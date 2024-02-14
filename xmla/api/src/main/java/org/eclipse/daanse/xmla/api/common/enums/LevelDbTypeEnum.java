@@ -221,7 +221,9 @@ public enum LevelDbTypeEnum {
      * identify rows in a child
      * rowset.
      */
-    DBTYPE_HCHAPTER(136);
+    DBTYPE_HCHAPTER(136),
+    //TODO
+    _1009(1009);
 
     private final int value;
 
