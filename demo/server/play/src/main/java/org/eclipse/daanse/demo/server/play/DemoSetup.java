@@ -190,6 +190,7 @@ public class DemoSetup {
         props.put("writeCubeMatrixDiagram", true);
         props.put("writeDatabaseInfoDiagrams", true);
         props.put("writeVerifierResult", true);
+        props.put("writeSchemasAsXML", false);
         cDoc = configurationAdmin.getFactoryConfiguration(PID_DESCRIPTION_DOC, "1", "?");
         cDoc.update(props);
     }

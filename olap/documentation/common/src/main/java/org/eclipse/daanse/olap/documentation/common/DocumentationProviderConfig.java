@@ -45,4 +45,9 @@ public interface DocumentationProviderConfig {
     default boolean writeVerifierResult() {
         return true;
     }
+
+    @AttributeDefinition(name = "writeSchemasAsXML", description = "write schemas as XML property", required = false)
+    default boolean writeSchemasAsXML() {
+        return true;
+    }
 }

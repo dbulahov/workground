@@ -97,6 +97,8 @@
 	org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.rolap.dbmapper.model.record;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.rolap.dbmapper.provider.api;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.base;version='[0.0.1,0.0.2)',\
+	org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.jaxb;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.rolap.dbmapper.provider.xml;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.rolap.dbmapper.utils;version='[0.0.1,0.0.2)',\
 	org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api;version='[0.0.1,0.0.2)',\

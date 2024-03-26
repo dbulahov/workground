@@ -13,6 +13,7 @@
  */
 package org.eclipse.daanse.olap.documentation.common;
 
+import jakarta.xml.bind.JAXBException;
 import org.eclipse.daanse.common.jdbc.db.api.DatabaseService;
 import org.eclipse.daanse.common.jdbc.db.api.meta.TableDefinition;
 import org.eclipse.daanse.common.jdbc.db.api.sql.ColumnDefinition;
@@ -39,6 +40,7 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTable;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingView;
+import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.jaxb.SerializerModifier;
 import org.eclipse.daanse.olap.rolap.dbmapper.utils.Utils;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.Level;
 import org.eclipse.daanse.olap.rolap.dbmapper.verifyer.api.VerificationResult;
@@ -124,6 +126,10 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         if (config.writeSchemasDescribing()) {
             writeSchemas(writer, context);
         }
+        if (config.writeSchemasAsXML()) {
+            writeSchemasAsXML(writer, context);
+        }
+
         if (config.writeCubsDiagrams()) {
             writeCubeDiagram(writer, context);
         }
@@ -504,6 +510,13 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         return path;
     }
 
+    private void writeSchemasAsXML(FileWriter writer, Context context) {
+        context.getDatabaseMappingSchemaProviders().forEach(p -> {
+            MappingSchema schema = p.get();
+            writeSchemaAsXML(writer, schema);
+        });
+    }
+
     private void writeSchemas(FileWriter writer, Context context) {
         context.getDatabaseMappingSchemaProviders().forEach(p -> {
             MappingSchema schema = p.get();
@@ -529,6 +542,19 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         }
 
 
+    }
+
+    private void writeSchemaAsXML(FileWriter writer, MappingSchema schema) {
+        try {
+            String schemaName = schema.name();
+            writer.write(STR."### Schema \{schemaName} as XML: ");
+            writer.write(ENTER);
+            SerializerModifier serializerModifier = new SerializerModifier(schema);
+            writer.write(serializerModifier.getXML());
+            writer.write(ENTER);
+        } catch (IOException | JAXBException e) {
+            e.printStackTrace();
+        }
     }
 
     private void writeSchema(FileWriter writer, MappingSchema schema) {
