@@ -13,11 +13,10 @@ package mondrian.rolap;
 
 import org.eclipse.daanse.olap.api.element.LevelType;
 import org.eclipse.daanse.olap.api.element.MemberFormatter;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
 
@@ -185,7 +184,7 @@ public class RolapCubeLevel extends RolapLevel {
                     RelationUtil.getAlias(table),
                     col.getName());
             } else if (rel instanceof JoinQueryMapping
-                || rel instanceof MappingRelationQuery)
+                || rel instanceof RelationalQueryMapping)
             {
                 // need to determine correct name of alias for this level.
                 // this may be defined in level
@@ -193,7 +192,7 @@ public class RolapCubeLevel extends RolapLevel {
                 String alias = getHierarchy().lookupAlias(ExpressionUtil.getTableAlias(col));
                 return new mondrian.rolap.Column(alias, col.getName());
             }
-        } else if (exp instanceof MappingExpressionView) {
+        } else {
             // this is a limitation, in the future, we may need
             // to replace the table name in the sql provided
             // with the new aliased name

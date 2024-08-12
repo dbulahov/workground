@@ -28,7 +28,6 @@ import org.eclipse.daanse.olap.api.access.Access;
 import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.Formula;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
@@ -160,12 +159,12 @@ public class RolapCubeHierarchy extends RolapHierarchy {
         // re-alias names if necessary
         if (!cubeIsVirtual && !usingCubeFact) {
             // join expressions are columns only
-            assert (usage.getJoinExp() instanceof MappingColumn);
+            assert (usage.getJoinExp() instanceof mondrian.rolap.Column column);
             currentRelation =
                 this.cubeDimension.getCube().getStar().getUniqueRelation(
                     rolapHierarchy.getRelation(),
                     usage.getForeignKey(),
-                    ((MappingColumn)usage.getJoinExp()).getName(),
+                    ((mondrian.rolap.Column)usage.getJoinExp()).getName(),
                     RelationUtil.getAlias(usage.getJoinTable()));
         } else {
             currentRelation = rolapHierarchy.getRelation();

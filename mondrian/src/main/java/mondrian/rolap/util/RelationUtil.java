@@ -18,12 +18,7 @@ import static mondrian.rolap.util.JoinUtil.right;
 
 import java.util.Objects;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
+import org.eclipse.daanse.rolap.mapping.api.model.InlineTableQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
@@ -39,10 +34,10 @@ public class RelationUtil {
     }
 
     public static RelationalQueryMapping find(QueryMapping relationOrJoin, String tableName) {
-        if (relationOrJoin instanceof MappingInlineTableQuery inlineTable) {
+        if (relationOrJoin instanceof InlineTableQueryMapping inlineTable) {
             return tableName.equals(inlineTable.getAlias()) ? (RelationalQueryMapping) relationOrJoin : null;
         }
-        if (relationOrJoin instanceof MappingTableQuery table) {
+        if (relationOrJoin instanceof TableQueryMapping table) {
             if (tableName.equals(table.getName())) {
                 return (RelationalQueryMapping) relationOrJoin;
             } else {
@@ -77,28 +72,28 @@ public class RelationUtil {
         }
     }
 
-    public static boolean equals(MappingRelationQuery relation, Object o) {
-        if (relation instanceof MappingViewQuery view) {
-            if (o instanceof MappingViewQuery that) {
+    public static boolean equals(RelationalQueryMapping relation, Object o) {
+        if (relation instanceof SqlSelectQueryMapping view) {
+            if (o instanceof SqlSelectQueryMapping that) {
                 if (!Objects.equals(relation.getAlias(), that.getAlias())) {
                     return false;
                 }
-                if (view.sql() == null || that.sql() == null
-                    || view.sql().sqls() == null || that.sql().sqls() == null
-                    || view.sql().sqls().size() != that.sql().sqls().size()) {
+                if (
+                    view.getSQL() == null || that.getSQL() == null
+                    || view.getSQL().size() != that.getSQL().size()) {
                     return false;
                 }
-                for (int i = 0; i < view.sql().sqls().size(); i++) {
-                    if (!Objects.equals(view.sql().sqls().get(i).statement(), that.sql().sqls().get(i).statement()))
+                for (int i = 0; i < view.getSQL().size(); i++) {
+                    if (!Objects.equals(view.getSQL().get(i).getStatement(), that.getSQL().get(i).getStatement()))
                     {
                         return false;
                     }
-                    if (view.sql().sqls().get(i).dialects() == null || that.sql().sqls().get(i).dialects() == null
-                        || view.sql().sqls().get(i).dialects().size() != that.sql().sqls().get(i).dialects().size()) {
+                    if (view.getSQL().get(i).getDialects() == null || that.getSQL().get(i).getDialects() == null
+                        || view.getSQL().get(i).getDialects().size() != that.getSQL().get(i).getDialects().size()) {
                         return false;
                     }
-                    for (int j = 0; j< view.sql().sqls().get(i).dialects().size(); j++) {
-                        if (!view.sql().sqls().get(i).dialects().get(j).equals(that.sql().sqls().get(i).dialects().get(j))) {
+                    for (int j = 0; j< view.getSQL().get(i).getDialects().size(); j++) {
+                        if (!view.getSQL().get(i).getDialects().get(j).equals(that.getSQL().get(i).getDialects().get(j))) {
                             return false;
                         }
                     }
@@ -109,8 +104,8 @@ public class RelationUtil {
                 return false;
             }
         }
-        if (relation instanceof MappingTableQuery table) {
-            if (o instanceof MappingTableQuery that) {
+        if (relation instanceof TableQueryMapping table) {
+            if (o instanceof TableQueryMapping that) {
                 return table.getName().equals(that.getName()) &&
                     Objects.equals(relation.getAlias(), that.getAlias()) &&
                     Objects.equals(table.getSchema(), that.getSchema());
@@ -118,8 +113,8 @@ public class RelationUtil {
                 return false;
             }
         }
-        if (relation instanceof MappingInlineTableQuery) {
-            if (o instanceof MappingInlineTableQuery that) {
+        if (relation instanceof InlineTableQueryMapping) {
+            if (o instanceof InlineTableQueryMapping that) {
                 return relation.getAlias().equals(that.getAlias());
             } else {
                 return false;
@@ -129,17 +124,17 @@ public class RelationUtil {
         return relation == o;
     }
 
-    public static int hashCode(MappingRelationQuery relation) {
-        if (relation instanceof MappingTableQuery) {
+    public static int hashCode(RelationalQueryMapping relation) {
+        if (relation instanceof TableQueryMapping) {
             return toString(relation).hashCode();
         }
-        if (relation instanceof MappingInlineTableQuery) {
+        if (relation instanceof InlineTableQueryMapping) {
             return toString(relation).hashCode();
         }
         return System.identityHashCode(relation);
     }
 
-    private static Object toString(MappingRelationQuery relation) {
+    private static Object toString(RelationalQueryMapping relation) {
         if (relation instanceof TableQueryMapping table) {
             return (table.getSchema() == null) ?
                 table.getName() :
@@ -150,7 +145,7 @@ public class RelationUtil {
                 .append(join.getLeft().getAlias()).append(".").append(join.getLeft().getKey()).append(" = ")
                 .append(join.getRight().getAlias()).append(".").append(join.getRight().getKey()).toString();
         }
-        if (relation instanceof MappingInlineTableQuery) {
+        if (relation instanceof InlineTableQueryMapping) {
             return "<inline data>";
         }
         return relation.toString();

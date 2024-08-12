@@ -197,7 +197,7 @@ public class AggStar {
     private static void collectLevels(
         List<Table.Level> levelList,
         Table table,
-        org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn joinColumn)
+        mondrian.rolap.Column joinColumn)
     {
         if (joinColumn == null) {
             levelList.addAll(table.levels);
@@ -500,7 +500,7 @@ public class AggStar {
                 final SQLExpressionMapping left,
                 final SQLExpressionMapping right)
             {
-                if (!(left instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn)) {
+                if (!(left instanceof mondrian.rolap.Column)) {
                     JOIN_CONDITION_LOGGER.debug("JoinCondition.left NOT Column: {}",
                         left.getClass().getName());
                 }
@@ -567,7 +567,7 @@ public class AggStar {
 
                 pw.print(subprefix);
                 pw.print("left=");
-                if (left instanceof org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn c) {
+                if (left instanceof mondrian.rolap.Column c) {
                     mondrian.rolap.RolapStar.Column col =
                         getTable().getAggStar().getStar().getFactTable()
                         .lookupColumn(c.getName());
@@ -1476,7 +1476,7 @@ public class AggStar {
                     levelColumnsToJoin.put(
                         bitPos,
                         new Column(
-                            ((org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn)parentLevel.getKeyExp())
+                            ((mondrian.rolap.Column)parentLevel.getKeyExp())
                                 .getName(),
                             parentLevel.getKeyExp(),
                             AggStar.this.star.getColumn(bitPos).getDatatype(),

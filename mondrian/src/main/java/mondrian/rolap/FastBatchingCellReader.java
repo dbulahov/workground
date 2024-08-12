@@ -29,8 +29,8 @@ import java.util.concurrent.Future;
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Execution;
 import org.eclipse.daanse.olap.api.Locus;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1517,15 +1517,15 @@ class BatchLoader {
             for (RolapStar.Measure measure : measuresList) {
                 if (measure.getAggregator().isDistinct()
                     && measure.getExpression() instanceof
-                    MappingExpressionView measureExpr)
+                    SQLExpressionMapping measureExpr)
                 {
-                    MappingSQL measureSql = measureExpr.sql().sqls().get(0);
+                    SQLMapping measureSql = measureExpr.getSqls().get(0);
                     // Checks if the SQL contains "SELECT" to detect the case a
                     // subquery is used to define the measure. This is not a
                     // perfect check, because a SQL expression on column names
                     // containing "SELECT" will also be detected. e,g,
                     // count("select beef" + "regular beef").
-                    if (measureSql.statement().toUpperCase().contains("SELECT")) {
+                    if (measureSql.getStatement().toUpperCase().contains("SELECT")) {
                         distinctSqlMeasureList.add(measure);
                     }
                 }

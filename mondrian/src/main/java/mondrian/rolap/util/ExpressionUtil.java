@@ -16,9 +16,6 @@ package mondrian.rolap.util;
 import java.util.Objects;
 
 import mondrian.rolap.Column;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 
 import mondrian.rolap.RolapRuntimeException;
@@ -36,37 +33,37 @@ public class ExpressionUtil {
         return codeSet.chooseQuery(query.getDialect());
     }
 
-    public static int hashCode(MappingExpression expression) {
-        if (expression instanceof MappingColumn) {
-            return expression.getName().hashCode() ^ (expression.getTable()==null ? 0 : expression.getTable().hashCode());
+    public static int hashCode(SQLExpressionMapping expression) {
+        if (expression instanceof mondrian.rolap.Column column) {
+            return column.getName().hashCode() ^ (column.getTable()==null ? 0 : column.getTable().hashCode());
         }
-        if (expression instanceof MappingExpressionView expressionView) {
+        if (expression != null) {
             int h = 17;
-            for (int i = 0; i < expressionView.sql().sqls().size(); i++) {
-                h = 37 * h + SQLUtil.hashCode(expressionView.sql().sqls().get(i));
+            for (int i = 0; i < expression.getSqls().size(); i++) {
+                h = 37 * h + SQLUtil.hashCode(expression.getSqls().get(i));
             }
             return h;
         }
         return expression.hashCode();
     }
 
-    public static boolean equals(MappingExpression expression, Object obj) {
-        if (expression instanceof MappingColumn) {
-            if (!(obj instanceof MappingColumn that)) {
+    public static boolean equals(SQLExpressionMapping expression, Object obj) {
+        if (expression instanceof mondrian.rolap.Column col) {
+            if (!(obj instanceof mondrian.rolap.Column that)) {
                 return false;
             }
-            return expression.getName().equals(that.getName()) &&
-                Objects.equals(expression.getTable(), that.getTable());
+            return col.getName().equals(that.getName()) &&
+                Objects.equals(col.getTable(), that.getTable());
         }
-        if (expression instanceof MappingExpressionView expressionView) {
-            if (!(obj instanceof MappingExpressionView that)) {
+        if (expression != null) {
+            if (!(obj instanceof SQLExpressionMapping that)) {
                 return false;
             }
-            if (expressionView.sql().sqls().size() != that.sql().sqls().size()) {
+            if (expression.getSqls().size() != that.getSqls().size()) {
                 return false;
             }
-            for (int i = 0; i < expressionView.sql().sqls().size(); i++) {
-                if (! expressionView.sql().sqls().get(i).equals(that.sql().sqls().get(i))) {
+            for (int i = 0; i < expression.getSqls().size(); i++) {
+                if (! expression.getSqls().get(i).equals(that.getSqls().get(i))) {
                     return false;
                 }
             }
@@ -81,7 +78,7 @@ public class ExpressionUtil {
                     return expression.getSqls().get(i).getStatement();
                 }
             }
-            return ((MappingExpressionView) expression).sql().sqls().get(0).statement();
+            return expression.getSqls().get(0).getStatement();
     }
 
     public static String toString(SQLExpressionMapping expression) {

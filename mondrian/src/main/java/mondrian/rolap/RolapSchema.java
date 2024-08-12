@@ -73,8 +73,6 @@ import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.Formula;
 import org.eclipse.daanse.olap.api.type.Type;
 import org.eclipse.daanse.olap.impl.IdentifierSegment;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.ParameterTypeEnum;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessCubeGrantMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessDimensionGrantMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessHierarchyGrantMapping;
@@ -456,9 +454,9 @@ public class RolapSchema implements Schema {
                     name));
             }
             Type type;
-            if (ParameterTypeEnum.STRING.getValue().equals(mappingParameter.getType())) {
+            if ("String".equalsIgnoreCase(mappingParameter.getType())) {
                 type = StringType.INSTANCE;
-            } else if (ParameterTypeEnum.NUMERIC.getValue().equals(mappingParameter.getType())) {
+            } else if ("Numeric".equalsIgnoreCase(mappingParameter.getType())) {
                 type = NumericType.INSTANCE;
             } else {
                 type = new MemberType(null, null, null, null);
@@ -524,6 +522,7 @@ public class RolapSchema implements Schema {
         }
     }
 
+    /*
     static Scripts.ScriptDefinition toScriptDef(MappingScript script) {
         if (script == null) {
             return null;
@@ -536,7 +535,7 @@ public class RolapSchema implements Schema {
         }
         return new Scripts.ScriptDefinition(script.cdata(), language);
     }
-
+    */
 
 
     private NamedSet createNamedSet(NamedSetMapping namedSetsMapping) {

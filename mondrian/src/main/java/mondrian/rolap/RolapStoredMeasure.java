@@ -13,7 +13,6 @@
 
 package mondrian.rolap;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 
 /**

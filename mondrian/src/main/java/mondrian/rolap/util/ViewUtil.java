@@ -15,7 +15,6 @@ package mondrian.rolap.util;
 
 import static mondrian.rolap.util.SQLUtil.toCodeSet;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
 import org.eclipse.daanse.rolap.mapping.api.model.SqlSelectQueryMapping;
 
 import mondrian.rolap.sql.SqlQuery;

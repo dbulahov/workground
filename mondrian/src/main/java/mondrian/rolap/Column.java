@@ -8,8 +8,8 @@ import org.eclipse.daanse.rolap.mapping.pojo.SQLMappingImpl;
 
 public class Column implements SQLExpressionMapping {
 
-    private final String table;
-    private final String name;
+    private String table;
+    private String name;
     private List<? extends SQLMapping> sqls;
 
 
@@ -33,6 +33,10 @@ public class Column implements SQLExpressionMapping {
     @Override
 	public List<? extends SQLMapping> getSqls() {
 		return sqls;
+	}
+
+	public void setTable(String table) {
+		 this.table =  table;		
 	}
 
 }

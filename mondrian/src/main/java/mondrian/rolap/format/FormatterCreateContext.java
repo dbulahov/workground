@@ -9,7 +9,6 @@
 */
 package mondrian.rolap.format;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingScript;
 import org.eclipse.daanse.rolap.mapping.api.model.FormatterMapping;
 
 /**
@@ -76,7 +75,7 @@ public class FormatterCreateContext {
 
                 formatterAsElement = true;
                 formatterClassName = cellFormatterMapping.getRef();
-                return script(null);
+                return null;
             }
             return this;
         }
@@ -105,17 +104,6 @@ public class FormatterCreateContext {
             return this;
         }
 
-        /**
-         * A script data used to create
-         * a script based implementation of a requested formatter.
-         */
-        public Builder script(MappingScript script) {
-            if (script != null) {
-                scriptText = script.cdata();
-                scriptLanguage = script.language();
-            }
-            return this;
-        }
 
         public FormatterCreateContext build() {
             return new FormatterCreateContext(this);

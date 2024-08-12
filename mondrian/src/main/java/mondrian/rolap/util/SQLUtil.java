@@ -16,7 +16,6 @@ package mondrian.rolap.util;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLMapping;
 
 import mondrian.rolap.sql.SqlQuery;
@@ -36,23 +35,23 @@ public class SQLUtil {
         return codeSet;
     }
 
-    public static int hashCode(MappingSQL sql) {
-        return sql.dialects().hashCode();
+    public static int hashCode(SQLMapping sql) {
+        return sql.getDialects().hashCode();
     }
 
-    public boolean equals(MappingSQL sql, Object obj) {
-        if (!(obj instanceof MappingSQL that)) {
+    public boolean equals(SQLMapping sql, Object obj) {
+        if (!(obj instanceof SQLMapping that)) {
             return false;
         }
-        if (sql.dialects().size() != that.dialects().size()) {
+        if (sql.getDialects().size() != that.getDialects().size()) {
             return false;
         }
-        if (!sql.statement().equals(that.statement())) {
+        if (!sql.getStatement().equals(that.getStatement())) {
             return false;
         }
 
-        for (int i = 0; i < sql.dialects().size(); i++) {
-            if (sql.dialects().get(i).equals(that.dialects().get(i))) {
+        for (int i = 0; i < sql.getDialects().size(); i++) {
+            if (sql.getDialects().get(i).equals(that.getDialects().get(i))) {
                 return false;
             }
         }

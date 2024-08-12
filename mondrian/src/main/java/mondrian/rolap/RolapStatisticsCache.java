@@ -19,12 +19,9 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
 
 import mondrian.rolap.sql.SqlQuery;
 import mondrian.server.ExecutionImpl;
@@ -55,7 +52,7 @@ public class RolapStatisticsCache {
         if (approxRowCount >= 0) {
             return approxRowCount;
         }
-        if (relation instanceof MappingTableQuery table) {
+        if (relation instanceof TableQueryMapping table) {
             return getTableCardinality(
                 null, table.getSchema(), table.getName());
         } else {
@@ -140,8 +137,8 @@ public class RolapStatisticsCache {
         if (approxCardinality >= 0) {
             return approxCardinality;
         }
-        if (relation instanceof MappingTableQuery table
-            && expression instanceof MappingColumn column)
+        if (relation instanceof TableQueryMapping table
+            && expression instanceof mondrian.rolap.Column column)
         {
             return getColumnCardinality(
                 null,

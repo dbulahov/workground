@@ -57,9 +57,6 @@ import org.eclipse.daanse.olap.calc.api.todo.TupleListCalc;
 import org.eclipse.daanse.olap.calc.base.constant.ConstantCalcs;
 import org.eclipse.daanse.olap.function.AbstractFunctionDefinition;
 import org.eclipse.daanse.olap.operation.api.InternalOperationAtom;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.rolap.mapping.api.model.AnnotationMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
@@ -383,6 +380,13 @@ public class RolapHierarchy extends HierarchyBase {
             }
         }
 
+        String sharedDimensionName = xmlCubeDimension.getDimension().getName();
+        this.sharedHierarchyName = sharedDimensionName;
+        if (subName != null) {
+            this.sharedHierarchyName += "." + subName; // e.g. "Time.Weekly"
+        }
+
+        /*
         if (xmlCubeDimension instanceof MappingDimensionUsage dimensionUsage) {
             String sharedDimensionName =
                 dimensionUsage.source();
@@ -393,6 +397,7 @@ public class RolapHierarchy extends HierarchyBase {
         } else {
             this.sharedHierarchyName = null;
         }
+        */
         if (xmlHierarchyRelation != null
             && xmlHierarchy.getMemberReaderClass() != null)
         {
@@ -759,7 +764,7 @@ public class RolapHierarchy extends HierarchyBase {
         query.registerRootRelation(getRelation());
         final boolean failIfExists = false;
         QueryMapping subRelation = getRelation();
-        if (getRelation() instanceof MappingJoinQuery && expression != null) {
+        if (getRelation() instanceof JoinQueryMapping && expression != null) {
             // Suppose relation is
             //   (((A join B) join C) join D)
             // and the fact table is

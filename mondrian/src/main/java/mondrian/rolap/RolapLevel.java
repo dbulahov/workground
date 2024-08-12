@@ -29,8 +29,6 @@ import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.LevelType;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.element.OlapElement;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.LevelMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.MemberPropertyMapping;
@@ -154,8 +152,8 @@ public class RolapLevel extends LevelBase {
             "hideMemberCondition != null");
         Util.assertPrecondition(levelType != null, "levelType != null");
 
-        if (keyExp instanceof MappingColumn) {
-            checkColumn((MappingColumn) keyExp);
+        if (keyExp instanceof mondrian.rolap.Column column) {
+            checkColumn(column);
         }
         this.metadata = metadata;
         this.approxRowCount = loadApproxRowCount(approxRowCount);
@@ -182,7 +180,7 @@ public class RolapLevel extends LevelBase {
         } else {
             this.ordinalExp = this.keyExp;
         }
-        if (parentExp instanceof MappingColumn) {
+        if (parentExp instanceof mondrian.rolap.Column) {
             //checkColumn((MappingColumn) parentExp);
         }
         this.parentExp = parentExp;
@@ -201,8 +199,8 @@ public class RolapLevel extends LevelBase {
             "parentExp != null || nullParentValue == null");
         this.xmlClosure = mappingClosure;
         for (RolapProperty property : properties) {
-            if (property.getExp() instanceof MappingColumn) {
-                checkColumn((MappingColumn) property.getExp());
+            if (property.getExp() instanceof mondrian.rolap.Column column) {
+                checkColumn(column);
             }
         }
         this.properties = properties;
@@ -446,21 +444,21 @@ public class RolapLevel extends LevelBase {
     private static Property.Datatype convertPropertyTypeNameToCode(
         String type)
     {
-        if (type.equals(PropertyTypeEnum.STRING.getValue())) {
+        if (type.equals("String")) {
             return Property.Datatype.TYPE_STRING;
-        } else if (type.equalsIgnoreCase(PropertyTypeEnum.NUMERIC.getValue())) {
+        } else if (type.equalsIgnoreCase("Numeric")) {
             return Property.Datatype.TYPE_NUMERIC;
-        } else if (type.equalsIgnoreCase(PropertyTypeEnum.INTEGER.getValue())) {
+        } else if (type.equalsIgnoreCase("Integer")) {
             return Property.Datatype.TYPE_INTEGER;
-        } else if (type.equalsIgnoreCase(PropertyTypeEnum.LONG.getValue())) {
+        } else if (type.equalsIgnoreCase("Long")) {
             return Property.Datatype.TYPE_LONG;
-        } else if (type.equalsIgnoreCase(PropertyTypeEnum.BOOLEAN.getValue())) {
+        } else if (type.equalsIgnoreCase("Boolean")) {
             return Property.Datatype.TYPE_BOOLEAN;
-        } else if (type.equalsIgnoreCase(PropertyTypeEnum.TIMESTAMP.getValue())) {
+        } else if (type.equalsIgnoreCase("Timestamp")) {
             return Property.Datatype.TYPE_TIMESTAMP;
-        } else if (type.equalsIgnoreCase(PropertyTypeEnum.TIME.getValue())) {
+        } else if (type.equalsIgnoreCase("Time")) {
             return Property.Datatype.TYPE_TIME;
-        } else if (type.equalsIgnoreCase(PropertyTypeEnum.DATE.getValue())) {
+        } else if (type.equalsIgnoreCase("Date")) {
             return Property.Datatype.TYPE_DATE;
         } else {
             throw Util.newError(new StringBuilder("Unknown property type '")
@@ -468,7 +466,7 @@ public class RolapLevel extends LevelBase {
         }
     }
 
-    private void checkColumn(MappingColumn nameColumn) {
+    private void checkColumn(mondrian.rolap.Column nameColumn) {
         final RolapHierarchy rolapHierarchy = (RolapHierarchy) hierarchy;
         if (nameColumn.getTable() == null) {
             final RelationalQueryMapping table = rolapHierarchy.getUniqueTable();

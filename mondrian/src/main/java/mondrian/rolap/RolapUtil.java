@@ -45,12 +45,11 @@ import org.eclipse.daanse.olap.api.Segment;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.calc.api.compiler.ExpressionCompiler;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.rolap.mapping.api.model.InlineTableQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.InlineTableRowCellMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.InlineTableRowMappingMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
 import org.eclipse.daanse.rolap.mapping.pojo.SQLMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.SqlSelectQueryMappingImpl;
 import org.slf4j.Logger;
@@ -672,19 +671,19 @@ public class RolapUtil {
         final RelationalQueryMapping fact)
     {
       List<String> rlStarKey = new ArrayList<>();
-      MappingTableQuery table = null;
+      TableQueryMapping table = null;
       rlStarKey.add(getAlias(fact));
-      if (fact instanceof MappingTableQuery t) {
+      if (fact instanceof TableQueryMapping t) {
         table = t;
       }
       // Add SQL filter to the key
-      if (!Util.isNull(table) && table != null && !Util.isNull(table.getSql())
-          && !Util.isBlank(table.getSql().statement()))
+      if (!Util.isNull(table) && table != null && !Util.isNull(table.getSqlWhereExpression())
+          && !Util.isBlank(table.getSqlWhereExpression().getStatement()))
       {
-        for (String dialect : table.getSql().dialects()) {
+        for (String dialect : table.getSqlWhereExpression().getDialects()) {
             rlStarKey.add(dialect);
         }
-        rlStarKey.add(table.getSql().statement());
+        rlStarKey.add(table.getSqlWhereExpression().getStatement());
       }
       return Collections.unmodifiableList(rlStarKey);
     }

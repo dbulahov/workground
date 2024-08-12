@@ -73,8 +73,6 @@ import org.eclipse.daanse.olap.function.AbstractFunctionDefinition;
 import org.eclipse.daanse.olap.impl.IdentifierNode;
 import org.eclipse.daanse.olap.impl.IdentifierSegment;
 import org.eclipse.daanse.olap.impl.ScenarioImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
 import org.eclipse.daanse.rolap.mapping.api.model.ActionMappingMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CalculatedMemberMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CalculatedMemberPropertyMapping;
@@ -1826,10 +1824,7 @@ public class RolapCube extends CubeBase {
             // Only one, so let lower level error checking handle problems
             createUsage(hierarchies[0], mappingCubeDimension);
 
-        } else if ((mappingCubeDimension instanceof MappingDimensionUsage du)
-            && (((MappingDimensionUsage) mappingCubeDimension).level()
-                != null))
-        {
+        } else if (mappingCubeDimension.getLevel() != null) {
             int cnt = 0;
 
             for (RolapCubeHierarchy hierarchy : hierarchies) {
@@ -1839,7 +1834,7 @@ public class RolapCube extends CubeBase {
                     getLogger().debug(msg);
                 }
                 RolapLevel joinLevel = (RolapLevel)
-                    Util.lookupHierarchyLevel(hierarchy, du.level());
+                    Util.lookupHierarchyLevel(hierarchy, mappingCubeDimension.getLevel().getName());
                 if (joinLevel == null) {
                     continue;
                 }
@@ -2663,7 +2658,7 @@ public class RolapCube extends CubeBase {
      * @param relation A table or a join
      */
     private static void topToBottom(QueryMappingImpl relation) {
-        if (relation instanceof MappingTableQuery) {
+        if (relation instanceof TableQueryMapping) {
             // nothing
 
         } else if (relation instanceof JoinQueryMappingImpl join) {

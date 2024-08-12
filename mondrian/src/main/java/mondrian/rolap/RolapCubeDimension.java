@@ -14,7 +14,6 @@ package mondrian.rolap;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.element.Schema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
 

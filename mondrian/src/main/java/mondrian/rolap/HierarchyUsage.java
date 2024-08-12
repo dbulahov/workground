@@ -22,10 +22,8 @@ import java.util.Objects;
 
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Level;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeDimension;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.slf4j.Logger;
@@ -113,7 +111,7 @@ public class HierarchyUsage {
      * not NULL for DimensionUsage
      * NULL for Dimension
      */
-    private final String source;
+    private final String source; // maybe need to remove that
 
     /**
      * May be null, this is the field that is used to disambiguate column
@@ -158,7 +156,43 @@ public class HierarchyUsage {
         // name
         // foreignKey
         this.name = cubeDim.getOverrideDimensionName();
-        this.foreignKey = cubeDim.getForeignKey();        
+        this.foreignKey = cubeDim.getForeignKey();
+        DimensionMapping du = cubeDim.getDimension();
+
+        this.kind = Kind.SHARED;
+
+
+        // Shared Hierarchy attributes
+        // source
+        // level
+        this.hierarchyName = deriveHierarchyName(hierarchy);
+        int index = this.hierarchyName == null ? -1 : this.hierarchyName.indexOf('.');
+        if (this.hierarchyName == null || index == -1) {
+            this.fullName = this.name;
+            this.source = du.getName();
+        } else {
+            String hname = this.hierarchyName.substring(
+                index + 1, this.hierarchyName.length());
+
+            StringBuilder buf = new StringBuilder(32);
+            buf.append(this.name);
+            buf.append('.');
+            buf.append(hname);
+            this.fullName = buf.toString();
+
+            buf.setLength(0);
+            buf.append(du.getName());
+            buf.append('.');
+            buf.append(hname);
+            this.source = buf.toString();
+        }
+
+        this.level = cubeDim.getLevel() != null ? cubeDim.getLevel().getName() : null;
+        this.usagePrefix = du.getUsagePrefix();
+
+        init(cube, hierarchy, cubeDim);
+        
+        /*
         if (cubeDim instanceof MappingDimensionUsage du) {
             this.kind = Kind.SHARED;
 
@@ -238,6 +272,7 @@ public class HierarchyUsage {
 
             init(cube, hierarchy, null);
         }
+        */
         if (getLogger().isDebugEnabled()) {
             getLogger().debug(
                 new StringBuilder(toString())
@@ -359,19 +394,19 @@ public class HierarchyUsage {
     void init(
         RolapCube cube,
         RolapHierarchy hierarchy,
-        MappingDimensionUsage cubeDim)
+        DimensionConnectorMapping cubeDim)
     {
         // Three ways that a hierarchy can be joined to the fact table.
-        if (cubeDim != null && cubeDim.level() != null) {
+        if (cubeDim != null && cubeDim.getLevel() != null) {
             // 1. Specify an explicit 'level' attribute in a <DimensionUsage>.
             RolapLevel joinLevel = (RolapLevel)
-                    Util.lookupHierarchyLevel(hierarchy, cubeDim.level());
+                    Util.lookupHierarchyLevel(hierarchy, cubeDim.getLevel().getName());
             if (joinLevel == null) {
                 throw new MondrianException(MessageFormat.format(
                     dimensionUsageHasUnknownLevel,
                         hierarchy.getUniqueName(),
                         cube.getName(),
-                        cubeDim.level()));
+                        cubeDim.getLevel().getName()));
             }
             String tableName = getTableAlias(joinLevel.getKeyExp());
             if (hierarchy instanceof RolapCubeHierarchy rch) {
