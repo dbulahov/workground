@@ -16,7 +16,7 @@ import static org.opencube.junit5.TestUtil.withSchema;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.Context;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -83,8 +83,8 @@ class OrderByAliasTest extends BatchTestCase {
         + "</Dimension>"));
      */
       RolapSchemaPool.instance().clear();
-      MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-      ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1KE(schema, colName)));
+      CatalogMapping catalog = context.getCatalogMapping();
+      ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier1KE(catalog, colName));
 
       assertQuerySql(context.getConnection(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -130,9 +130,9 @@ class OrderByAliasTest extends BatchTestCase {
         + "  </Hierarchy>\n"
         + "</Dimension>"));
      */
-         RolapSchemaPool.instance().clear();
-         MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1NE(schema, colName)));
+         RolapSchemaPool.instance().clear();       
+         CatalogMapping catalog = context.getCatalogMapping();
+         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier1NE(catalog, colName));
          assertQuerySql(
         context.getConnection(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -181,8 +181,8 @@ class OrderByAliasTest extends BatchTestCase {
         + "</Dimension>"));
      */
          RolapSchemaPool.instance().clear();
-         MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1CE(schema, colName)));
+         CatalogMapping catalog = context.getCatalogMapping();
+         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier1CE(catalog, colName));
          assertQuerySql(
         context.getConnection(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -231,8 +231,8 @@ class OrderByAliasTest extends BatchTestCase {
         + "</Dimension>"));
      */
          RolapSchemaPool.instance().clear();
-         MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1OE(schema, colName)));
+         CatalogMapping catalog = context.getCatalogMapping();
+         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier1OE(catalog, colName));         
          assertQuerySql(
         context.getConnection(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -293,8 +293,8 @@ class OrderByAliasTest extends BatchTestCase {
         + "</Dimension>"));
      */
          RolapSchemaPool.instance().clear();
-         MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier2(schema, colName)));
+         CatalogMapping catalog = context.getCatalogMapping();
+         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier2(catalog, colName));         
          assertQuerySql(
         context.getConnection(),
         "select non empty{[Employees].[All Employees].Children} ON rows, "
@@ -354,9 +354,8 @@ class OrderByAliasTest extends BatchTestCase {
         + "</Dimension>"));
      */
          RolapSchemaPool.instance().clear();
-         MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-         ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier3(schema, colName)));
-
+         CatalogMapping catalog = context.getCatalogMapping();
+         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier3(catalog, colName));
          assertQuerySql(
         context.getConnection(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -404,8 +403,8 @@ class OrderByAliasTest extends BatchTestCase {
         + "</Dimension>"));
      */
         RolapSchemaPool.instance().clear();
-        MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.OrderByAliasTestModifier1ME(schema, colName)));
+        CatalogMapping catalog = context.getCatalogMapping();
+        ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier1ME(catalog, colName));
 
         assertQuerySql(
         context.getConnection(),

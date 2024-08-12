@@ -20,31 +20,14 @@ import static org.opencube.junit5.TestUtil.getDialect;
 import static org.opencube.junit5.TestUtil.verifySameNativeAndNot;
 import static org.opencube.junit5.TestUtil.withSchema;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.CacheControl;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MemberGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -1095,12 +1078,12 @@ protected void assertQuerySql(Connection connection,
         + "Mouthwash]}\n"
         + "Row #0: 51.60\n"
         + "Row #1: 28.96\n";
-      class TestMultipleAllWithInExprModifier extends RDbMappingSchemaModifier {
+      class TestMultipleAllWithInExprModifier extends PojoMappingModifier {
 
-          public TestMultipleAllWithInExprModifier(MappingSchema mappingSchema) {
-              super(mappingSchema);
+          public TestMultipleAllWithInExprModifier(CatalogMapping catalogMapping) {
+              super(catalogMapping);
           }
-
+          /* TODO: DENIS MAPPING-MODIFIER
           @Override
           protected List<MappingCube> cubes(List<MappingCube> cubes) {
               List<MappingCube> result = new ArrayList<>();
@@ -1198,6 +1181,7 @@ protected void assertQuerySql(Connection connection,
                   .build());
               return result;
           }
+          */
       }
     /*
     String baseSchema = TestUtil.getRawSchema(context);
@@ -1572,12 +1556,12 @@ protected void assertQuerySql(Connection connection,
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
   void testNativeVirtualRestrictedSet(Context context) throws Exception {
-      class TestNativeVirtualRestrictedSetModifier extends RDbMappingSchemaModifier {
+      class TestNativeVirtualRestrictedSetModifier extends PojoMappingModifier {
 
-          public TestNativeVirtualRestrictedSetModifier(MappingSchema mappingSchema) {
-              super(mappingSchema);
+          public TestNativeVirtualRestrictedSetModifier(CatalogMapping catalogMapping) {
+              super(catalogMapping);
           }
-
+          /* TODO: DENIS MAPPING-MODIFIER
           @Override
           protected List<MappingRole> roles(List<MappingRole> roles) {
               List<MappingRole> result = new ArrayList<>();
@@ -1615,6 +1599,7 @@ protected void assertQuerySql(Connection connection,
                   .build());
               return result;
           }
+          */
       }
     /*
     String baseSchema = TestUtil.getRawSchema(context);
@@ -1703,12 +1688,12 @@ protected void assertQuerySql(Connection connection,
         + "  </Role>";
     // The following queries should not include [Denny C-Size Batteries] or
     // [Denny D-Size Batteries]
-      class TestNativeHonorsRoleRestrictionsModifier extends RDbMappingSchemaModifier {
+      class TestNativeHonorsRoleRestrictionsModifier extends PojoMappingModifier {
 
-          public TestNativeHonorsRoleRestrictionsModifier(MappingSchema mappingSchema) {
-              super(mappingSchema);
+          public TestNativeHonorsRoleRestrictionsModifier(CatalogMapping catalogMapping) {
+              super(catalogMapping);
           }
-
+          /* TODO: DENIS MAPPING-MODIFIER
           @Override
           protected List<MappingRole> roles(List<MappingRole> roles) {
               List<MappingRole> result = new ArrayList<>();
@@ -1762,6 +1747,7 @@ protected void assertQuerySql(Connection connection,
                   .build());
               return result;
           }
+          */
       }
     /*
     String baseSchema = TestUtil.getRawSchema(context);

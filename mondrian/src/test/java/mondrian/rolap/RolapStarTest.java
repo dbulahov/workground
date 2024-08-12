@@ -17,12 +17,10 @@ import static org.mockito.Mockito.when;
 
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Context;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.TableImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SqlSelectQueryR;
+import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.SQLMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
@@ -45,13 +43,13 @@ class RolapStarTest {
         public RolapStarForTests(
             final RolapSchema schema,
             final Context context,
-            final MappingRelationQuery fact)
+            final RelationalQueryMapping fact)
         {
             super(schema, context, fact);
         }
 
-        public MappingQuery cloneRelationForTests(
-            MappingRelationQuery rel,
+        public QueryMapping cloneRelationForTests(
+            RelationalQueryMapping rel,
             String possibleName)
         {
             return cloneRelation(rel, possibleName);
@@ -81,20 +79,25 @@ class RolapStarTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCloneRelationWithFilteredTable(Context context) {
       RolapStarForTests rs = getStar(context.getConnection(), "sales");
-      TableImpl original = new TableImpl();
-      original.setName("TestTable");
-      original.setAlias("Alias");
-      original.setSchema("Sechema");
-      original.setSql(new SQLR("Alias.clicked = 'true'", List.of("generic")));
+      TableQueryMappingImpl original = TableQueryMappingImpl.builder()
+    		  .withName("TestTable")
+    		  .withAlias("Alias")
+    		  .withSchema("Sechema")
+    		  .withSqlWhereExpression(SQLMappingImpl.builder()
+    				  .withStatement("Alias.clicked = 'true'")
+    				  .withDialects(List.of("generic"))
+    				  .build())
+    		  .build();
 
-      MappingTableQuery cloned = (MappingTableQuery)rs.cloneRelationForTests(
+
+      TableQueryMappingImpl cloned = (TableQueryMappingImpl)rs.cloneRelationForTests(
           original,
           "NewAlias");
 
       assertEquals("NewAlias", RelationUtil.getAlias(cloned));
       assertEquals("TestTable", cloned.getName());
-      assertNotNull(cloned.getSql());
-      assertEquals("NewAlias.clicked = 'true'", cloned.getSql().statement());
+      assertNotNull(cloned.getSqlWhereExpression());
+      assertEquals("NewAlias.clicked = 'true'", cloned.getSqlWhereExpression().getStatement());
   }
 
    //Below there are tests for mondrian.rolap.RolapStar.ColumnComparator

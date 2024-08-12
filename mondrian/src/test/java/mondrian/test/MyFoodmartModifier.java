@@ -13,48 +13,13 @@
  */
 package mondrian.test;
 
-import java.util.List;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.DimensionTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.HideMemberIfEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.LevelTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggExcludeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CalculatedMemberPropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CalculatedMemberRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ClosureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ExpressionViewRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MemberGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SqlSelectQueryRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeMeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+public class MyFoodmartModifier extends PojoMappingModifier {
 
-public class MyFoodmartModifier extends RDbMappingSchemaModifier {
-
-    public MyFoodmartModifier(MappingSchema mappingSchema) {
-        super(mappingSchema);
+    public MyFoodmartModifier(CatalogMapping catalog) {
+        super(catalog);
     }
 
     /*
@@ -614,6 +579,8 @@ public class MyFoodmartModifier extends RDbMappingSchemaModifier {
                         + "</Schema>";
 
      */
+    
+    /* TODO: DENIS MAPPING-MODIFIER
     protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
         return SchemaRBuilder.builder()
             .name("FoodMart")
@@ -1981,4 +1948,5 @@ public class MyFoodmartModifier extends RDbMappingSchemaModifier {
             ))
             .build();
     }
+    */
 }

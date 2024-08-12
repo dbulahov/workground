@@ -78,7 +78,7 @@ import org.eclipse.daanse.olap.api.result.Position;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.api.type.Type;
 import org.eclipse.daanse.olap.calc.api.ResultStyle;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -4802,8 +4802,9 @@ public class BasicQueryTest {
                 + "aggregator=\"sum\"/>\n" + "</Cube>", null, null, null, null );
        */
     RolapSchemaPool.instance().clear();
-    MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-    ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.BasicQueryTestModifier27(schema, "Supply Time Error")));
+    SchemaMapping schema = context.getCatalogMapping().getSchemas().get(0);
+    //TODO: DENIS MAPPING-MODIFIER
+    //((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.BasicQueryTestModifier27(schema, "Supply Time Error")));
     String queryWithoutFilter = "select store.members on 0 from " + "DefaultMeasureTesting";
     String queryWithFirstMeasure =
         "select store.members on 0 " + "from DefaultMeasureTesting where [measures].[Store Invoice]";
@@ -4825,8 +4826,9 @@ public class BasicQueryTest {
        */
 
     RolapSchemaPool.instance().clear();
-    MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-    ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.BasicQueryTestModifier27(schema, "SUPPLY TIME")));
+    SchemaMapping schema = context.getCatalogMapping().getSchemas().get(0);
+    //TODO: DENIS MAPPING-MODIFIER
+    //((TestContext)context).setCatalogMappingSupplier(List.of(new SchemaModifiers.BasicQueryTestModifier27(schema, "SUPPLY TIME")));
     String queryWithoutFilter = "select store.members on 0 from " + "DefaultMeasureTesting";
     String queryWithFirstMeasure =
         "select store.members on 0 " + "from DefaultMeasureTesting where [measures].[Store Invoice]";
@@ -5965,8 +5967,9 @@ public class BasicQueryTest {
             null ));
      */
         RolapSchemaPool.instance().clear();
-        MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.BasicQueryTestModifier8(schema, dialect)));
+        SchemaMapping schema = context.getCatalogMapping().getSchemas().get(0);
+        //TODO: DENIS MAPPING-MODIFIER
+        //((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.BasicQueryTestModifier8(schema, dialect)));
 
         connection = context.getConnection();
     assertAxisReturns(connection, "[Example.Example Hierarchy].[Non-Zero]",

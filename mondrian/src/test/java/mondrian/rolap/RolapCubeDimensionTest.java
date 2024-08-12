@@ -21,9 +21,8 @@ import static org.mockito.Mockito.verify;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.element.Hierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.PrivateDimensionImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.VirtualCubeDimensionImpl;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.StandardDimensionMappingImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -38,18 +37,22 @@ class RolapCubeDimensionTest {
     Hierarchy[] rolapDim_hierarchies = new Hierarchy[]{};
     doReturn(rolapDim_hierarchies).when(rolapDim).getHierarchies();
     
-    DimensionMapping cubeDim = StandardDimensionMappingImpl.builder().build();
-    cubeDim.setCaption("StubCubeDimCaption");
-    cubeDim.setDescription("StubCubeDimDescription");
-    cubeDim.setVisible(true);
+    StandardDimensionMappingImpl cubeDim = StandardDimensionMappingImpl.builder()
+    		.withName("StubCubeDimCaption")
+    		.withDescription("StubCubeDimDescription")
+    		.withVisible(true)
+    		.build();
     String name = "StubCubeName";
     int cubeOrdinal = 0;
     List<RolapHierarchy> hierarchyList = null;
-
+    DimensionConnectorMappingImpl dimensionConnector = DimensionConnectorMappingImpl.builder()
+    		.withDimension(cubeDim)
+    		.build();
+    
     return new RolapCubeDimension(
         cube,
         rolapDim,
-        cubeDim,
+        dimensionConnector,
         name,
         cubeOrdinal,
         hierarchyList);
@@ -76,10 +79,11 @@ class RolapCubeDimensionTest {
   @Test
   void testLookupCube_noSuchCube() {
     RolapCubeDimension rcd = stubRolapCubeDimension(false);
-    DimensionMapping cubeDim = StandardDimensionMappingImpl.builder().build();
     RolapSchema schema = mock(RolapSchema.class);
     final String cubeName = "TheCubeName";
-    cubeDim.setCubeName(cubeName);
+    DimensionMapping cubeDim = StandardDimensionMappingImpl.builder()
+    		.withName(cubeName)
+    		.build();
     // explicit doReturn - just to make it evident
     doReturn(null).when(schema).lookupCube(anyString());
 
@@ -90,11 +94,12 @@ class RolapCubeDimensionTest {
   @Test
   void testLookupCube_found() {
     RolapCubeDimension rcd = stubRolapCubeDimension(false);
-    VirtualCubeDimensionImpl cubeDim = new VirtualCubeDimensionImpl();
-    RolapSchema schema = mock(RolapSchema.class);
-    RolapCube factCube = mock(RolapCube.class);
     final String cubeName = "TheCubeName";
-    cubeDim.setCubeName(cubeName);
+    DimensionMapping cubeDim = StandardDimensionMappingImpl.builder()
+    		//.withCubeName(cubeName)
+    		.build();
+    RolapSchema schema = mock(RolapSchema.class);
+    RolapCube factCube = mock(RolapCube.class);        
     doReturn(factCube).when(schema).lookupCube(cubeName);
 
     assertEquals(factCube, rcd.lookupFactCube(cubeDim, schema));

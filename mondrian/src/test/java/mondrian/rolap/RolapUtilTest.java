@@ -19,9 +19,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.TableImpl;
+import org.eclipse.daanse.rolap.mapping.api.model.InlineTableQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;
 import org.junit.jupiter.api.Test;
 import org.opencube.junit5.SchemaUtil;
 
@@ -33,12 +33,12 @@ class RolapUtilTest {
   private static final String TABLE_ALIAS = "TableAlias";
   private static final String RELATION_ALIAS = "RelationAlias";
   private static final String FACT_NAME = "order_fact";
-  private MappingRelationQuery fact;
+  private TableQueryMappingImpl fact;
 
   @Test
   void testMakeRolapStarKeyUnmodifiable() throws Exception {
     try {
-      fact = SchemaUtil.parse(getFactTableWithSQLFilter(), TableImpl.class);
+      fact = SchemaUtil.parse(getFactTableWithSQLFilter(), TableQueryMappingImpl.class);
       List<String> polapStarKey = RolapUtil.makeRolapStarKey(FACT_NAME);
       assertNotNull(polapStarKey);
       polapStarKey.add("OneMore");
@@ -52,7 +52,7 @@ class RolapUtilTest {
 
   @Test
   void testMakeRolapStarKey_ByFactTableName() throws Exception {
-    fact = SchemaUtil.parse(getFactTableWithSQLFilter(), TableImpl.class);
+    fact = SchemaUtil.parse(getFactTableWithSQLFilter(), TableQueryMappingImpl.class);
     List<String> polapStarKey = RolapUtil.makeRolapStarKey(FACT_NAME);
     assertNotNull(polapStarKey);
     assertEquals(1, polapStarKey.size());
@@ -61,7 +61,7 @@ class RolapUtilTest {
 
   @Test
   void testMakeRolapStarKey_FactTableWithSQLFilter() throws Exception {
-    fact = SchemaUtil.parse(getFactTableWithSQLFilter(), TableImpl.class);
+    fact = SchemaUtil.parse(getFactTableWithSQLFilter(), TableQueryMappingImpl.class);
     List<String> polapStarKey = RolapUtil.makeRolapStarKey(fact);
     assertNotNull(polapStarKey);
     assertEquals(3, polapStarKey.size());
@@ -73,7 +73,7 @@ class RolapUtilTest {
   @Test
   void testMakeRolapStarKey_FactTableWithEmptyFilter()
       throws Exception {
-    fact = SchemaUtil.parse(getFactTableWithEmptySQLFilter(), TableImpl.class);
+    fact = SchemaUtil.parse(getFactTableWithEmptySQLFilter(), TableQueryMappingImpl.class);
     List<String> polapStarKey = RolapUtil.makeRolapStarKey(fact);
     assertNotNull(polapStarKey);
     assertEquals(1, polapStarKey.size());
@@ -83,7 +83,7 @@ class RolapUtilTest {
   @Test
   void testMakeRolapStarKey_FactTableWithoutSQLFilter()
       throws Exception {
-    fact = SchemaUtil.parse(getFactTableWithoutSQLFilter(), TableImpl.class);
+    fact = SchemaUtil.parse(getFactTableWithoutSQLFilter(), TableQueryMappingImpl.class);
     List<String> polapStarKey = RolapUtil.makeRolapStarKey(fact);
     assertNotNull(polapStarKey);
     assertEquals(1, polapStarKey.size());
@@ -129,8 +129,8 @@ class RolapUtilTest {
     return fact;
   }
 
-  private static MappingRelationQuery getFactRelationMock() throws Exception {
-    MappingRelationQuery factMock = mock(MappingInlineTableQuery.class);
+  private static RelationalQueryMapping getFactRelationMock() throws Exception {
+    RelationalQueryMapping factMock = mock(InlineTableQueryMapping.class);
     when(factMock.getAlias()).thenReturn(RELATION_ALIAS);
     return factMock;
   }

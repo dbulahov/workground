@@ -9,39 +9,20 @@
 
 package mondrian.test;
 
-import mondrian.enums.DatabaseProduct;
+import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
+import static org.opencube.junit5.TestUtil.assertQueryReturns;
+import static org.opencube.junit5.TestUtil.getDialect;
+import static org.opencube.junit5.TestUtil.withSchema;
+
 import org.eclipse.daanse.olap.api.Context;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ColumnDefRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.InlineTableRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ValueRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RowRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
-import static org.opencube.junit5.TestUtil.assertQueryReturns;
-import static org.opencube.junit5.TestUtil.getDialect;
-import static org.opencube.junit5.TestUtil.withSchema;
+import mondrian.enums.DatabaseProduct;
 
 /**
  * Unit test for the InlineTable element, defining tables whose values are held
@@ -55,12 +36,12 @@ class InlineTableTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
     void testInlineTable(Context context) {
         final String cubeName = "Sales_inline";
-        class TestInlineTableModifier extends RDbMappingSchemaModifier {
+        class TestInlineTableModifier extends PojoMappingModifier {
 
             public TestInlineTableModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -149,7 +130,9 @@ class InlineTableTest {
                     .build());
                 return result;
             }
+*/
         }
+
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -207,11 +190,12 @@ class InlineTableTest {
     void testInlineTableInSharedDim(Context context) {
         final String cubeName = "Sales_inline_shared";
 
-        class TestInlineTableInSharedDimModifier extends RDbMappingSchemaModifier {
+        class TestInlineTableInSharedDimModifier extends PojoMappingModifier {
 
             public TestInlineTableInSharedDimModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER            
             protected List<MappingPrivateDimension> schemaDimensions(MappingSchema mappingSchemaOriginal) {
                 List<MappingPrivateDimension> result = new ArrayList<>();
                 result.addAll(super.schemaDimensions(mappingSchemaOriginal));
@@ -310,6 +294,7 @@ class InlineTableTest {
                     .build());
                 return result;
             }
+            */
         }
        /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -378,11 +363,12 @@ class InlineTableTest {
             return;
         }
         final String cubeName = "Sales_inline_snowflake";
-        class TestInlineTableSnowflakeModifier extends RDbMappingSchemaModifier {
+        class TestInlineTableSnowflakeModifier extends PojoMappingModifier {
 
             public TestInlineTableSnowflakeModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER            
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -510,6 +496,7 @@ class InlineTableTest {
                     .build());
                 return result;
             }
+            */
         }
 
         /*
@@ -580,11 +567,12 @@ class InlineTableTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class )
     void testInlineTableDate(Context context) {
         final String cubeName = "Sales_Inline_Date";
-        class TestInlineTableDateModifier extends RDbMappingSchemaModifier {
+        class TestInlineTableDateModifier extends PojoMappingModifier {
 
             public TestInlineTableDateModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER            
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -733,6 +721,7 @@ class InlineTableTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);

@@ -41,18 +41,9 @@ import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Position;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRoleUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MemberGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.UnionRBuilder;
+import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
@@ -1249,8 +1240,8 @@ class AccessControlTest {
         String v3)
     {
         RolapSchemaPool.instance().clear();
-        MappingSchema schema = foodMartContext.getDatabaseMappingSchemaProviders().get(0).get();
-        ((TestContext)foodMartContext).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.AccessControlTestModifier39(schema, rollupPolicy)));
+        CatalogMapping catalog = foodMartContext.getCatalogMapping();
+        ((TestContext)foodMartContext).setCatalogMappingSupplier(new SchemaModifiers.AccessControlTestModifier39(catalog, rollupPolicy));
         ConnectionProps props = new RolapConnectionPropsR(List.of("Role1"), true, Locale.getDefault(), -1, TimeUnit.SECONDS, Optional.empty(), Optional.empty());
     	Connection connection = foodMartContext.getConnection(props);
         // All of the children of [San Francisco] are invisible, because [City]
@@ -1351,8 +1342,8 @@ class AccessControlTest {
         String v2)
     {
         RolapSchemaPool.instance().clear();
-        MappingSchema schema = foodMartContext.getDatabaseMappingSchemaProviders().get(0).get();
-        ((TestContext)foodMartContext).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.AccessControlTestModifier40(schema, policy)));
+        CatalogMapping catalog = foodMartContext.getCatalogMapping();
+        ((TestContext)foodMartContext).setCatalogMappingSupplier(new SchemaModifiers.AccessControlTestModifier40(catalog, policy));
         ConnectionProps props = new RolapConnectionPropsR(List.of("Role1"), true, Locale.getDefault(), -1, TimeUnit.SECONDS, Optional.empty(), Optional.empty());
     	Connection connection = foodMartContext.getConnection(props);
     	TestUtil.assertExprReturns(connection, "[Measures].[Unit Sales]", v1);
@@ -1388,8 +1379,8 @@ class AccessControlTest {
         String v3)
     {
         RolapSchemaPool.instance().clear();
-        MappingSchema schema = foodMartContext.getDatabaseMappingSchemaProviders().get(0).get();
-        ((TestContext)foodMartContext).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.AccessControlTestModifier41(schema, policy)));
+        CatalogMapping catalogMapping = foodMartContext.getCatalogMapping();
+        ((TestContext)foodMartContext).setCatalogMappingSupplier(new SchemaModifiers.AccessControlTestModifier41(catalogMapping, policy));
         ConnectionProps props = new RolapConnectionPropsR(List.of("Role1"), true, Locale.getDefault(), -1, TimeUnit.SECONDS, Optional.empty(), Optional.empty());
     	Connection connection = foodMartContext.getConnection(props);
     	TestUtil.assertExprReturns(connection, "[Measures].[Unit Sales]", v1);
@@ -1936,8 +1927,8 @@ class AccessControlTest {
 
     private static void setGoodmanContext(Context foodMartContext, final RollupPolicy policy) {
         RolapSchemaPool.instance().clear();
-        MappingSchema schema = foodMartContext.getDatabaseMappingSchemaProviders().get(0).get();
-        ((TestContext)foodMartContext).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.AccessControlTestModifier42(schema, policy)));
+        CatalogMapping catalogMapping = foodMartContext.getCatalogMapping();
+        ((TestContext)foodMartContext).setCatalogMappingSupplier(new SchemaModifiers.AccessControlTestModifier42(catalogMapping, policy));
     }
 
     /**
@@ -2416,7 +2407,7 @@ class AccessControlTest {
         final Result result = TestUtil.executeQuery(
     		connection,
             "select [Customers].[City].Members on 0 from [Sales]");
-        List<MappingRole> roles = new ArrayList<>();
+        List<AccessRoleMapping> roles = new ArrayList<>();
         List<MappingRoleUsage> roleUsages = new ArrayList<>();
         for (Position position : result.getAxes()[0].getPositions()) {
             Member member = position.get(0);
@@ -3402,10 +3393,10 @@ class AccessControlTest {
                     // MONDRIAN-1568 showed different results with different
                     // rollup policies and different default members
                     // RolapNativeCrossjoin
-                    RolapSchemaPool.instance().clear();
-                    MappingSchema schemaO = foodMartContext.getDatabaseMappingSchemaProviders().get(0).get();
-                    ((TestContext)foodMartContext).setDatabaseMappingSchemaProviders(
-                        List.of(new SchemaModifiers.AccessControlTestModifier29(schemaO, hasAll, defaultMember, policy)));
+                    RolapSchemaPool.instance().clear();                                     
+                    CatalogMapping catalogMapping = foodMartContext.getCatalogMapping();
+                    ((TestContext)foodMartContext).setCatalogMappingSupplier(new SchemaModifiers.AccessControlTestModifier29(catalogMapping, hasAll, defaultMember, policy));
+
                     ConnectionProps props = new RolapConnectionPropsR(List.of("test"), true, Locale.getDefault(), -1, TimeUnit.SECONDS, Optional.empty(), Optional.empty());
                     Connection connection = foodMartContext.getConnection(props);
                 	TestUtil.assertQueryReturns(

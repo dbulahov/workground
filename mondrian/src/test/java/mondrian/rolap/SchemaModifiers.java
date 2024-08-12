@@ -19,78 +19,9 @@ import java.util.Optional;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.access.RollupPolicy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingUserDefinedFunction;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCubeMeasure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.DimensionTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.HideMemberIfEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.LevelTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.PrivateDimensionR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggExcludeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggForeignKeyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggLevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggMeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AnnotationRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CalculatedMemberPropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CalculatedMemberRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CellFormatterRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ClosureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ColumnDefRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ExpressionViewRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.FormulaRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.InlineTableRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MemberGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RowRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ScriptRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SqlSelectQueryRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.UnionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.UserDefinedFunctionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ValueRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ViewRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeMeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
 import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 
@@ -1874,6 +1805,7 @@ public class SchemaModifiers {
                 + "</Hierarchy>\n"
                 + "</Dimension>\n"));
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -1935,6 +1867,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class ParentChildHierarchyTestModifier6 extends PojoMappingModifier {
@@ -1969,6 +1902,8 @@ public class SchemaModifiers {
             + "    <Measure name='Count' column='employee_id' aggregator='count' formatString='#,#'/>\n"
             + "</Cube>",
          */
+        
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(MappingSchema schema) {
             List<MappingCube> result = new ArrayList<>();
@@ -2052,6 +1987,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class ParentChildHierarchyTestModifier7 extends PojoMappingModifier {
@@ -2086,6 +2022,7 @@ public class SchemaModifiers {
             + "      formatString=\"#,#\"/>\n"
             + "</Cube>",
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(MappingSchema schema) {
             List<MappingCube> result = new ArrayList<>();
@@ -2146,6 +2083,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class ParentChildHierarchyTestModifier8 extends PojoMappingModifier {
@@ -2166,6 +2104,7 @@ public class SchemaModifiers {
             + "   <Measure name=\"Org Salary\" column=\"salary_paid\" aggregator=\"sum\"/>"
             + "</Cube>"
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(MappingSchema schema) {
             List<MappingCube> result = new ArrayList<>();
@@ -2211,6 +2150,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
 
         /*
             "<Dimension name=\"Employees\" >"
@@ -2227,6 +2167,7 @@ public class SchemaModifiers {
             + "   </Hierarchy>"
             + "</Dimension>",
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingPrivateDimension> schemaDimensions(MappingSchema schema) {
             List<MappingPrivateDimension> result = new ArrayList<>();
@@ -2261,6 +2202,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
 
         /*
             + "<VirtualCube name=\"CustomSalesAndHR\" >"
@@ -2272,6 +2214,7 @@ public class SchemaModifiers {
             + "</CalculatedMember>"
             + "</VirtualCube>",
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingVirtualCube> schemaVirtualCubes(MappingSchema schema) {
             List<MappingVirtualCube> result = new ArrayList<>();
@@ -2305,6 +2248,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class ParentChildHierarchyTestModifier9 extends PojoMappingModifier {
@@ -2335,6 +2279,7 @@ public class SchemaModifiers {
                         + "  <Measure name=\"Count\" column=\"employee_id\" aggregator=\"count\" />\n"
                         + "</Cube>\n";
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(MappingSchema schema) {
             List<MappingCube> result = new ArrayList<>();
@@ -2386,6 +2331,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
 
     }
 
@@ -2414,6 +2360,7 @@ public class SchemaModifiers {
                         + "  <Measure name=\"Count\" column=\"employee_id\" aggregator=\"count\" />\n"
                         + "</Cube>\n";
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(MappingSchema schema) {
             List<MappingCube> result = new ArrayList<>();
@@ -2458,6 +2405,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
 
     }
 
@@ -2525,6 +2473,7 @@ public class SchemaModifiers {
             + "</Schema>");
 
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             MappingInlineTableQuery it = InlineTableRBuilder.builder()
@@ -2655,6 +2604,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class ValidMeasureFunDefTestModifier extends PojoMappingModifier {
@@ -2698,6 +2648,8 @@ public class SchemaModifiers {
     + "    </VirtualCubeMeasure>\n"
     + "  </VirtualCube>\n" + "</Schema>";
          */
+        
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -2797,6 +2749,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class FunctionTestModifier extends PojoMappingModifier {
@@ -2811,6 +2764,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -2824,6 +2778,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class FunctionTestModifier2 extends PojoMappingModifier {
@@ -2841,7 +2796,7 @@ public class SchemaModifiers {
         public FunctionTestModifier2(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -2861,6 +2816,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class FunctionTestModifier3 extends PojoMappingModifier {
@@ -2897,7 +2853,7 @@ public class SchemaModifiers {
         public FunctionTestModifier3(CatalogMapping catalogMapping) {
             super(catalogMapping);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -2977,6 +2933,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class FilterTestModifier extends PojoMappingModifier {
@@ -3001,7 +2958,7 @@ public class SchemaModifiers {
         public FilterTestModifier(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -3066,6 +3023,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class MemberCacheControlTestModifier extends PojoMappingModifier {
@@ -3093,6 +3051,7 @@ public class SchemaModifiers {
         public MemberCacheControlTestModifier(CatalogMapping catalog) {
             super(catalog);
         }
+        /* TODO: DENIS MAPPING-MODIFIER
 
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
@@ -3167,6 +3126,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class NonEmptyTestModifier extends PojoMappingModifier {
@@ -3185,7 +3145,7 @@ public class SchemaModifiers {
         public NonEmptyTestModifier(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -3220,11 +3180,12 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class NonEmptyTestModifier2 extends PojoMappingModifier {
 
-        private final HideMemberIfEnum hideMemberIf;
+        private final String hideMemberIf;
 
         /*
                       "<Dimension name=\"Product Ragged\" foreignKey=\"product_id\">\n"
@@ -3238,11 +3199,11 @@ public class SchemaModifiers {
                 + "</Dimension>" ) );
 
                  */
-        public NonEmptyTestModifier2(CatalogMapping catalog, HideMemberIfEnum hideMemberIf) {
+        public NonEmptyTestModifier2(CatalogMapping catalog, String hideMemberIf) {
             super(catalog);
             this.hideMemberIf = hideMemberIf;
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -3282,6 +3243,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class NonEmptyTestModifier3 extends PojoMappingModifier {
@@ -3300,7 +3262,7 @@ public class SchemaModifiers {
         public NonEmptyTestModifier3(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -3335,6 +3297,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class NonEmptyTestModifier4 extends PojoMappingModifier {
@@ -3355,7 +3318,7 @@ public class SchemaModifiers {
         public NonEmptyTestModifier4(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -3399,6 +3362,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
     public static class NonEmptyTestModifier5 extends PojoMappingModifier {
 
@@ -3417,7 +3381,7 @@ public class SchemaModifiers {
         public NonEmptyTestModifier5(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -3455,6 +3419,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class NonEmptyTestModifier6 extends PojoMappingModifier {
@@ -3510,7 +3475,7 @@ public class SchemaModifiers {
         public NonEmptyTestModifier6(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -3648,6 +3613,7 @@ public class SchemaModifiers {
                 .build();
 
         }
+        */
     }
 
     public static class NonEmptyTestModifier7 extends PojoMappingModifier {
@@ -3692,7 +3658,7 @@ public class SchemaModifiers {
         public NonEmptyTestModifier7(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -3809,6 +3775,7 @@ public class SchemaModifiers {
                 .build();
 
         }
+        */
     }
 
     public static class BasicQueryTestModifier1 extends PojoMappingModifier {
@@ -3836,7 +3803,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier1(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -3874,6 +3841,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier2 extends PojoMappingModifier {
@@ -3894,7 +3862,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier2(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -3940,6 +3908,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier3 extends PojoMappingModifier {
@@ -3987,7 +3956,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier3(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -4088,6 +4057,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier4 extends PojoMappingModifier {
@@ -4098,7 +4068,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier4(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -4112,6 +4082,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier5 extends PojoMappingModifier {
@@ -4128,7 +4099,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier5(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -4157,6 +4128,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier6 extends PojoMappingModifier {
@@ -4174,7 +4146,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier6(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -4209,6 +4181,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier7 extends PojoMappingModifier {
@@ -4221,7 +4194,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier7(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
             List<MappingMeasure> result = new ArrayList<>();
@@ -4247,6 +4220,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier8 extends PojoMappingModifier {
@@ -4280,7 +4254,7 @@ public class SchemaModifiers {
             super(catalog);
             this.dialect = dialect;
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -4372,6 +4346,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier9 extends PojoMappingModifier {
@@ -4383,7 +4358,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier9(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -4400,6 +4375,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier10 extends PojoMappingModifier {
@@ -4414,7 +4390,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier10(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -4443,6 +4419,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier11 extends PojoMappingModifier {
@@ -4458,7 +4435,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier11(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -4491,6 +4468,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier12 extends PojoMappingModifier {
@@ -4502,7 +4480,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier12(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
             List<MappingMeasure> result = new ArrayList<>();
@@ -4524,6 +4502,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier14 extends PojoMappingModifier {
@@ -4556,7 +4535,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier14(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -4643,6 +4622,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class BasicQueryTestModifier15 extends PojoMappingModifier {
@@ -4671,7 +4651,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier15(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -4754,6 +4734,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class BasicQueryTestModifier16 extends PojoMappingModifier {
@@ -4811,7 +4792,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier16(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -4995,6 +4976,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class BasicQueryTestModifier17 extends PojoMappingModifier {
@@ -5028,7 +5010,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier17(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -5115,6 +5097,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
 
     }
 
@@ -5149,7 +5132,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier18(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -5236,6 +5219,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
 
     }
 
@@ -5270,7 +5254,7 @@ public class SchemaModifiers {
         public BasicQueryTestModifier19(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -5356,6 +5340,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class BasicQueryTestModifier20 extends PojoMappingModifier {
@@ -5382,6 +5367,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -5439,6 +5425,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier21 extends PojoMappingModifier {
@@ -5471,6 +5458,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -5571,6 +5559,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier22 extends PojoMappingModifier {
@@ -5836,6 +5825,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -5846,6 +5836,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier26 extends PojoMappingModifier {
@@ -5925,6 +5916,7 @@ public class SchemaModifiers {
             this.defaultMeasure = defaultMeasure;
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -5965,6 +5957,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class BasicQueryTestModifier28 extends PojoMappingModifier {
@@ -6614,6 +6607,7 @@ public class SchemaModifiers {
             this.colName = colName;
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -6655,6 +6649,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class OrderByAliasTestModifier2 extends PojoMappingModifier {
@@ -6688,6 +6683,7 @@ public class SchemaModifiers {
             this.colName = colName;
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -6757,6 +6753,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class OrderByAliasTestModifier3 extends PojoMappingModifier {
@@ -6779,6 +6776,7 @@ public class SchemaModifiers {
             this.colName = colName;
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -6816,6 +6814,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class OrderByAliasTestModifier4 extends PojoMappingModifier {
@@ -6870,6 +6869,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -6998,6 +6998,7 @@ public class SchemaModifiers {
                 .build();
 
         }
+        */
     }
 
     public static class TestCalculatedMembersModifier1 extends PojoMappingModifier {
@@ -7011,6 +7012,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> virtualCubeCalculatedMember(MappingVirtualCube virtualCube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -7024,6 +7026,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class TestCalculatedMembersModifier2 extends PojoMappingModifier {
@@ -7044,6 +7047,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -7068,6 +7072,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class TestCalculatedMembersModifier3 extends PojoMappingModifier {
@@ -7083,6 +7088,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -7097,6 +7103,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class TestCalculatedMembersModifier4 extends PojoMappingModifier {
@@ -7115,6 +7122,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -7139,6 +7147,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class TestAggregationManagerModifier1 extends PojoMappingModifier {
@@ -7160,6 +7169,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -7207,6 +7217,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class TestAggregationManagerModifier2 extends PojoMappingModifier {
@@ -7229,6 +7240,7 @@ public class SchemaModifiers {
             this.colName = colName;
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -7267,6 +7279,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class TestAggregationManagerModifier10 extends PojoMappingModifier {
@@ -7289,6 +7302,7 @@ public class SchemaModifiers {
             this.colName = colName;
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -7327,6 +7341,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class DrillThroughTestModifier1 extends PojoMappingModifier {
@@ -7353,6 +7368,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -7413,6 +7429,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class DrillThroughTestModifier2 extends PojoMappingModifier {
@@ -7432,6 +7449,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -7465,6 +7483,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class DrillThroughTestModifier3 extends PojoMappingModifier {
@@ -7483,6 +7502,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -7516,6 +7536,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class RaggedHierarchyTestModifier1 extends PojoMappingModifier {
@@ -7543,6 +7564,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -7582,6 +7604,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class RaggedHierarchyTestModifier2 extends PojoMappingModifier {
@@ -7605,6 +7628,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -7647,6 +7671,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class RolapResultTestModifier extends PojoMappingModifier {
@@ -7665,6 +7690,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -7693,6 +7719,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class VirtualCubeTestModifier1 extends PojoMappingModifier {
@@ -7707,6 +7734,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> virtualCubeCalculatedMember(MappingVirtualCube virtualCube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -7728,6 +7756,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class VirtualCubeTestModifier2 extends PojoMappingModifier {
@@ -7739,6 +7768,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingVirtualCubeMeasure> virtualCubeVirtualCubeMeasure(MappingVirtualCube virtualCube) {
             List<MappingVirtualCubeMeasure> result = new ArrayList<>();
@@ -7751,6 +7781,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class VirtualCubeTestModifier3 extends PojoMappingModifier {
@@ -7801,6 +7832,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
 
@@ -7913,6 +7945,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class SqlQueryTestModifier extends PojoMappingModifier {
@@ -7926,6 +7959,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
             List<MappingMeasure> result = new ArrayList<>();
@@ -7940,6 +7974,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
 
@@ -7955,6 +7990,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
             List<MappingMeasure> result = new ArrayList<>();
@@ -7969,6 +8005,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class CompoundSlicerTestModifier2 extends PojoMappingModifier {
@@ -7982,6 +8019,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
             List<MappingMeasure> result = new ArrayList<>();
@@ -8005,6 +8043,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class CompoundSlicerTestModifier3 extends PojoMappingModifier {
@@ -8019,7 +8058,7 @@ public class SchemaModifiers {
         public CompoundSlicerTestModifier3(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingVirtualCubeMeasure> virtualCubeVirtualCubeMeasure(MappingVirtualCube virtualCube) {
             List<MappingVirtualCubeMeasure> result = new ArrayList<>();
@@ -8055,6 +8094,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
 
     }
 
@@ -8075,6 +8115,7 @@ public class SchemaModifiers {
             this.type = type;
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
             List<MappingMeasure> result = new ArrayList<>();
@@ -8103,6 +8144,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class MultipleHierarchyTestModifier1 extends PojoMappingModifier {
@@ -8147,6 +8189,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -8289,6 +8332,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class MultipleHierarchyTestModifier2 extends PojoMappingModifier {
@@ -8313,6 +8357,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -8373,6 +8418,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class PerformanceTestModifier1 extends PojoMappingModifier {
@@ -8402,6 +8448,7 @@ public class SchemaModifiers {
         public PerformanceTestModifier1(CatalogMapping catalog) {
             super(catalog);
         }
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -8473,6 +8520,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class Ssas2005CompatibilityTestModifier1 extends PojoMappingModifier {
@@ -8489,6 +8537,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -8516,6 +8565,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class Ssas2005CompatibilityTestModifier2 extends PojoMappingModifier {
@@ -8543,6 +8593,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -8596,6 +8647,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class Ssas2005CompatibilityTestModifier3 extends PojoMappingModifier {
@@ -8614,6 +8666,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -8643,6 +8696,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class Ssas2005CompatibilityTestModifier4 extends PojoMappingModifier {
@@ -8682,6 +8736,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -8766,6 +8821,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class PerformanceTestModifier2 extends PojoMappingModifier {
@@ -8781,6 +8837,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -8810,6 +8867,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class PerformanceTestModifier3 extends PojoMappingModifier {
@@ -8846,6 +8904,8 @@ public class SchemaModifiers {
           + "  </SchemaGrant>\n"
           + "</Role>\n" );
          */
+        
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -8943,6 +9003,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
 
     }
     public static class PerformanceTestModifier4 extends PojoMappingModifier {
@@ -8959,6 +9020,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -8969,6 +9031,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class NativeSetEvaluationTestModifier extends PojoMappingModifier {
@@ -8980,6 +9043,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -8993,6 +9057,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class Olap4jTestModifier extends PojoMappingModifier {
@@ -9004,6 +9069,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -9017,6 +9083,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class ScenarioTestModifier1 extends PojoMappingModifier {
@@ -9041,6 +9108,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
             List<MappingMeasure> result = new ArrayList<>();
@@ -9088,6 +9156,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class SolveOrderScopeIsolationTestModifier extends PojoMappingModifier {
@@ -9127,6 +9196,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -9191,6 +9261,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier1 extends PojoMappingModifier {
@@ -9205,6 +9276,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
             List<MappingMeasure> result = new ArrayList<>();
@@ -9220,6 +9292,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier2 extends PojoMappingModifier {
@@ -9239,6 +9312,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
             List<MappingMeasure> result = new ArrayList<>();
@@ -9258,6 +9332,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier3 extends PojoMappingModifier {
@@ -9277,6 +9352,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -9298,6 +9374,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier4 extends PojoMappingModifier {
@@ -9316,6 +9393,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -9334,6 +9412,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier5 extends PojoMappingModifier {
@@ -9354,6 +9433,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             List<MappingCalculatedMember> result = new ArrayList<>();
@@ -9374,6 +9454,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier6 extends PojoMappingModifier {
@@ -9395,6 +9476,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -9423,6 +9505,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier7 extends PojoMappingModifier {
@@ -9448,6 +9531,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -9481,6 +9565,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier8 extends PojoMappingModifier {
@@ -9504,6 +9589,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -9540,6 +9626,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier9 extends PojoMappingModifier {
@@ -9565,6 +9652,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -9602,6 +9690,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier10 extends PojoMappingModifier {
@@ -9631,6 +9720,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
             List<MappingCubeDimension> result = new ArrayList<>();
@@ -9671,6 +9761,7 @@ public class SchemaModifiers {
             }
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier11 extends PojoMappingModifier {
@@ -9687,6 +9778,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -9697,6 +9789,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier12 extends PojoMappingModifier {
@@ -9713,6 +9806,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -9723,6 +9817,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier14 extends PojoMappingModifier {
@@ -9742,6 +9837,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -9756,6 +9852,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier15 extends PojoMappingModifier {
@@ -9771,6 +9868,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -9781,6 +9879,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier16 extends PojoMappingModifier {
@@ -9797,7 +9896,7 @@ public class SchemaModifiers {
         public UdfTestModifier16(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -9812,6 +9911,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier17 extends PojoMappingModifier {
@@ -9829,6 +9929,7 @@ public class SchemaModifiers {
             this.functionClass = functionClass;
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -9839,6 +9940,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier18 extends PojoMappingModifier {
@@ -9854,6 +9956,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -9864,6 +9967,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier19 extends PojoMappingModifier {
@@ -9879,6 +9983,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -9889,6 +9994,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier20 extends PojoMappingModifier {
@@ -9902,6 +10008,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -9911,6 +10018,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier21 extends PojoMappingModifier {
@@ -9927,6 +10035,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -9939,6 +10048,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier22 extends PojoMappingModifier {
@@ -9955,6 +10065,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -9968,6 +10079,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier23 extends PojoMappingModifier {
@@ -10002,6 +10114,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -10034,6 +10147,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier24 extends PojoMappingModifier {
@@ -10065,6 +10179,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -10094,6 +10209,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UdfTestModifier25 extends PojoMappingModifier {
@@ -10125,6 +10241,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -10154,6 +10271,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class TestAggregationManagerModifier extends PojoMappingModifier {
@@ -10204,6 +10322,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             MappingTableQuery t = new TableR("sales_fact_1997",
@@ -10322,6 +10441,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class TestAggregationManagerModifier3 extends PojoMappingModifier {
@@ -10344,7 +10464,7 @@ public class SchemaModifiers {
         public TestAggregationManagerModifier3(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -10387,6 +10507,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class TestAggregationManagerModifier4 extends PojoMappingModifier {
@@ -10427,7 +10548,7 @@ public class SchemaModifiers {
         public TestAggregationManagerModifier4(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             MappingTableQuery t = new TableR("sales_fact_1997",
@@ -10525,6 +10646,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class TestAggregationManagerModifier5 extends PojoMappingModifier {
@@ -10683,6 +10805,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             MappingTableQuery t = new TableR("sales_fact_1997",
@@ -10962,6 +11085,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class TestAggregationManagerModifier6 extends PojoMappingModifier {
@@ -11033,6 +11157,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             MappingTableQuery t = new TableR("sales_fact_1997",
@@ -11218,6 +11343,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class TestAggregationManagerModifier7 extends PojoMappingModifier {
@@ -11257,7 +11383,7 @@ public class SchemaModifiers {
         public TestAggregationManagerModifier7(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             MappingTableQuery t = new TableR("sales_fact_1997",
@@ -11349,6 +11475,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class TestAggregationManagerModifier8 extends PojoMappingModifier {
@@ -11395,6 +11522,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             MappingTableQuery t = new TableR("sales_fact_1997",
@@ -11508,6 +11636,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class TestAggregationManagerModifier9 extends PojoMappingModifier {
@@ -11613,6 +11742,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             MappingTableQuery t1 = new TableR("sales_fact_1997",
@@ -11944,6 +12074,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class TestCalculatedMembers1 extends PojoMappingModifier {
@@ -11995,7 +12126,7 @@ public class SchemaModifiers {
         public TestCalculatedMembers1(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -12082,6 +12213,7 @@ public class SchemaModifiers {
             return result;
 
         }
+        */
     }
 
     public static class TestCalculatedMembers2 extends PojoMappingModifier {
@@ -12127,6 +12259,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -12209,6 +12342,7 @@ public class SchemaModifiers {
             return result;
 
         }
+        */
     }
 
     public static class TestCalculatedMembers3 extends PojoMappingModifier {
@@ -12239,7 +12373,7 @@ public class SchemaModifiers {
         public TestCalculatedMembers3(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -12295,6 +12429,7 @@ public class SchemaModifiers {
             return result;
 
         }
+        */
     }
 
 
@@ -12311,6 +12446,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
             List<MappingUserDefinedFunction> result = new ArrayList<>();
@@ -12321,6 +12457,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class UsagePrefixTestModifier1 extends PojoMappingModifier {
@@ -12367,6 +12504,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -12453,6 +12591,7 @@ public class SchemaModifiers {
                 .build();
 
         }
+        */
     }
 
     public static class DrillThroughExcludeFilterTestModifier extends PojoMappingModifier {
@@ -12504,6 +12643,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -12691,6 +12831,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class CompatibilityTestModifier extends PojoMappingModifier {
@@ -12733,6 +12874,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -12820,6 +12962,7 @@ public class SchemaModifiers {
             return result;
 
         }
+        */
 
     }
 
@@ -12867,6 +13010,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -12937,6 +13081,7 @@ public class SchemaModifiers {
             return result;
 
         }
+        */
 
     }
 
@@ -12958,7 +13103,8 @@ public class SchemaModifiers {
         public AccessControlTestModifier1(CatalogMapping catalog) {
             super(catalog);
         }
-
+        
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -12997,6 +13143,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier2 extends PojoMappingModifier {
@@ -13035,6 +13182,7 @@ public class SchemaModifiers {
         public AccessControlTestModifier2(CatalogMapping catalog) {
             super(catalog);
         }
+        /* TODO: DENIS MAPPING-MODIFIER
 
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
@@ -13144,6 +13292,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier3 extends PojoMappingModifier {
@@ -13175,7 +13324,8 @@ public class SchemaModifiers {
         public AccessControlTestModifier3(CatalogMapping catalog) {
             super(catalog);
         }
-
+        
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -13240,6 +13390,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier4 extends PojoMappingModifier {
@@ -13265,6 +13416,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -13310,6 +13462,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier5 extends PojoMappingModifier {
@@ -13335,6 +13488,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -13382,6 +13536,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier6 extends PojoMappingModifier {
@@ -13402,6 +13557,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -13436,6 +13592,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier7 extends PojoMappingModifier {
@@ -13457,6 +13614,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -13495,6 +13653,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier8 extends PojoMappingModifier {
@@ -13522,6 +13681,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -13569,6 +13729,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier9 extends PojoMappingModifier {
@@ -13593,6 +13754,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -13643,6 +13805,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier10 extends PojoMappingModifier {
@@ -13670,6 +13833,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -13728,6 +13892,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier11 extends PojoMappingModifier {
@@ -13749,6 +13914,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -13788,14 +13954,15 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier12 extends PojoMappingModifier {
 
-        private List<MappingRole> roles;
+        private List<AccessRoleMapping> roles;
 
 
-        public AccessControlTestModifier12(CatalogMapping catalog, List<MappingRole> roles) {
+        public AccessControlTestModifier12(CatalogMapping catalog, List<AccessRoleMapping> roles) {
             super(catalog);
             this.roles = roles;
         }
@@ -13812,6 +13979,8 @@ public class SchemaModifiers {
             + "  </Dimension> ",
 
         */
+        
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingPrivateDimension> schemaDimensions(CatalogMapping catalogOriginal) {
             List<MappingPrivateDimension> result = new ArrayList<>();
@@ -13851,6 +14020,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
         /*
                     "  <Cube name=\"" + cubeName + "\"> \n"
             + "    <Table name=\"sales_fact_1997\"/> \n"
@@ -13863,6 +14033,7 @@ public class SchemaModifiers {
             + "  </Cube> \n",
 
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -13908,6 +14079,7 @@ public class SchemaModifiers {
             result.addAll(roles);
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier14 extends PojoMappingModifier {
@@ -13931,6 +14103,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -13978,6 +14151,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier15 extends PojoMappingModifier {
@@ -14006,6 +14180,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14066,6 +14241,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier16 extends PojoMappingModifier {
@@ -14085,6 +14261,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14115,6 +14292,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier17 extends PojoMappingModifier {
@@ -14140,6 +14318,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14192,6 +14371,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier18 extends PojoMappingModifier {
@@ -14220,6 +14400,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14282,6 +14463,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier19 extends PojoMappingModifier {
@@ -14320,6 +14502,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14415,6 +14598,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier20 extends PojoMappingModifier {
@@ -14446,7 +14630,7 @@ public class SchemaModifiers {
         public AccessControlTestModifier20(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14517,6 +14701,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier21 extends PojoMappingModifier {
@@ -14538,6 +14723,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14573,6 +14759,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier22 extends PojoMappingModifier {
@@ -14593,6 +14780,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14628,6 +14816,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier23 extends PojoMappingModifier {
@@ -14657,6 +14846,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14723,6 +14913,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
 
@@ -14749,6 +14940,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14796,6 +14988,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier25 extends PojoMappingModifier {
@@ -14827,6 +15020,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14892,6 +15086,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier26 extends PojoMappingModifier {
@@ -14917,6 +15112,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -14960,6 +15156,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier27 extends PojoMappingModifier {
@@ -14985,6 +15182,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -15028,6 +15226,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier28 extends PojoMappingModifier {
@@ -15049,6 +15248,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -15085,6 +15285,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier39 extends PojoMappingModifier {
@@ -15112,7 +15313,7 @@ public class SchemaModifiers {
             super(catalog);
             this.policy = policy;
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -15158,6 +15359,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier40 extends PojoMappingModifier {
@@ -15184,6 +15386,7 @@ public class SchemaModifiers {
             this.policy = policy;
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -15224,6 +15427,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier41 extends PojoMappingModifier {
@@ -15256,6 +15460,7 @@ public class SchemaModifiers {
             this.policy = policy;
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -15312,6 +15517,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier42 extends PojoMappingModifier {
@@ -15338,6 +15544,7 @@ public class SchemaModifiers {
             this.policy = policy;
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -15378,6 +15585,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier29 extends PojoMappingModifier {
@@ -15414,6 +15622,7 @@ public class SchemaModifiers {
             + "  <Measure name=\"Unit Sales\" column=\"unit_sales\" aggregator=\"sum\"/>\n"
             + "</Cube>";
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
             result.addAll(super.schemaCubes(mappingSchemaOriginal).stream()
@@ -15443,6 +15652,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
 
         /*
                      "<Dimension name=\"Store2\">\n"
@@ -15454,6 +15664,7 @@ public class SchemaModifiers {
             + "</Dimension>\n";
 
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         protected List<MappingPrivateDimension> schemaDimensions(CatalogMapping catalogOriginal) {
             List<MappingPrivateDimension> result = new ArrayList<>();
             result.addAll(super.schemaDimensions(mappingSchemaOriginal).stream()
@@ -15483,6 +15694,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
 
         /*
                     "<Role name=\"test\">\n"
@@ -15499,6 +15711,7 @@ public class SchemaModifiers {
             + "    </Role> ";
 
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -15544,6 +15757,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier30 extends PojoMappingModifier {
@@ -15563,6 +15777,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -15598,6 +15813,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier31 extends PojoMappingModifier {
@@ -15626,6 +15842,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -15684,6 +15901,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier33 extends PojoMappingModifier {
@@ -15778,6 +15996,8 @@ public class SchemaModifiers {
           + "</Cube>";
 
          */
+        
+        /*
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
             result.addAll(super.schemaCubes(mappingSchemaOriginal));
@@ -16024,7 +16244,7 @@ public class SchemaModifiers {
             return result;
         }
 
-
+        */
         /*
             "<Role name=\"MR\">\n"
             + "  <SchemaGrant access=\"none\">\n"
@@ -16041,6 +16261,7 @@ public class SchemaModifiers {
             + "   </SchemaGrant>\n"
             + "</Role>");
         */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -16088,6 +16309,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier34 extends PojoMappingModifier {
@@ -16108,6 +16330,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -16144,6 +16367,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier35 extends PojoMappingModifier {
@@ -16186,6 +16410,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -16300,6 +16525,7 @@ public class SchemaModifiers {
 
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier36 extends PojoMappingModifier {
@@ -16341,6 +16567,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -16450,6 +16677,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier37 extends PojoMappingModifier {
@@ -16473,6 +16701,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -16522,6 +16751,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class AccessControlTestModifier32 extends PojoMappingModifier {
@@ -16583,6 +16813,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
                 .name("FoodMart.DimAndMeasure.Role")
@@ -16735,6 +16966,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class AccessControlTestModifier38 extends PojoMappingModifier {
@@ -16750,7 +16982,7 @@ public class SchemaModifiers {
         public AccessControlTestModifier38(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -16773,6 +17005,7 @@ public class SchemaModifiers {
             );
             return result;
         }
+        */
     }
 
     public static class OrderKeyOneToOneCheckTestModifier extends PojoMappingModifier {
@@ -16801,7 +17034,7 @@ public class SchemaModifiers {
         public OrderKeyOneToOneCheckTestModifier(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
                 .name("FoodMart 2358")
@@ -16864,6 +17097,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class DefaultRecognizerTestModifier extends PojoMappingModifier {
@@ -16901,6 +17135,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
                 .name("FoodMart")
@@ -16987,6 +17222,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class DialectTestModifier1 extends PojoMappingModifier {
@@ -17020,6 +17256,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
                 .name("FoodMart")
@@ -17077,6 +17314,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class DialectTestModifier2 extends PojoMappingModifier {
@@ -17124,6 +17362,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
                 .name("FoodMart")
@@ -17201,6 +17440,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class DrillThroughTestModifier4 extends PojoMappingModifier {
@@ -17253,6 +17493,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
                 .name("dsad")
@@ -17374,6 +17615,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class DrillThroughTestModifier5 extends PojoMappingModifier {
@@ -17403,6 +17645,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
                 .name("FoodMartSalesOnly")
@@ -17466,6 +17709,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
     public static class DrillThroughTestModifier6 extends PojoMappingModifier {
@@ -17495,6 +17739,7 @@ public class SchemaModifiers {
             super(catalog);
         }
 
+        /* TODO: DENIS MAPPING-MODIFIER
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
                 .name("FoodMartSalesOnly")
@@ -17556,6 +17801,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
     }
 
 
@@ -17579,7 +17825,7 @@ public class SchemaModifiers {
         public PropertiesTestModifier(CatalogMapping catalog) {
             super(catalog);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
             result.addAll(super.schemaCubes(mappingSchemaOriginal));
@@ -17627,6 +17873,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
+        */
 
     }
 
@@ -17732,6 +17979,7 @@ public class SchemaModifiers {
                 + "</Cube>\n"
                 + "</Schema>");
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -18029,7 +18277,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
-
+        */
     }
 
     public static class SteelWheelsSchemaTestModifier1 extends PojoMappingModifier {
@@ -18185,6 +18433,7 @@ public class SchemaModifiers {
             + "  </Role>\n"
             + "</Schema>\n";
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -18610,7 +18859,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
-
+        */
     }
 
     public static class SteelWheelsSchemaTestModifier2 extends PojoMappingModifier {
@@ -18618,10 +18867,12 @@ public class SchemaModifiers {
         public SteelWheelsSchemaTestModifier2(CatalogMapping catalog) {
             super(catalog);
         }
-
-        protected boolean hierarchyHasAll(MappingHierarchy hierarchy) {
+        
+        @Override
+        protected boolean hierarchyHasAll(HierarchyMapping hierarchy) {
             return false;
         }
+        
     }
 
     public static class SteelWheelsSchemaTestModifier3 extends PojoMappingModifier {
@@ -18630,15 +18881,16 @@ public class SchemaModifiers {
             super(catalog);
         }
 
-        protected boolean hierarchyHasAll(MappingHierarchy hierarchy) {
+        @Override
+        protected boolean hierarchyHasAll(HierarchyMapping hierarchy) {
 
-            if ("All Markets".equals(hierarchy.allMemberName()) && hierarchy.hasAll()) {
+            if ("All Markets".equals(hierarchy.getAllMemberName()) && hierarchy.isHasAll()) {
                 return false;
             }
-            if ("All Status Types".equals(hierarchy.allMemberName()) && hierarchy.hasAll()) {
+            if ("All Status Types".equals(hierarchy.getAllMemberName()) && hierarchy.isHasAll()) {
                 return false;
             }
-            return hierarchy.hasAll();
+            return hierarchy.isHasAll();
         }
     }
 
@@ -18765,6 +19017,8 @@ public class SchemaModifiers {
                 + "</Schema>\n");
 
          */
+        
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -19127,6 +19381,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
 
     }
 
@@ -19165,6 +19420,7 @@ public class SchemaModifiers {
                 + "</Schema>\n");
 
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -19242,7 +19498,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
-
+		*/
     }
 
     public static class SteelWheelsSchemaTestModifier6 extends PojoMappingModifier {
@@ -19324,6 +19580,7 @@ public class SchemaModifiers {
             + "</Schema>\n");
 
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -19550,6 +19807,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
 
     }
 
@@ -19595,6 +19853,7 @@ public class SchemaModifiers {
             + "  </Role>\n ";
 
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
             List<MappingRole> result = new ArrayList<>();
@@ -19690,6 +19949,7 @@ public class SchemaModifiers {
                     .build());
             return result;
         }
+        */
     }
 
     public static class SteelWheelsSchemaTestModifier8 extends PojoMappingModifier {
@@ -19741,6 +20001,7 @@ public class SchemaModifiers {
             + "</Schema>\n";
 
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -19869,6 +20130,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
 
     }
 
@@ -19937,6 +20199,7 @@ public class SchemaModifiers {
             + "</Schema>\n";
 
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -20098,6 +20361,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
+        */
 
     }
 
@@ -20184,6 +20448,7 @@ public class SchemaModifiers {
             + "</Schema>\n";
 
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -20388,7 +20653,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
-
+		*/
     }
 
     public static class XmlaBasicTestModifier extends PojoMappingModifier {
@@ -20415,6 +20680,7 @@ public class SchemaModifiers {
             + "</Cube>\n" + "\n" + "</Schema>";
 
          */
+        /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
             return SchemaRBuilder.builder()
@@ -20470,7 +20736,7 @@ public class SchemaModifiers {
                 ))
                 .build();
         }
-
+		*/
     }
 
 }

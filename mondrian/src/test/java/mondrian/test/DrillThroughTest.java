@@ -48,7 +48,7 @@ import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
@@ -398,7 +398,7 @@ class DrillThroughTest {
         }
         for (Level l : h.getLevels()) {
             if (l.getName().equals(levelName)) {
-                MappingExpression exp = ((RolapLevel) l).getNameExp();
+            	SQLExpressionMapping exp = ((RolapLevel) l).getNameExp();
                 String nameExpStr = getExpression(exp, star.getSqlQuery());
                 nameExpStr = nameExpStr.replace('"', '`') ;
                 return nameExpStr;

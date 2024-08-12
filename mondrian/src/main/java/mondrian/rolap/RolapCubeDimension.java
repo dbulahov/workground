@@ -95,9 +95,11 @@ public class RolapCubeDimension extends RolapDimension {
     RolapCube lookupFactCube(
         DimensionMapping cubeDim, RolapSchema schema)
     {
+      /* TODO: DENIS MAPPING-MODIFIER	
       if (cubeDim instanceof MappingVirtualCubeDimension virtualCubeDim && virtualCubeDim.cubeName() != null) {
           return schema.lookupCube(virtualCubeDim.cubeName());
       }
+      */
       return null;
     }
 

@@ -48,87 +48,9 @@ import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Position;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpressionView;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingFormula;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingInlineTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingJoinQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSQL;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSqlSelectQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingViewQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.DimensionTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.HideMemberIfEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.InternalTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.LevelTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggColumnNameR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggExcludeR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.AggMeasureR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.FormulaR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SQLR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SqlSelectQueryR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.ValueR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.RoleUsageR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.SchemaGrantR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggExcludeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggForeignKeyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggLevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggMeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AnnotationRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CalculatedMemberPropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CalculatedMemberRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ClosureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ColumnDefRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ExpressionViewRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.FormulaRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.InlineTableRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MemberGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.NamedSetRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RowRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SqlSelectQueryRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.UnionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ValueRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ViewRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeMeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -233,10 +155,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSolveOrderInCalculatedMember(Context context) {
-        class TestSolveOrderInCalculatedMemberModifier extends RDbMappingSchemaModifier{
+        class TestSolveOrderInCalculatedMemberModifier extends PojoMappingModifier{
             public TestSolveOrderInCalculatedMemberModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
             	List<MappingCalculatedMember> cm = new ArrayList<>();
@@ -288,6 +211,7 @@ class SchemaTest {
             	}
             	return cm;
             }
+            */
         }
         withSchema(context, TestSolveOrderInCalculatedMemberModifier::new);
         assertQueryReturns(context.getConnection(),
@@ -304,10 +228,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testHierarchyDefaultMember(Context context) {
-        class TestHierarchyDefaultMemberModifier extends RDbMappingSchemaModifier {
+        class TestHierarchyDefaultMemberModifier extends PojoMappingModifier {
             public TestHierarchyDefaultMemberModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -337,6 +262,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -370,10 +296,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDefaultMemberName(Context context) {
-        class TestDefaultMemberNameModifier extends RDbMappingSchemaModifier {
+        class TestDefaultMemberNameModifier extends PojoMappingModifier {
             public TestDefaultMemberNameModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -424,6 +351,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         };
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -456,10 +384,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testHierarchyAbbreviatedDefaultMember(Context context) {
-        class TestHierarchyAbbreviatedDefaultMemberModifier extends RDbMappingSchemaModifier {
+        class TestHierarchyAbbreviatedDefaultMemberModifier extends PojoMappingModifier {
             public TestHierarchyAbbreviatedDefaultMemberModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -490,6 +419,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         };
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -519,10 +449,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testHierarchyNoLevelsFails(Context context) {
-        class TestHierarchyNoLevelsFailsModifier extends RDbMappingSchemaModifier {
+        class TestHierarchyNoLevelsFailsModifier extends PojoMappingModifier {
             public TestHierarchyNoLevelsFailsModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -545,6 +476,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         };
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -564,10 +496,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testHierarchyNonUniqueLevelsFails(Context context) {
-        class TestHierarchyNonUniqueLevelsFailsModifier extends RDbMappingSchemaModifier {
+        class TestHierarchyNonUniqueLevelsFailsModifier extends PojoMappingModifier {
             public TestHierarchyNonUniqueLevelsFailsModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -603,6 +536,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         };
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -627,10 +561,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCountMeasure(Context context) {
-        class TestCountMeasureModifier extends RDbMappingSchemaModifier {
+        class TestCountMeasureModifier extends PojoMappingModifier {
             public TestCountMeasureModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
                 List<MappingMeasure> result = new ArrayList<>();
@@ -646,6 +581,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -682,10 +618,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testHierarchyTableNotFound(Context context) {
-        class TestHierarchyTableNotFoundModifier extends RDbMappingSchemaModifier {
+        class TestHierarchyTableNotFoundModifier extends PojoMappingModifier {
             public TestHierarchyTableNotFoundModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -714,6 +651,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -737,10 +675,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testPrimaryKeyTableNotFound(Context context) {
-        class TestPrimaryKeyTableNotFoundModifier extends RDbMappingSchemaModifier {
+        class TestPrimaryKeyTableNotFoundModifier extends PojoMappingModifier {
             public TestPrimaryKeyTableNotFoundModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -770,6 +709,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -790,10 +730,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testLevelTableNotFound(Context context) {
-        class TestLevelTableNotFoundModifier extends RDbMappingSchemaModifier {
+        class TestLevelTableNotFoundModifier extends PojoMappingModifier {
             public TestLevelTableNotFoundModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -823,6 +764,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -844,10 +786,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testHierarchyBadDefaultMember(Context context) {
-        class TestHierarchyBadDefaultMemberModifier extends RDbMappingSchemaModifier {
+        class TestHierarchyBadDefaultMemberModifier extends PojoMappingModifier {
             public TestHierarchyBadDefaultMemberModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -877,6 +820,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -910,10 +854,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDuplicateTableAlias(Context context) {
-        class TestDuplicateTableAliasModifier extends RDbMappingSchemaModifier {
+        class TestDuplicateTableAliasModifier extends PojoMappingModifier {
             public TestDuplicateTableAliasModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -942,6 +887,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -973,10 +919,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDuplicateTableAliasSameForeignKey(Context context) {
-        class TestDuplicateTableAliasSameForeignKeyModifier extends RDbMappingSchemaModifier {
+        class TestDuplicateTableAliasSameForeignKeyModifier extends PojoMappingModifier {
             public TestDuplicateTableAliasSameForeignKeyModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -1005,6 +952,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -1041,10 +989,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDimensionsShareTable(Context context) {
-        class TestDimensionsShareTableModifier extends RDbMappingSchemaModifier {
+        class TestDimensionsShareTableModifier extends PojoMappingModifier {
             public TestDimensionsShareTableModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -1073,6 +1022,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -1245,10 +1195,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDimensionsShareTableNativeNonEmptyCrossJoin(Context context) {
-        class TestDimensionsShareTableNativeNonEmptyCrossJoinModifier extends RDbMappingSchemaModifier {
+        class TestDimensionsShareTableNativeNonEmptyCrossJoinModifier extends PojoMappingModifier {
             public TestDimensionsShareTableNativeNonEmptyCrossJoinModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -1277,6 +1228,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -1309,10 +1261,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDimensionsShareTableSameForeignKeys(Context context) {
-        class TestDimensionsShareTableSameForeignKeysModifier extends RDbMappingSchemaModifier {
+        class TestDimensionsShareTableSameForeignKeysModifier extends PojoMappingModifier {
             public TestDimensionsShareTableSameForeignKeysModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -1341,6 +1294,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -1408,10 +1362,11 @@ class SchemaTest {
         {
             return;
         }
-        class TestSnowflakeHierarchyValidationNotNeededModifier extends RDbMappingSchemaModifier{
+        class TestSnowflakeHierarchyValidationNotNeededModifier extends PojoMappingModifier{
             public TestSnowflakeHierarchyValidationNotNeededModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -1575,6 +1530,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -1649,10 +1605,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSnowflakeHierarchyValidationNotNeeded2(Context context) {
-        class TestSnowflakeHierarchyValidationNotNeeded2Modifier extends RDbMappingSchemaModifier {
+        class TestSnowflakeHierarchyValidationNotNeeded2Modifier extends PojoMappingModifier {
             public TestSnowflakeHierarchyValidationNotNeeded2Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -1815,6 +1772,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -1891,10 +1849,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDimensionsShareJoinTable(Context context) {
-        class TestDimensionsShareJoinTableModifier extends RDbMappingSchemaModifier {
+        class TestDimensionsShareJoinTableModifier extends PojoMappingModifier {
             public TestDimensionsShareJoinTableModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -2022,6 +1981,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -2086,10 +2046,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDimensionsShareJoinTableOneAlias(Context context) {
-        class TestDimensionsShareJoinTableOneAliasModifier extends RDbMappingSchemaModifier {
+        class TestDimensionsShareJoinTableOneAliasModifier extends PojoMappingModifier {
             public TestDimensionsShareJoinTableOneAliasModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -2222,6 +2183,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -2285,10 +2247,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDimensionsShareJoinTableTwoAliases(Context context) {
-        class TestDimensionsShareJoinTableTwoAliasesModifier extends RDbMappingSchemaModifier {
+        class TestDimensionsShareJoinTableTwoAliasesModifier extends PojoMappingModifier {
             public TestDimensionsShareJoinTableTwoAliasesModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -2421,6 +2384,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -2484,10 +2448,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testTwoAliasesDimensionsShareTable(Context context) {
-        class TestTwoAliasesDimensionsShareTableModifier extends RDbMappingSchemaModifier {
+        class TestTwoAliasesDimensionsShareTableModifier extends PojoMappingModifier {
             public TestTwoAliasesDimensionsShareTableModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -2577,6 +2542,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -2634,10 +2600,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testTwoAliasesDimensionsShareTableSameForeignKeys(Context context) {
-        class TestTwoAliasesDimensionsShareTableSameForeignKeysModifier extends RDbMappingSchemaModifier {
+        class TestTwoAliasesDimensionsShareTableSameForeignKeysModifier extends PojoMappingModifier {
             public TestTwoAliasesDimensionsShareTableSameForeignKeysModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -2727,6 +2694,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -2783,10 +2751,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testMultipleDimensionUsages(Context context) {
-        class TestMultipleDimensionUsagesModifier extends RDbMappingSchemaModifier {
+        class TestMultipleDimensionUsagesModifier extends PojoMappingModifier {
             public TestMultipleDimensionUsagesModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -2838,6 +2807,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -2881,10 +2851,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testMultipleDimensionHierarchyCaptionUsages(Context context) {
-        class TestMultipleDimensionHierarchyCaptionUsagesModifier extends RDbMappingSchemaModifier {
+        class TestMultipleDimensionHierarchyCaptionUsagesModifier extends PojoMappingModifier {
             public TestMultipleDimensionHierarchyCaptionUsagesModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -2938,6 +2909,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -2989,10 +2961,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDimensionCreation(Context context) {
-        class TestDimensionCreationModifier extends RDbMappingSchemaModifier {
+        class TestDimensionCreationModifier extends PojoMappingModifier {
             public TestDimensionCreationModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -3035,6 +3008,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         withSchema(context, TestDimensionCreationModifier::new);
 
@@ -3068,10 +3042,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDimensionUsageLevel(Context context) {
-        class TestDimensionUsageLevelModifier extends RDbMappingSchemaModifier {
+        class TestDimensionUsageLevelModifier extends PojoMappingModifier {
             public TestDimensionUsageLevelModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -3107,6 +3082,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
 
         /*
@@ -3172,10 +3148,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testAllMemberMultipleDimensionUsages(Context context) {
-        class TestAllMemberMultipleDimensionUsagesModifier extends RDbMappingSchemaModifier {
+        class TestAllMemberMultipleDimensionUsagesModifier extends PojoMappingModifier {
             public TestAllMemberMultipleDimensionUsagesModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -3219,6 +3196,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
 
 
@@ -3286,10 +3264,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testNonAliasedDimensionUsage(Context context) {
-        class TestNonAliasedDimensionUsageModifier extends RDbMappingSchemaModifier {
+        class TestNonAliasedDimensionUsageModifier extends PojoMappingModifier {
             public TestNonAliasedDimensionUsageModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -3331,6 +3310,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -3376,10 +3356,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testViewDegenerateDims(Context context) {
-        class TestViewDegenerateDimsModifier extends RDbMappingSchemaModifier {
+        class TestViewDegenerateDimsModifier extends PojoMappingModifier {
             public TestViewDegenerateDimsModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -3457,6 +3438,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -3530,10 +3512,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testViewFactTable(Context context) {
-        class TestViewFactTableModifier extends RDbMappingSchemaModifier {
+        class TestViewFactTableModifier extends PojoMappingModifier {
             public TestViewFactTableModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -3622,6 +3605,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -3694,10 +3678,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testViewFactTable2(Context context) {
-        class TestViewFactTable2Modifier extends RDbMappingSchemaModifier {
+        class TestViewFactTable2Modifier extends PojoMappingModifier {
             public TestViewFactTable2Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -3752,6 +3737,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -3817,10 +3803,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDeprecatedDistinctCountAggregator(Context context) {
-        class TestDeprecatedDistinctCountAggregatorModifier extends RDbMappingSchemaModifier{
+        class TestDeprecatedDistinctCountAggregatorModifier extends PojoMappingModifier{
             public TestDeprecatedDistinctCountAggregatorModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
                 List<MappingMeasure> result = new ArrayList<>();
@@ -3856,6 +3843,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         withSchema(context, TestDeprecatedDistinctCountAggregatorModifier::new);
         assertQueryReturns(context.getConnection(),
@@ -3898,10 +3886,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testInvalidAggregator(Context context) {
-        class TestInvalidAggregatorModifier extends RDbMappingSchemaModifier{
+        class TestInvalidAggregatorModifier extends PojoMappingModifier{
             public TestInvalidAggregatorModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
                 List<MappingCalculatedMember> result = new ArrayList<>();
@@ -3937,6 +3926,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -3965,10 +3955,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testUnknownUsages(Context context) {
-        class TestUnknownUsagesModifier extends RDbMappingSchemaModifier {
+        class TestUnknownUsagesModifier extends PojoMappingModifier {
             public TestUnknownUsagesModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected MappingSchema modifyMappingSchema(MappingSchema schema) {
                 MappingTableQuery t = new TableR(
@@ -4075,6 +4066,7 @@ class SchemaTest {
                     .cubes(List.of(c))
                     .build();
             }
+            */
         }
 
         if (!context.getConfig().readAggregates()) {
@@ -4153,10 +4145,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testUnknownUsages1(Context context) {
-        class TestUnknownUsages1Modifier extends RDbMappingSchemaModifier {
+        class TestUnknownUsages1Modifier extends PojoMappingModifier {
             public TestUnknownUsages1Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected MappingSchema modifyMappingSchema(MappingSchema schema) {
                 MappingTableQuery t = new TableR(
@@ -4298,6 +4291,7 @@ class SchemaTest {
                     .cubes(List.of(c))
                     .build();
             }
+            */
         }
 
         if (!context.getConfig().readAggregates()) {
@@ -4394,10 +4388,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testPropertyFormatter(Context context) {
-        class TestPropertyFormatterModifier extends RDbMappingSchemaModifier {
+        class TestPropertyFormatterModifier extends PojoMappingModifier {
             public TestPropertyFormatterModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -4443,6 +4438,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -4485,10 +4481,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testBugMondrian233(Context context) {
-        class TestBugMondrian233Modifier extends RDbMappingSchemaModifier {
+        class TestBugMondrian233Modifier extends PojoMappingModifier {
             public TestBugMondrian233Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -4529,6 +4526,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         withSchema(context, TestBugMondrian233Modifier::new);
         // With bug, and with aggregates enabled, query against Sales returns
@@ -4555,10 +4553,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testBugMondrian303(Context context) {
-        class TestBugMondrian303Modifier extends RDbMappingSchemaModifier {
+        class TestBugMondrian303Modifier extends PojoMappingModifier {
             public TestBugMondrian303Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -4603,6 +4602,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         // In order to reproduce the problem a dimension specifying
         // captionColumn and Properties were required.
@@ -4680,10 +4680,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCubeWithOneDimensionOneMeasure(Context context) {
-        class TestCubeWithOneDimensionOneMeasureModifier extends RDbMappingSchemaModifier {
+        class TestCubeWithOneDimensionOneMeasureModifier extends PojoMappingModifier {
             public TestCubeWithOneDimensionOneMeasureModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -4727,6 +4728,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -4759,10 +4761,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCubeWithOneDimensionUsageOneMeasure(Context context) {
-        class TestCubeWithOneDimensionUsageOneMeasureModifier extends RDbMappingSchemaModifier {
+        class TestCubeWithOneDimensionUsageOneMeasureModifier extends PojoMappingModifier {
             public TestCubeWithOneDimensionUsageOneMeasureModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -4792,6 +4795,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -4823,10 +4827,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCubeHasFact(Context context) {
-        class TestCubeHasFactModifier extends RDbMappingSchemaModifier {
+        class TestCubeHasFactModifier extends PojoMappingModifier {
             public TestCubeHasFactModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -4839,6 +4844,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
 
         /*
@@ -4864,10 +4870,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCubeCaption(Context context) throws SQLException {
-        class TestCubeCaptionModifier extends RDbMappingSchemaModifier {
+        class TestCubeCaptionModifier extends PojoMappingModifier {
             public TestCubeCaptionModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -4899,6 +4906,7 @@ class SchemaTest {
                 result.addAll(super.virtualCubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -4930,10 +4938,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCubeWithNoDimensions(Context context) {
-        class TestCubeWithNoDimensionsModifier extends RDbMappingSchemaModifier {
+        class TestCubeWithNoDimensionsModifier extends PojoMappingModifier {
             public TestCubeWithNoDimensionsModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -4956,6 +4965,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         withSchema(context, TestCubeWithNoDimensionsModifier::new);
         assertQueryReturns(context.getConnection(),
@@ -4970,10 +4980,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCubeWithNoMeasuresFails(Context context) {
-        class TestCubeWithNoMeasuresFailsModifier extends RDbMappingSchemaModifier {
+        class TestCubeWithNoMeasuresFailsModifier extends PojoMappingModifier {
             public TestCubeWithNoMeasuresFailsModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -5017,6 +5028,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -5044,10 +5056,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCubeWithOneCalcMeasure(Context context) {
-        class TestCubeWithOneCalcMeasureModifier extends RDbMappingSchemaModifier {
+        class TestCubeWithOneCalcMeasureModifier extends PojoMappingModifier {
             public TestCubeWithOneCalcMeasureModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -5090,6 +5103,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -5135,10 +5149,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCalcMemberInCube(Context context) {
-        class TestCalcMemberInCubeModifier1 extends RDbMappingSchemaModifier {
+        class TestCalcMemberInCubeModifier1 extends PojoMappingModifier {
             public TestCalcMemberInCubeModifier1(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
                 List<MappingCalculatedMember> result = new ArrayList<>();
@@ -5158,6 +5173,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -5201,10 +5217,11 @@ class SchemaTest {
 
         // Test where hierarchy & dimension both specified. should fail
         try {
-            class TestCalcMemberInCubeModifier2 extends RDbMappingSchemaModifier {
-                public TestCalcMemberInCubeModifier2(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+            class TestCalcMemberInCubeModifier2 extends PojoMappingModifier {
+                public TestCalcMemberInCubeModifier2(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
                     List<MappingCalculatedMember> result = new ArrayList<>();
@@ -5225,6 +5242,7 @@ class SchemaTest {
                     }
                     return result;
                 }
+                */
             }
             /*
             ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -5261,10 +5279,11 @@ class SchemaTest {
 
         // test where hierarchy is not uname of valid hierarchy. should fail
         try {
-            class TestCalcMemberInCubeModifier3 extends RDbMappingSchemaModifier {
-                public TestCalcMemberInCubeModifier3(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+            class TestCalcMemberInCubeModifier3 extends PojoMappingModifier {
+                public TestCalcMemberInCubeModifier3(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
                     List<MappingCalculatedMember> result = new ArrayList<>();
@@ -5284,6 +5303,7 @@ class SchemaTest {
                     }
                     return result;
                 }
+                */
             }
             /*
             ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -5319,10 +5339,11 @@ class SchemaTest {
 
         // test where formula is invalid. should fail
         try {
-            class TestCalcMemberInCubeModifier4 extends RDbMappingSchemaModifier {
-                public TestCalcMemberInCubeModifier4(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+            class TestCalcMemberInCubeModifier4 extends PojoMappingModifier {
+                public TestCalcMemberInCubeModifier4(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
                     List<MappingCalculatedMember> result = new ArrayList<>();
@@ -5342,6 +5363,7 @@ class SchemaTest {
                     }
                     return result;
                 }
+                */
             }
             /*
             ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -5375,10 +5397,11 @@ class SchemaTest {
 
         // Test where parent is invalid. should fail
         try {
-            class TestCalcMemberInCubeModifier5 extends RDbMappingSchemaModifier {
-                public TestCalcMemberInCubeModifier5(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+            class TestCalcMemberInCubeModifier5 extends PojoMappingModifier {
+                public TestCalcMemberInCubeModifier5(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
                     List<MappingCalculatedMember> result = new ArrayList<>();
@@ -5398,6 +5421,7 @@ class SchemaTest {
                     }
                     return result;
                 }
+                */
             }
             /*
             ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -5434,10 +5458,11 @@ class SchemaTest {
 
         // test where parent is not in same hierarchy as hierarchy. should fail
         try {
-            class TestCalcMemberInCubeModifier6 extends RDbMappingSchemaModifier {
-                public TestCalcMemberInCubeModifier6(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+            class TestCalcMemberInCubeModifier6 extends PojoMappingModifier {
+                public TestCalcMemberInCubeModifier6(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
                     List<MappingCalculatedMember> result = new ArrayList<>();
@@ -5457,6 +5482,7 @@ class SchemaTest {
                     }
                     return result;
                 }
+                */
             }
             /*
             ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -5494,10 +5520,11 @@ class SchemaTest {
         // test where calc member has no formula (formula attribute or
         //   embedded element); should fail
         try {
-            class TestCalcMemberInCubeModifier7 extends RDbMappingSchemaModifier {
-                public TestCalcMemberInCubeModifier7(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+            class TestCalcMemberInCubeModifier7 extends PojoMappingModifier {
+                public TestCalcMemberInCubeModifier7(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingCalculatedMember> cubeCalculatedMembers(MappingCube cube) {
                     List<MappingCalculatedMember> result = new ArrayList<>();
@@ -5517,6 +5544,7 @@ class SchemaTest {
                     }
                     return result;
                 }
+                */
             }
             /*
             ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -5554,11 +5582,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testAggTableSupportOfSharedDims(Context context) {
-        class TestAggTableSupportOfSharedDimsModifier extends RDbMappingSchemaModifier {
-            public TestAggTableSupportOfSharedDimsModifier(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+        class TestAggTableSupportOfSharedDimsModifier extends PojoMappingModifier {
+            public TestAggTableSupportOfSharedDimsModifier(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                  List<MappingCube> result = new ArrayList<>();
@@ -5603,6 +5631,7 @@ class SchemaTest {
                  result.addAll(super.cubes(cubes));
                  return result;
              }
+             */
         }
         if (Bug.BugMondrian361Fixed) {
             /*
@@ -5661,10 +5690,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testLevelTableAttributeAsView(Context context) {
-        class TestLevelTableAttributeAsViewModifier extends RDbMappingSchemaModifier {
+        class TestLevelTableAttributeAsViewModifier extends PojoMappingModifier {
             public TestLevelTableAttributeAsViewModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -5725,6 +5755,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -5791,10 +5822,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testInvalidSchemaAccess(Context context) {
-        class TestInvalidSchemaAccess extends RDbMappingSchemaModifier {
+        class TestInvalidSchemaAccess extends PojoMappingModifier {
             public TestInvalidSchemaAccess(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingRole> schemaRoles(MappingSchema schema) {
                 List<MappingRole> result = new ArrayList<>();
@@ -5805,6 +5837,7 @@ class SchemaTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -5824,10 +5857,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testAllMemberNoStringReplace(Context context) {
-        class TestAllMemberNoStringReplaceModifier extends RDbMappingSchemaModifier {
+        class TestAllMemberNoStringReplaceModifier extends PojoMappingModifier {
             public TestAllMemberNoStringReplaceModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> result = new ArrayList<>();
@@ -5878,6 +5912,7 @@ class SchemaTest {
                 result.addAll(super.cubes(cubes));
                 return result;
             }
+            */
         }
 
         withSchema(context, TestAllMemberNoStringReplaceModifier::new);
@@ -5894,10 +5929,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testUnionRole(Context context) {
-        class TestUnionRoleModifier extends RDbMappingSchemaModifier {
+        class TestUnionRoleModifier extends PojoMappingModifier {
             public TestUnionRoleModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingRole> schemaRoles(MappingSchema schema) {
                 List<MappingRole> result = new ArrayList<>();
@@ -5926,6 +5962,7 @@ class SchemaTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -5962,10 +5999,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testUnionRoleContainsGrants(Context context) {
-        class TestUnionRoleContainsGrantsModifier extends RDbMappingSchemaModifier {
+        class TestUnionRoleContainsGrantsModifier extends PojoMappingModifier {
             public TestUnionRoleContainsGrantsModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingRole> schemaRoles(MappingSchema schema) {
                 List<MappingRole> result = new ArrayList<>();
@@ -5984,6 +6022,7 @@ class SchemaTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -6009,10 +6048,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testUnionRoleIllegalForwardRef(Context context) {
-        class TestUnionRoleIllegalForwardRefModifier extends RDbMappingSchemaModifier {
+        class TestUnionRoleIllegalForwardRefModifier extends PojoMappingModifier {
             public TestUnionRoleIllegalForwardRefModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingRole> schemaRoles(MappingSchema schema) {
                 List<MappingRole> result = new ArrayList<>();
@@ -6030,6 +6070,7 @@ class SchemaTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -6057,10 +6098,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testVirtualCubeNamedSetSupportInSchema(Context context) {
-        class TestVirtualCubeNamedSetSupportInSchemaModifier extends RDbMappingSchemaModifier {
+        class TestVirtualCubeNamedSetSupportInSchemaModifier extends PojoMappingModifier {
             public TestVirtualCubeNamedSetSupportInSchemaModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingNamedSet> schemaNamedSets(MappingSchema schema) {
                 List<MappingNamedSet> result = new ArrayList<>();
@@ -6070,6 +6112,7 @@ class SchemaTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -6118,10 +6161,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testVirtualCubeNamedSetSupportInSchemaError(Context context) {
-        class TestVirtualCubeNamedSetSupportInSchemaErrorModifier extends RDbMappingSchemaModifier {
+        class TestVirtualCubeNamedSetSupportInSchemaErrorModifier extends PojoMappingModifier {
             public TestVirtualCubeNamedSetSupportInSchemaErrorModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingNamedSet> virtualCubeNamedSet(MappingVirtualCube virtualCube) {
                 List<MappingNamedSet> result = new ArrayList<>();
@@ -6136,6 +6180,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -6176,10 +6221,11 @@ class SchemaTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void _testValidatorFindsNumericLevel(Context context) {
 
-        class TestValidatorFindsNumericLevelModifier extends RDbMappingSchemaModifier {
+        class TestValidatorFindsNumericLevelModifier extends PojoMappingModifier {
             public TestValidatorFindsNumericLevelModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -6208,6 +6254,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         // In the real foodmart, the level has type="Numeric"
         /*
@@ -6228,10 +6275,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testInvalidRoleError(Context context) {
-        class TestInvalidRoleErrorModifier extends RDbMappingSchemaModifier {
+        class TestInvalidRoleErrorModifier extends PojoMappingModifier {
             public TestInvalidRoleErrorModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected String schemaDefaultRole(MappingSchema schema) {
                 String role = super.schemaDefaultRole(schema);
@@ -6240,6 +6288,7 @@ class SchemaTest {
                 }
                 return role;
             }
+            */
         }
         //String schema = TestContext.getRawFoodMartSchema();
         /*
@@ -6279,10 +6328,11 @@ class SchemaTest {
             // therefore experiences bug MONDRIAN-413.
             return;
         }
-        class TestBinaryLevelKeyModifier extends RDbMappingSchemaModifier {
+        class TestBinaryLevelKeyModifier extends PojoMappingModifier {
             public TestBinaryLevelKeyModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -6352,6 +6402,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -6432,10 +6483,11 @@ class SchemaTest {
     void testLevelInternalType(Context context) {
         // One of the keys is larger than Integer.MAX_VALUE (2 billion), so
         // will only work if we use long values.
-        class TestLevelInternalTypeModifier extends RDbMappingSchemaModifier {
+        class TestLevelInternalTypeModifier extends PojoMappingModifier {
             public TestLevelInternalTypeModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -6496,6 +6548,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -6549,10 +6602,11 @@ class SchemaTest {
     @DisabledIfSystemProperty(named = "tempIgnoreStrageTests",matches = "true")
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testLevelInternalTypeErr(Context context) {
-        class TestLevelInternalTypeErrModifier extends RDbMappingSchemaModifier {
+        class TestLevelInternalTypeErrModifier extends PojoMappingModifier {
             public TestLevelInternalTypeErrModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -6606,6 +6660,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -6687,10 +6742,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testScdJoin(Context context) {
-        class TestScdJoinModifier extends RDbMappingSchemaModifier {
+        class TestScdJoinModifier extends PojoMappingModifier {
             public TestScdJoinModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -6728,6 +6784,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         withSchema(context, TestScdJoinModifier::new);
         assertQueryReturns(context.getConnection(),
@@ -6754,10 +6811,11 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void _testNonUniqueAlias(Context context) {
-        class TestNonUniqueAliasModifier extends RDbMappingSchemaModifier {
+        class TestNonUniqueAliasModifier extends PojoMappingModifier {
             public TestNonUniqueAliasModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -6795,6 +6853,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -6845,10 +6904,11 @@ class SchemaTest {
         if (context.getConfig().useAggregates()) {
             return;
         }
-        class TestBugMondrian482Modifier extends RDbMappingSchemaModifier {
+        class TestBugMondrian482Modifier extends PojoMappingModifier {
             public TestBugMondrian482Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
                 List<MappingCube> cs = new ArrayList<>();
@@ -6896,6 +6956,7 @@ class SchemaTest {
                 cs.addAll(super.cubes(cubes));
                 return cs;
             }
+            */
         }
         // In order to reproduce the problem it was necessary to only have one
         // non empty member under USA. In the cube definition below we create a
@@ -6987,10 +7048,11 @@ class SchemaTest {
 
     public void checkBugMondrian355(Context context, String timeHalfYear) {
     	RolapSchemaPool.instance().clear();
-        class CheckBugMondrian355Modifier1 extends RDbMappingSchemaModifier {
+        class CheckBugMondrian355Modifier1 extends PojoMappingModifier {
             public CheckBugMondrian355Modifier1(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> ds = new ArrayList<>();
@@ -7024,11 +7086,13 @@ class SchemaTest {
                 ds.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 return ds;
             }
+            */
         }
-        class CheckBugMondrian355Modifier2 extends RDbMappingSchemaModifier {
+        class CheckBugMondrian355Modifier2 extends PojoMappingModifier {
             public CheckBugMondrian355Modifier2(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> ds = new ArrayList<>();
@@ -7063,6 +7127,7 @@ class SchemaTest {
                 ds.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 return ds;
             }
+            */
         }
         /*
         final String xml =
@@ -7080,10 +7145,6 @@ class SchemaTest {
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
             "Sales", xml, false));
          */
-        DatabaseMappingSchemaProvider provider = context.getDatabaseMappingSchemaProviders().get(0);
-        MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(
-            List.of(new CheckBugMondrian355Modifier1(schema)));
         withSchema(context, CheckBugMondrian355Modifier1::new);
         assertQueryReturns(context.getConnection(),
             "select Head([Time2].[Quarter hours].Members, 3) on columns\n"
@@ -7116,14 +7177,12 @@ class SchemaTest {
                     "Sales",
                 xml.replace("TimeUndefined", "TimeUnspecified"), false));
             */
-        	RolapSchemaPool.instance().clear();
-            ((TestContext)context).setDatabaseMappingSchemaProviders(
-                List.of(new CheckBugMondrian355Modifier2(schema)));
+        	withSchema(context, CheckBugMondrian355Modifier2::new);
             assertSimpleQuery(context.getConnection());
             fail("expected error");
         } catch (Throwable e) {
-            ((TestContext)context).setDatabaseMappingSchemaProviders(
-        			List.of(provider));
+            //((TestContext)context).setDatabaseMappingSchemaProviders(
+        	//		List.of(provider));
             checkThrowable(
                 e,
            		"level-type must be  'Regular', 'TimeYears', 'TimeHalfYears', 'TimeHalfYear', 'TimeQuarters', 'TimeMonths', 'TimeWeeks', 'TimeDays', 'TimeHours', 'TimeMinutes', 'TimeSeconds', 'TimeUndefined'.");
@@ -7142,10 +7201,11 @@ class SchemaTest {
         final String salesCubeName = "DescSales";
         final String virtualCubeName = "DescWarehouseAndSales";
         final String warehouseCubeName = "Warehouse";
-        class TestCaptionDescriptionAndAnnotationModifier extends RDbMappingSchemaModifier {
+        class TestCaptionDescriptionAndAnnotationModifier extends PojoMappingModifier {
             public TestCaptionDescriptionAndAnnotationModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected MappingSchema modifyMappingSchema(MappingSchema schema) {
                 MappingPrivateDimension sd1 = PrivateDimensionRBuilder.builder()
@@ -7457,6 +7517,7 @@ class SchemaTest {
                     .virtualCubes(List.of(vc1))
                     .build();
             }
+            */
         }
         /*
         withSchema(context,
@@ -7792,12 +7853,12 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCaption(Context context) {
-        class TestCaptionModifier extends RDbMappingSchemaModifier {
+        class TestCaptionModifier extends PojoMappingModifier {
 
             public TestCaptionModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> ds = new ArrayList<>();
@@ -7827,7 +7888,7 @@ class SchemaTest {
                 ds.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 return ds;
             }
-
+			*/
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -7904,12 +7965,12 @@ class SchemaTest {
             return;
         }
 
-        class TestBugMondrian747Modifier extends RDbMappingSchemaModifier {
+        class TestBugMondrian747Modifier extends PojoMappingModifier {
 
             public TestBugMondrian747Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
                 MappingPrivateDimension sd1 = PrivateDimensionRBuilder.builder()
@@ -8073,6 +8134,7 @@ class SchemaTest {
                     .virtualCubes(List.of(vc))
                     .build();
             }
+            */
         }
         /*
         withSchema(context,
@@ -8293,12 +8355,12 @@ class SchemaTest {
             // we get wild stuff because of referential integrity.
             return;
         }
-        class TestBugMondrian463Modifier1 extends RDbMappingSchemaModifier {
+        class TestBugMondrian463Modifier1 extends PojoMappingModifier {
 
             public TestBugMondrian463Modifier1(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> ds = new ArrayList<>();
@@ -8375,7 +8437,7 @@ class SchemaTest {
                 ds.addAll(super.cubeDimensionUsageOrDimensions(cube));
                 return ds;
             }
-
+			*/
         }
 
         // To build a dimension that is a 3-way snowflake, take the 2-way
@@ -8420,12 +8482,12 @@ class SchemaTest {
             // integrity problems.
             return;
         }
-        class TestBugMondrian463Modifier2 extends RDbMappingSchemaModifier {
+        class TestBugMondrian463Modifier2 extends PojoMappingModifier {
 
             public TestBugMondrian463Modifier2(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
 
@@ -8560,6 +8622,7 @@ class SchemaTest {
 
                 return schema;
             }
+            */
         }
         /*
         withSchema(context,
@@ -8646,12 +8709,12 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testLeftDeepJoinFails(Context context) {
-        class TestLeftDeepJoinFailsModifier extends RDbMappingSchemaModifier {
+        class TestLeftDeepJoinFailsModifier extends PojoMappingModifier {
 
             public TestLeftDeepJoinFailsModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> ds = new ArrayList<>();
@@ -8727,6 +8790,7 @@ class SchemaTest {
                 }
                 return ds;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -8768,12 +8832,12 @@ class SchemaTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCaptionWithOrdinalColumn(Context context) {
     	RolapSchemaPool.instance().clear();
-        class TestCaptionWithOrdinalColumnModifier extends RDbMappingSchemaModifier {
+        class TestCaptionWithOrdinalColumnModifier extends PojoMappingModifier {
 
             public TestCaptionWithOrdinalColumnModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> ds = new ArrayList<>();
@@ -8808,6 +8872,7 @@ class SchemaTest {
                 }
                 return ds;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -8852,12 +8917,12 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testBugMondrian923(Context context) throws Exception {
-        class TestBugMondrian923Modifier extends RDbMappingSchemaModifier {
+        class TestBugMondrian923Modifier extends PojoMappingModifier {
 
             public TestBugMondrian923Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCalculatedMember> virtualCubeCalculatedMember(MappingVirtualCube virtualCube) {
                 List<MappingCalculatedMember> result = new ArrayList<>();
@@ -8902,6 +8967,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -8952,12 +9018,12 @@ class SchemaTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testCubesVisibility(Context context) throws Exception {
         for (Boolean testValue : new Boolean[] {true, false}) {
-            class TestCubesVisibilityModifier extends RDbMappingSchemaModifier {
+            class TestCubesVisibilityModifier extends PojoMappingModifier {
 
-                public TestCubesVisibilityModifier(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+                public TestCubesVisibilityModifier(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
-
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingCube> schemaCubes(MappingSchema schema) {
                     List<MappingCube> result = new ArrayList<>();
@@ -8994,6 +9060,7 @@ class SchemaTest {
                     result.addAll(super.schemaCubes(schema).stream().filter(c -> !"Foo".equals(c.name())).toList());
                     return result;
                 }
+                */
             }
             /*
             String cubeDef =
@@ -9027,12 +9094,12 @@ class SchemaTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testVirtualCubesVisibility(Context context) throws Exception {
         for (Boolean testValue : new Boolean[] {true, false}) {
-            class TestVirtualCubesVisibilityModifier extends RDbMappingSchemaModifier {
+            class TestVirtualCubesVisibilityModifier extends PojoMappingModifier {
 
-                public TestVirtualCubesVisibilityModifier(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+                public TestVirtualCubesVisibilityModifier(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
-
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingVirtualCube> schemaVirtualCubes(MappingSchema schema) {
                     List<MappingVirtualCube> result = new ArrayList<>();
@@ -9056,6 +9123,7 @@ class SchemaTest {
                     result.addAll(super.schemaVirtualCubes(schema).stream().filter(c -> !"Foo".equals(c.name())).toList());
                     return result;
                 }
+                */
             }
             /*
             String cubeDef =
@@ -9083,12 +9151,12 @@ class SchemaTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDimensionVisibility(Context context) throws Exception {
         for (Boolean testValue : new Boolean[] {true, false}) {
-            class TestDimensionVisibilityModifier extends RDbMappingSchemaModifier {
+            class TestDimensionVisibilityModifier extends PojoMappingModifier {
 
-                public TestDimensionVisibilityModifier(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+                public TestDimensionVisibilityModifier(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
-
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingCube> schemaCubes(MappingSchema schema) {
                     List<MappingCube> result = new ArrayList<>();
@@ -9125,6 +9193,7 @@ class SchemaTest {
                     result.addAll(super.schemaCubes(schema).stream().filter(c -> !"Foo".equals(c.name())).toList());
                     return result;
                 }
+                */
             }
             /*
             String cubeDef =
@@ -9165,12 +9234,12 @@ class SchemaTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testVirtualDimensionVisibility(Context context) throws Exception {
         for (Boolean testValue : new Boolean[] {true, false}) {
-            class TestVirtualDimensionVisibilityModifier extends RDbMappingSchemaModifier {
+            class TestVirtualDimensionVisibilityModifier extends PojoMappingModifier {
 
-                public TestVirtualDimensionVisibilityModifier(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+                public TestVirtualDimensionVisibilityModifier(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
-
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingVirtualCube> schemaVirtualCubes(MappingSchema schema) {
                     List<MappingVirtualCube> result = new ArrayList<>();
@@ -9194,6 +9263,7 @@ class SchemaTest {
                     result.addAll(super.schemaVirtualCubes(schema).stream().filter(c -> !"Foo".equals(c.name())).toList());
                     return result;
                 }
+                */
             }
             /*
             String cubeDef =
@@ -9228,13 +9298,13 @@ class SchemaTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDimensionUsageVisibility(Context context) throws Exception {
         for (Boolean testValue : new Boolean[] {true, false}) {
-            class TestDimensionUsageVisibilityModifier extends RDbMappingSchemaModifier {
+            class TestDimensionUsageVisibilityModifier extends PojoMappingModifier {
                 private Boolean value;
-                public TestDimensionUsageVisibilityModifier(MappingSchema mappingSchema, Boolean value) {
-                    super(mappingSchema);
+                public TestDimensionUsageVisibilityModifier(CatalogMapping catalogMapping, Boolean value) {
+                    super(catalogMapping);
                     this.value = value;
                 }
-
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingCube> schemaCubes(MappingSchema schema) {
                     List<MappingCube> result = new ArrayList<>();
@@ -9276,6 +9346,7 @@ class SchemaTest {
                     result.addAll(super.schemaCubes(schema).stream().filter(c -> !"Foo".equals(c.name())).toList());
                     return result;
                 }
+                */
             }
             /*
             String cubeDef =
@@ -9295,10 +9366,10 @@ class SchemaTest {
             withSchema(context, schema);
              */
             RolapSchemaPool.instance().clear();
-            MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
+            CatalogMapping catalogMapping = context.getCatalogMapping();
             TestDimensionUsageVisibilityModifier testDimensionUsageVisibilityModifier =
-            		new TestDimensionUsageVisibilityModifier(schema, testValue);
-            ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(testDimensionUsageVisibilityModifier));
+            		new TestDimensionUsageVisibilityModifier(catalogMapping, testValue);
+            ((TestContext)context).setCatalogMappingSupplier(testDimensionUsageVisibilityModifier);
 
             final Cube cube =
                 context.getConnection().getSchema()
@@ -9320,12 +9391,12 @@ class SchemaTest {
     void testHierarchyVisibility(Context context) throws Exception {
         for (Boolean testValue : new Boolean[] {true, false}) {
         	RolapSchemaPool.instance().clear();
-            class TestHierarchyVisibilityModifier extends RDbMappingSchemaModifier {
+            class TestHierarchyVisibilityModifier extends PojoMappingModifier {
 
-                public TestHierarchyVisibilityModifier(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+                public TestHierarchyVisibilityModifier(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
-
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingCube> schemaCubes(MappingSchema schema) {
                     List<MappingCube> result = new ArrayList<>();
@@ -9363,6 +9434,7 @@ class SchemaTest {
                     result.addAll(super.schemaCubes(schema).stream().filter(c -> !"Foo".equals(c.name())).toList());
                     return result;
                 }
+                */
             }
             /*
             String cubeDef =
@@ -9410,12 +9482,12 @@ class SchemaTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testLevelVisibility(Context context) throws Exception {
         for (Boolean testValue : new Boolean[] {true, false}) {
-            class TestLevelVisibilityModifier extends RDbMappingSchemaModifier {
+            class TestLevelVisibilityModifier extends PojoMappingModifier {
 
-                public TestLevelVisibilityModifier(MappingSchema mappingSchema) {
-                    super(mappingSchema);
+                public TestLevelVisibilityModifier(CatalogMapping catalogMapping) {
+                    super(catalogMapping);
                 }
-
+                /* TODO: DENIS MAPPING-MODIFIER
                 @Override
                 protected List<MappingCube> schemaCubes(MappingSchema schema) {
                     List<MappingCube> result = new ArrayList<>();
@@ -9453,6 +9525,7 @@ class SchemaTest {
                     result.addAll(super.schemaCubes(schema).stream().filter(c -> !"Foo".equals(c.name())).toList());
                     return result;
                 }
+                */
             }
             /*
             String cubeDef =
@@ -9507,12 +9580,12 @@ class SchemaTest {
             return;
         }
         RolapSchemaPool.instance().clear();
-        class TestNonCollapsedAggregateModifier extends RDbMappingSchemaModifier {
+        class TestNonCollapsedAggregateModifier extends PojoMappingModifier {
 
             public TestNonCollapsedAggregateModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> schemaCubes(MappingSchema schema) {
                 List<MappingCube> result = new ArrayList<>();
@@ -9628,6 +9701,7 @@ class SchemaTest {
                 result.addAll(super.schemaCubes(schema).stream().filter(c -> !"Foo".equals(c.name())).toList());
                 return result;
             }
+            */
         }
         /*
         final String cube =
@@ -9703,12 +9777,12 @@ class SchemaTest {
         {
             return;
         }
-        class TestNonCollapsedAggregateOnNonUniqueLevelFailsModifier extends RDbMappingSchemaModifier {
+        class TestNonCollapsedAggregateOnNonUniqueLevelFailsModifier extends PojoMappingModifier {
 
             public TestNonCollapsedAggregateOnNonUniqueLevelFailsModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> schemaCubes(MappingSchema schema) {
                 List<MappingCube> result = new ArrayList<>();
@@ -9824,6 +9898,7 @@ class SchemaTest {
                 result.addAll(super.schemaCubes(schema).stream().filter(c -> !"Foo".equals(c.name())).toList());
                 return result;
             }
+            */
         }
         /*
         final String cube =
@@ -9887,12 +9962,12 @@ class SchemaTest {
         {
             return;
         }
-        class TestTwoNonCollapsedAggregateModifier extends RDbMappingSchemaModifier {
+        class TestTwoNonCollapsedAggregateModifier extends PojoMappingModifier {
 
             public TestTwoNonCollapsedAggregateModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> schemaCubes(MappingSchema schema) {
                 List<MappingCube> result = new ArrayList<>();
@@ -10042,6 +10117,7 @@ class SchemaTest {
                 result.addAll(super.schemaCubes(schema).stream().filter(c -> !"Foo".equals(c.name())).toList());
                 return result;
             }
+            */
         }
         /*
         final String cube =
@@ -10273,12 +10349,12 @@ class SchemaTest {
         {
             return;
         }
-        class TestCollapsedErrorModifier extends RDbMappingSchemaModifier {
+        class TestCollapsedErrorModifier extends PojoMappingModifier {
 
             public TestCollapsedErrorModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> schemaCubes(MappingSchema schema) {
                 List<MappingCube> result = new ArrayList<>();
@@ -10393,6 +10469,7 @@ class SchemaTest {
                 result.addAll(super.schemaCubes(schema).stream().filter(c -> !"Foo".equals(c.name())).toList());
                 return result;
             }
+            */
         }
         /*
         final String cube =
@@ -10475,10 +10552,11 @@ class SchemaTest {
 
 
     public void checkBugMondrian1047(Context context, int n) {
-        class CheckBugMondrian1047Modifier extends RDbMappingSchemaModifier{
+        class CheckBugMondrian1047Modifier extends PojoMappingModifier{
             public CheckBugMondrian1047Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -10515,6 +10593,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         withSchema(context, CheckBugMondrian1047Modifier::new);
         /*
@@ -10555,10 +10634,11 @@ class SchemaTest {
         default:
             return;
         }
-        class TestBugMondrian1065Modifier extends RDbMappingSchemaModifier{
+        class TestBugMondrian1065Modifier extends PojoMappingModifier{
             public TestBugMondrian1065Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
                 List<MappingCubeDimension> result = new ArrayList<>();
@@ -10652,6 +10732,7 @@ class SchemaTest {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -10774,12 +10855,12 @@ class SchemaTest {
     void testMondrian1499(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(false);
         ((TestConfig)context.getConfig()).setReadAggregates(false);
-        class TestMondrian1499Modifier extends RDbMappingSchemaModifier {
+        class TestMondrian1499Modifier extends PojoMappingModifier {
 
             public TestMondrian1499Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
                 MappingPrivateDimension d1 = PrivateDimensionRBuilder.builder()
@@ -11018,6 +11099,7 @@ class SchemaTest {
                     ))
                     .build();
             }
+            */
         }
         /*
         withSchema(context,
@@ -11143,12 +11225,12 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testMondrian1073(Context context) throws Exception {
-        class TestMondrian1073Modifier extends RDbMappingSchemaModifier {
+        class TestMondrian1073Modifier extends PojoMappingModifier {
 
             public TestMondrian1073Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> schemaCubes(MappingSchema schema) {
                 List<MappingCube> result = new ArrayList<>();
@@ -11213,6 +11295,7 @@ class SchemaTest {
                 result.addAll(super.schemaCubes(schema));
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -11236,12 +11319,12 @@ class SchemaTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testMultiByteSchemaReadFromFile(Context context) throws IOException {
         //String rawSchema = TestContext.getRawFoodMartSchema().replace(
-        class TestMultiByteSchemaReadFromFile extends RDbMappingSchemaModifier {
+        class TestMultiByteSchemaReadFromFile extends PojoMappingModifier {
 
             public TestMultiByteSchemaReadFromFile(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected MappingHierarchy hierarchy(MappingHierarchy hierarchy) {
                 MappingHierarchy h = super.hierarchy(hierarchy);
@@ -11254,6 +11337,7 @@ class SchemaTest {
                 }
                 return h;
             }
+            */
         }
         /*
         String rawSchema = TestUtil.getRawSchema(context).replace(
@@ -11290,12 +11374,13 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testBugMonrian2528(Context context) {
-        class TestBugMonrian2528Modifier extends RDbMappingSchemaModifier {
+        class TestBugMonrian2528Modifier extends PojoMappingModifier {
 
             public TestBugMonrian2528Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
 
+            /* TODO: DENIS MAPPING-MODIFIER
             protected List<MappingRole> schemaRoles(MappingSchema schema) {
                 List<MappingRole> result = new ArrayList<>();
                 result.addAll(super.schemaRoles(schema));
@@ -11351,6 +11436,7 @@ class SchemaTest {
                     );
                 return result;
             }
+            */
         }
                 // Default member [Measures].[Unit Sales] is denied for the current role.
       // Before the fix ClassCastException was thrown on query.
@@ -11407,11 +11493,12 @@ class SchemaTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testMondrian1275(Context context) throws Exception {
-        class TestMondrian1275Modifier extends RDbMappingSchemaModifier {
+        class TestMondrian1275Modifier extends PojoMappingModifier {
 
             public TestMondrian1275Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER
             protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
                 MappingHierarchy h1 = HierarchyRBuilder.builder()
                     .hasAll(true)
@@ -11468,6 +11555,7 @@ class SchemaTest {
                     .cubes(List.of(c1))
                     .build();
             }
+            */
         }
         /*
         withSchema(context,

@@ -22,21 +22,11 @@ import static org.opencube.junit5.TestUtil.getDialect;
 import static org.opencube.junit5.TestUtil.verifySameNativeAndNot;
 import static org.opencube.junit5.TestUtil.withSchema;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CalculatedMemberPropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CalculatedMemberRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.FormulaRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.NamedSetRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -867,12 +857,12 @@ class NamedSetTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testBadNamedSet(Context context) {
-        class TestBadNamedSetModifier extends RDbMappingSchemaModifier {
+        class TestBadNamedSetModifier extends PojoMappingModifier {
 
             public TestBadNamedSetModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingNamedSet> schemaNamedSets(MappingSchema schema) {
                 List<MappingNamedSet> result = new ArrayList<>();
@@ -883,6 +873,7 @@ class NamedSetTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -1319,12 +1310,12 @@ class NamedSetTest {
      * Dynamic schema processor which adds two named sets to a the first cube
      * in a schema.
      */
-    public static class NamedSetsInCubeModifier extends RDbMappingSchemaModifier {
+    public static class NamedSetsInCubeModifier extends PojoMappingModifier {
 
-        public NamedSetsInCubeModifier(MappingSchema mappingSchema) {
-            super(mappingSchema);
+        public NamedSetsInCubeModifier(CatalogMapping catalogMapping) {
+            super(catalogMapping);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         protected List<MappingNamedSet> schemaNamedSets(MappingSchema mappingSchemaOriginal) {
             List<MappingNamedSet> result = new ArrayList<>();
             result.addAll(super.schemaNamedSets(mappingSchemaOriginal));
@@ -1340,17 +1331,18 @@ class NamedSetTest {
                 .build());
             return result;
         }
+        */
     }
 
 
 
 
-    public static class NamedSetsInCubeAndSchemaModifier extends RDbMappingSchemaModifier {
+    public static class NamedSetsInCubeAndSchemaModifier extends PojoMappingModifier {
 
-        public NamedSetsInCubeAndSchemaModifier(MappingSchema mappingSchema) {
-            super(mappingSchema);
+        public NamedSetsInCubeAndSchemaModifier(CatalogMapping catalogMapping) {
+            super(catalogMapping);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         protected List<MappingNamedSet> schemaNamedSets(MappingSchema mappingSchemaOriginal) {
             List<MappingNamedSet> result = new ArrayList<>();
             result.addAll(super.schemaNamedSets(mappingSchemaOriginal));
@@ -1376,18 +1368,19 @@ class NamedSetTest {
                 .build());
             return result;
         }
+        */
     }
 
 
 
 
 
-    public static class MixedNamedSetSchemaModifier extends RDbMappingSchemaModifier {
+    public static class MixedNamedSetSchemaModifier extends PojoMappingModifier {
 
-        public MixedNamedSetSchemaModifier(MappingSchema mappingSchema) {
-            super(mappingSchema);
+        public MixedNamedSetSchemaModifier(CatalogMapping catalogMapping) {
+            super(catalogMapping);
         }
-
+        /* TODO: DENIS MAPPING-MODIFIER
         protected List<MappingNamedSet> cubeNamedSets(MappingCube cube) {
             List<MappingNamedSet> result = new ArrayList<>();
             result.addAll(super.cubeNamedSets(cube));
@@ -1425,6 +1418,7 @@ class NamedSetTest {
             }
             return result;
         }
+        */
     }
 
 

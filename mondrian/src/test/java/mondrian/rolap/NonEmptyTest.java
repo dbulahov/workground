@@ -36,27 +36,6 @@ import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.HideMemberIfEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CalculatedMemberRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.FormulaRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeMeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.VirtualCubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.api.AfterEach;
@@ -1899,9 +1878,9 @@ class NonEmptyTest extends BatchTestCase {
         + "</Dimension>" ) );
      */
       RolapSchemaPool.instance().clear();
-      MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-      ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.NonEmptyTestModifier2(schema,
-          HideMemberIfEnum.IF_BLANK_NAME)));
+      CatalogMapping catalog = context.getCatalogMapping();
+      ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.NonEmptyTestModifier2(catalog,
+          "IfBlankName"));
 
       // [Product Name] can be hidden if it is blank, but native evaluation
     // should be able to handle the query.
@@ -1937,9 +1916,9 @@ class NonEmptyTest extends BatchTestCase {
         + "</Dimension>" ) );
      */
       RolapSchemaPool.instance().clear();
-      CatalogMapping catalogMapping= context.getCatalogMapping();
-      ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.NonEmptyTestModifier2(schema,
-          HideMemberIfEnum.IF_PARENTS_NAME)));
+      CatalogMapping catalogMapping = context.getCatalogMapping();
+      ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.NonEmptyTestModifier2(catalogMapping,
+    		  "IfParentsName"));
 
       // [Product Name] can be hidden if it it matches its parent name, so
     // native evaluation can not handle this query.
@@ -2042,9 +2021,9 @@ class NonEmptyTest extends BatchTestCase {
         + "</Dimension>" ) );
       */
       RolapSchemaPool.instance().clear();
-      MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-      ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.NonEmptyTestModifier2(schema,
-          HideMemberIfEnum.IF_BLANK_NAME)));
+      CatalogMapping schema = context.getCatalogMapping();
+      ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.NonEmptyTestModifier2(schema,
+    		  "IfBlankName"));
 
       // [Product Name] can be hidden if it is blank, but native evaluation
     // should be able to handle the query.

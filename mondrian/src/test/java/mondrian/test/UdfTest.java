@@ -48,8 +48,8 @@ import org.eclipse.daanse.olap.api.result.CellSet;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.api.type.Type;
 import org.eclipse.daanse.olap.impl.StatementImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -117,13 +117,13 @@ public class UdfTest {
      * @param xmlMeasure Measure definition
      * @return Test context
      */
-    private void updateTestContext(Context context, Function<MappingSchema, RDbMappingSchemaModifier> f) {
+    private void updateTestContext(Context context, Function<CatalogMapping, PojoMappingModifier> f) {
         withSchema(context, f);
     }
 
-    private void updateTestContext(Context context, RDbMappingSchemaModifier m) {
+    private void updateTestContext(Context context, PojoMappingModifier m) {
         RolapSchemaPool.instance().clear();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(m));
+        ((TestContext)context).setCatalogMappingSupplier(m);
     }
 
 
@@ -944,8 +944,8 @@ public class UdfTest {
             + functionClass.getName()
             + "\"/>\n");
          */
-        MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-        RDbMappingSchemaModifier modifier = new SchemaModifiers.UdfTestModifier17(schema, functionClass);
+    	CatalogMapping catalogMapping = context.getCatalogMapping();
+    	PojoMappingModifier modifier = new SchemaModifiers.UdfTestModifier17(catalogMapping, functionClass);
         updateTestContext(context, modifier);
         final String expectedResult =
             "Axis #0:\n"

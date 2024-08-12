@@ -15,31 +15,9 @@ import static org.opencube.junit5.TestUtil.assertQueryReturns;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.Context;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.AccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.DimensionTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.HideMemberIfEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.LevelTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MemberGrantAccessEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MemberGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.RoleUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaGrantRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.UnionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.SchemaMappingImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -92,7 +70,10 @@ class SteelWheelsAggregationTest {
         SystemWideProperties.instance().populateInitial();
     }
 
-    private MappingSchema getSchemaWith(List<MappingRole> roles) {
+    private SchemaMapping getSchemaWith(List<AccessRoleMapping> roles) {
+    	
+    	return SchemaMappingImpl.builder().build();
+    	/* TODO: DENIS MAPPING-MODIFIER
         return SchemaRBuilder.builder()
             .name("SteelWheels")
             .description("1 admin role, 1 user role. For testing MemberGrant with caching in 5.1.2")
@@ -168,6 +149,7 @@ class SteelWheelsAggregationTest {
             ))
             .roles(roles)
             .build();
+            */
 
     }
 
@@ -177,7 +159,7 @@ class SteelWheelsAggregationTest {
     void testWithAggregation(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
-        final MappingSchema schema = getSchemaWith
+        final SchemaMapping schema = getSchemaWith
                 (List.of(RoleRBuilder.builder()
                     .name("Power User")
                     .schemaGrants(List.of(
@@ -217,7 +199,7 @@ class SteelWheelsAggregationTest {
                     ))
                     .build()));
         RolapSchemaPool.instance().clear();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new PojoMappingModifier(schema)));
         assertQueryReturns(((TestContext)context).getConnection(List.of("Power User")), QUERY, EXPECTED);
     }
 
@@ -226,7 +208,7 @@ class SteelWheelsAggregationTest {
     void testWithAggregationNoRestrictionsOnTopLevel(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
-        final MappingSchema schema = getSchemaWith
+        final SchemaMapping schema = getSchemaWith
             (List.of(RoleRBuilder.builder()
                 .name("Power User")
                 .schemaGrants(List.of(
@@ -262,7 +244,7 @@ class SteelWheelsAggregationTest {
                 ))
                 .build()));
         RolapSchemaPool.instance().clear();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new PojoMappingModifier(schema)));
         assertQueryReturns(((TestContext)context).getConnection(List.of("Power User")), QUERY, EXPECTED);
     }
 
@@ -272,7 +254,7 @@ class SteelWheelsAggregationTest {
     void testUnionWithAggregation(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
-        final MappingSchema schema = getSchemaWith
+        final SchemaMapping schema = getSchemaWith
             (List.of(
                 RoleRBuilder.builder()
                     .name("Foo")
@@ -330,7 +312,7 @@ class SteelWheelsAggregationTest {
                     .build()
             ));
         RolapSchemaPool.instance().clear();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new PojoMappingModifier(schema)));
         assertQueryReturns(((TestContext)context).getConnection(List.of("Power User Union")), QUERY, EXPECTED);
     }
 
@@ -424,7 +406,7 @@ class SteelWheelsAggregationTest {
                     .build()
             ));
         RolapSchemaPool.instance().clear();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new RDbMappingSchemaModifier(schema)));
+        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new PojoMappingModifier(schema)));
         assertQueryReturns(((TestContext)context).getConnection(List.of("Power User Union")), QUERY, EXPECTED);
     }
 }

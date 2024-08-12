@@ -44,11 +44,8 @@ import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.query.component.Query;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingParameter;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.ParameterTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ParameterRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
@@ -1245,12 +1242,12 @@ class ParameterTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSchemaProp(Context context) {
-        class TestSchemaPropModifier extends RDbMappingSchemaModifier {
+        class TestSchemaPropModifier extends PojoMappingModifier {
 
             public TestSchemaPropModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingParameter> schemaParameters(MappingSchema schema) {
                 List<MappingParameter> result = new ArrayList<>();
@@ -1262,6 +1259,7 @@ class ParameterTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -1283,12 +1281,12 @@ class ParameterTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSchemaPropDupFails(Context context) {
-        class TestSchemaPropDupFailsModifier extends RDbMappingSchemaModifier {
+        class TestSchemaPropDupFailsModifier extends PojoMappingModifier {
 
             public TestSchemaPropDupFailsModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingParameter> schemaParameters(MappingSchema schema) {
                 List<MappingParameter> result = new ArrayList<>();
@@ -1310,6 +1308,7 @@ class ParameterTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -1335,12 +1334,12 @@ class ParameterTest {
     @DisabledIfSystemProperty(named = "tempIgnoreStrageTests",matches = "true")
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSchemaPropIllegalTypeFails(Context context) {
-        class TestSchemaPropIllegalTypeFailsModifier extends RDbMappingSchemaModifier {
+        class TestSchemaPropIllegalTypeFailsModifier extends PojoMappingModifier {
 
             public TestSchemaPropIllegalTypeFailsModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingParameter> schemaParameters(MappingSchema schema) {
                 List<MappingParameter> result = new ArrayList<>();
@@ -1352,6 +1351,7 @@ class ParameterTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -1375,12 +1375,12 @@ class ParameterTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSchemaPropInvalidDefaultExpFails(Context context) {
-        class TestSchemaPropInvalidDefaultExpFailsModifier extends RDbMappingSchemaModifier {
+        class TestSchemaPropInvalidDefaultExpFailsModifier extends PojoMappingModifier {
 
             public TestSchemaPropInvalidDefaultExpFailsModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingParameter> schemaParameters(MappingSchema schema) {
                 List<MappingParameter> result = new ArrayList<>();
@@ -1392,6 +1392,7 @@ class ParameterTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
@@ -1417,12 +1418,12 @@ class ParameterTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSchemaPropContext(Context context) {
-        class TestSchemaPropContextModifier extends RDbMappingSchemaModifier {
+        class TestSchemaPropContextModifier extends PojoMappingModifier {
 
             public TestSchemaPropContextModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-
+            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingParameter> schemaParameters(MappingSchema schema) {
                 List<MappingParameter> result = new ArrayList<>();
@@ -1434,6 +1435,7 @@ class ParameterTest {
                     .build());
                 return result;
             }
+            */
         }
         /*
         String baseSchema = TestUtil.getRawSchema(context);
