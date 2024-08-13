@@ -1112,6 +1112,7 @@ public class RolapStar {
          * @param dialect Dialect
          * @return String representation of column's datatype
          */
+        @Deprecated(since = "StefanBischof - thios seems not to be used may be removed after check")
         public String getDatatypeString(Dialect dialect, boolean formatted) {
             final SqlQuery query = new SqlQuery(dialect, formatted);
             query.addFrom(

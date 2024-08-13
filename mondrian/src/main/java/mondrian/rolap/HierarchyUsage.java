@@ -415,8 +415,8 @@ public class HierarchyUsage {
             this.joinTable =
                 findJoinTable(hierarchy, tableName);
             this.joinExp = joinLevel.getKeyExp();
-        } else if (hierarchy.getXmlHierarchy() != null
-            && hierarchy.getXmlHierarchy().getPrimaryKey() != null)
+        } else if (hierarchy.getHierarchyMapping() != null
+            && hierarchy.getHierarchyMapping().getPrimaryKey() != null)
         {
             // 2. Specify a "primaryKey" attribute of in <Hierarchy>. You must
             //    also specify the "primaryKeyTable" attribute if the hierarchy
@@ -424,11 +424,11 @@ public class HierarchyUsage {
             this.joinTable =
                 findJoinTable(
                     hierarchy,
-                    hierarchy.getXmlHierarchy().getPrimaryKeyTable());
+                    hierarchy.getHierarchyMapping().getPrimaryKeyTable());
             this.joinExp =
                 new mondrian.rolap.Column(
                     getAlias(this.joinTable),
-                    hierarchy.getXmlHierarchy().getPrimaryKey());
+                    hierarchy.getHierarchyMapping().getPrimaryKey());
         } else {
             // 3. If neither of the above, the join is assumed to be to key of
             //    the last level.

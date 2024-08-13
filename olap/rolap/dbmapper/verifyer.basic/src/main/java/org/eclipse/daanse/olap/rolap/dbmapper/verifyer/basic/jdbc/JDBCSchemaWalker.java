@@ -521,8 +521,8 @@ public class JDBCSchemaWalker extends AbstractSchemaWalker {
             // be numeric
             agIndex = 0;
         }
-        if (optionalColumnDefinition.isPresent() && optionalColumnDefinition.get().columnType() != null) {
-            int colType = optionalColumnDefinition.get().columnType().dataType().getVendorTypeNumber();
+        if (optionalColumnDefinition.isPresent() && optionalColumnDefinition.get().columnMetaData() != null) {
+            int colType = optionalColumnDefinition.get().columnMetaData().dataType().getVendorTypeNumber();
             if (!(agIndex == -1 || (colType >= 2 && colType <= 8) || colType == -5 || colType == -6)) {
                 String msg = String.format(AGGREGATOR_IS_NOT_VALID_FOR_THE_DATA_TYPE_OF_THE_COLUMN,
                     measure.aggregator(), measure.column());

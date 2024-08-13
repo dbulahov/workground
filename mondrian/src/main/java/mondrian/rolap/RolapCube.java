@@ -2158,15 +2158,15 @@ public class RolapCube extends CubeBase {
                             column,
                             hierarchyUsage.getJoinExp());
 
-                    if (hierarchy.getXmlHierarchy() != null
-                            && hierarchy.getXmlHierarchy()
+                    if (hierarchy.getHierarchyMapping() != null
+                            && hierarchy.getHierarchyMapping()
                             .getPrimaryKeyTable() != null
                             && relation instanceof JoinQueryMappingImpl join
                             && right(join) instanceof TableQueryMapping tqm
                             && getAlias(tqm) != null
                             && getAlias(tqm)
                             .equals(
-                                hierarchy.getXmlHierarchy()
+                                hierarchy.getHierarchyMapping()
                               .getPrimaryKeyTable()))
                     {
                         JoinQueryMapping newRelation = JoinQueryMappingImpl.builder()

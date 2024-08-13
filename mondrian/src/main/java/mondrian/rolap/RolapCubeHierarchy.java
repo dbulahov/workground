@@ -140,7 +140,7 @@ public class RolapCubeHierarchy extends RolapHierarchy {
 
         this.rolapHierarchy = rolapHierarchy;
         this.cubeDimension = cubeDimension;
-        this.xmlHierarchy = rolapHierarchy.getXmlHierarchy();
+        this.hierarchyMapping = rolapHierarchy.getHierarchyMapping();
         // this relation should equal the name of the new dimension table
         // The null member belongs to a level with very similar properties to
         // the 'all' level.

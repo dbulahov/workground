@@ -131,7 +131,7 @@ public class RolapHierarchy extends HierarchyBase {
      * {@link #createMemberReader(Role)}.
      */
     private MemberReader memberReader;
-    protected HierarchyMapping xmlHierarchy;
+    protected HierarchyMapping hierarchyMapping;
     private String memberReaderClass;
     protected QueryMapping relation;
     private Member defaultMember;
@@ -274,7 +274,7 @@ public class RolapHierarchy extends HierarchyBase {
 
         assert !(this instanceof RolapCubeHierarchy);
 
-        this.xmlHierarchy = xmlHierarchy;
+        this.hierarchyMapping = xmlHierarchy;
         QueryMapping xmlHierarchyRelation = xmlHierarchy.getQuery();
         if (xmlHierarchy.getQuery() == null
             && xmlHierarchy.getMemberReaderClass() == null
@@ -619,8 +619,8 @@ public class RolapHierarchy extends HierarchyBase {
         this.relation = relation;
     }
 
-    public HierarchyMapping getXmlHierarchy() {
-        return xmlHierarchy;
+    public HierarchyMapping getHierarchyMapping() {
+        return hierarchyMapping;
     }
 
     @Override
