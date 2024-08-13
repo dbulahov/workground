@@ -18,13 +18,13 @@
  */
 package mondrian.rolap;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 
 import mondrian.spi.PropertyFormatter;
 
 public class TestPublicRolapProperty extends RolapProperty {
 
-	TestPublicRolapProperty(String name, Datatype type, MappingExpression exp, PropertyFormatter formatter, String caption,
+	TestPublicRolapProperty(String name, Datatype type, SQLExpressionMapping exp, PropertyFormatter formatter, String caption,
                             Boolean dependsOnLevelValue, boolean internal, String description, RolapLevel level) {
 		super(name, type, exp, formatter, caption, dependsOnLevelValue, internal, description, level);
 	}

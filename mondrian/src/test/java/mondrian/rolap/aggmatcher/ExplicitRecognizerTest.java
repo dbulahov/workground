@@ -19,17 +19,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.daanse.olap.api.Context;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggForeignKeyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggLevelPropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggLevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggMeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PropertyRBuilder;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.MemberPropertyMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationColumnNameMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationForeignKeyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationLevelMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationLevelPropertyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationMeasureMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationNameMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationTableMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MemberPropertyMappingImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,33 +75,33 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
         setupMultiColDimCube(context,
-                List.of(AggNameRBuilder.builder()
-                        .name("agg_g_ms_pcat_sales_fact_1997")
-                        .aggFactCount(AggColumnNameRBuilder.builder()
-                        .column("FACT_COUNT")
+                List.of(AggregationNameMappingImpl.builder()
+                        .withName("agg_g_ms_pcat_sales_fact_1997")
+                        .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
+                        .withColumn("FACT_COUNT")
                         .build())
-                        .aggMeasures(List.of(
-                        AggMeasureRBuilder.builder()
-                            .name("[Measures].[Unit Sales]")
-                            .column("UNIT_SALES")
+                        .withAggregationMeasures(List.of(
+                        AggregationMeasureMappingImpl.builder()
+                            .withName("[Measures].[Unit Sales]")
+                            .withColumn("UNIT_SALES")
                             .build()
                         ))
-                        .aggLevels(List.of(
-                            AggLevelRBuilder.builder()
-                                .name("[Gender].[Gender]")
-                                .column("gender")
+                        .withAggregationLevels(List.of(
+                            AggregationLevelMappingImpl.builder()
+                                .withName("[Gender].[Gender]")
+                                .withColumn("gender")
                                 .build(),
-                            AggLevelRBuilder.builder()
-                                .name("[TimeExtra].[Year]")
-                                .column("the_year")
+                            AggregationLevelMappingImpl.builder()
+                                .withName("[TimeExtra].[Year]")
+                                .withColumn("the_year")
                                 .build(),
-                            AggLevelRBuilder.builder()
-                                .name("[TimeExtra].[Quarter]")
-                                .column("quarter")
+                            AggregationLevelMappingImpl.builder()
+                                .withName("[TimeExtra].[Quarter]")
+                                .withColumn("quarter")
                                 .build(),
-                            AggLevelRBuilder.builder()
-                                .name("[TimeExtra].[Month]")
-                                .column("month_of_year")
+                            AggregationLevelMappingImpl.builder()
+                                .withName("[TimeExtra].[Month]")
+                                .withColumn("month_of_year")
                                 .build()
                         ))
                         .build()
@@ -182,43 +181,43 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
         setupMultiColDimCube(context,
-            List.of(AggNameRBuilder.builder()
-                .name("agg_c_14_sales_fact_1997")
-                .aggFactCount(AggColumnNameRBuilder.builder()
-                    .column("FACT_COUNT")
+            List.of(AggregationNameMappingImpl.builder()
+                .withName("agg_c_14_sales_fact_1997")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
+                    .withColumn("FACT_COUNT")
                     .build())
-                .aggForeignKeys(List.of(
-                    AggForeignKeyRBuilder.builder()
-                        .factColumn("store_id")
-                        .aggColumn("store_id")
+                .withAggregationForeignKeys(List.of(
+                    AggregationForeignKeyMappingImpl.builder()
+                        .withFactColumn("store_id")
+                        .withAggregationColumn("store_id")
                         .build()
                 ))
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("unit_sales")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("unit_sales")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Cost]")
-                        .column("store_cost")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Cost]")
+                        .withColumn("store_cost")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[Gender].[Gender]")
-                        .column("gender")
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Gender].[Gender]")
+                        .withColumn("gender")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Year]")
-                        .column("the_year")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Year]")
+                        .withColumn("the_year")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Quarter]")
-                        .column("quarter")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Quarter]")
+                        .withColumn("quarter")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Month]")
-                        .column("month_of_year")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Month]")
+                        .withColumn("month_of_year")
                         .build()
                 ))
                 .build()
@@ -317,34 +316,34 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
         setupMultiColDimCube(context,
-            List.of(AggNameRBuilder.builder()
-                .name("exp_agg_test")
-                .aggFactCount(AggColumnNameRBuilder.builder()
-                    .column("FACT_COUNT")
+            List.of(AggregationNameMappingImpl.builder()
+                .withName("exp_agg_test")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
+                    .withColumn("FACT_COUNT")
                     .build())
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("test_unit_sales")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("test_unit_sales")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[Gender].[Gender]")
-                        .column("gender")
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Gender].[Gender]")
+                        .withColumn("gender")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Year]")
-                        .column("testyear")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Year]")
+                        .withColumn("testyear")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Quarter]")
-                        .column("testqtr")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Quarter]")
+                        .withColumn("testqtr")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Month]")
-                        .column("testmonthname")
-                        .ordinalColumn("testmonthord")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Month]")
+                        .withColumn("testmonthname")
+                        .withOrdinalColumn("testmonthord")
                         .build()
                 ))
                 .build()
@@ -400,34 +399,34 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
         setupMultiColDimCube(context,
-            List.of(AggNameRBuilder.builder()
-                .name("exp_agg_test")
-                .aggFactCount(AggColumnNameRBuilder.builder()
-                    .column("FACT_COUNT")
+            List.of(AggregationNameMappingImpl.builder()
+                .withName("exp_agg_test")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
+                    .withColumn("FACT_COUNT")
                     .build())
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("test_unit_sales")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("test_unit_sales")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[Gender].[Gender]")
-                        .column("gender")
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Gender].[Gender]")
+                        .withColumn("gender")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Year]")
-                        .column("testyear")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Year]")
+                        .withColumn("testyear")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Quarter]")
-                        .column("testqtr")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Quarter]")
+                        .withColumn("testqtr")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Month]")
-                        .column("testmonthname")
-                        .captionColumn("testmonthcap")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Month]")
+                        .withColumn("testmonthname")
+                        .withCaptionColumn("testmonthcap")
                         .build()
                 ))
                 .build()
@@ -483,38 +482,38 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
         setupMultiColDimCube(context,
-            List.of(AggNameRBuilder.builder()
-                .name("exp_agg_test")
-                .aggFactCount(AggColumnNameRBuilder.builder()
-                    .column("FACT_COUNT")
+            List.of(AggregationNameMappingImpl.builder()
+                .withName("exp_agg_test")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
+                    .withColumn("FACT_COUNT")
                     .build())
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("test_unit_sales")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("test_unit_sales")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[Gender].[Gender]")
-                        .column("gender")
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Gender].[Gender]")
+                        .withColumn("gender")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Year]")
-                        .column("testyear")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Year]")
+                        .withColumn("testyear")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Quarter]")
-                        .column("testqtr")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Quarter]")
+                        .withColumn("testqtr")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Month]")
-                        .column("testmonthname")
-                        .nameColumn("testmonthcap")
-                        .properties(Stream.of(
-                            AggLevelPropertyRBuilder.builder()
-                                .name("aProperty")
-                                .column("testmonprop1")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Month]")
+                        .withColumn("testmonthname")
+                        .withNameColumn("testmonthcap")
+                        .withAggregationLevelProperties(Stream.of(
+                            AggregationLevelPropertyMappingImpl.builder()
+                                .withName("aProperty")
+                                .withColumn("testmonprop1")
                                 .build()
                         ).collect(Collectors.toList()))
                         .build()
@@ -524,9 +523,9 @@ class ExplicitRecognizerTest extends AggTableTestCase {
             "the_year",
             "quarter",
             "the_month", null, null,  "month_of_year",
-            List.of(PropertyRBuilder.builder()
-                .name("aProperty")
-                .column("fiscal_period")
+            List.of(AggregationLevelPropertyMappingImpl.builder()
+                .withName("aProperty")
+                .withColumn("fiscal_period")
                 .build()));
 
         String query =
@@ -578,49 +577,49 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
         setupMultiColDimCube(context,
-            List.of(AggNameRBuilder.builder()
-                .name("exp_agg_test_distinct_count")
-                .aggFactCount(AggColumnNameRBuilder.builder()
-                    .column("FACT_COUNT")
+            List.of(AggregationNameMappingImpl.builder()
+                .withName("exp_agg_test_distinct_count")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
+                    .withColumn("FACT_COUNT")
                     .build())
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("unit_s")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("unit_s")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Customer Count]")
-                        .column("cust_cnt")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Customer Count]")
+                        .withColumn("cust_cnt")
                         .build()
                     ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Year]")
-                        .column("testyear")
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Year]")
+                        .withColumn("testyear")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Gender].[Gender]")
-                        .column("gender")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Gender].[Gender]")
+                        .withColumn("gender")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store Country]")
-                        .column("store_country")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store Country]")
+                        .withColumn("store_country")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store State]")
-                        .column("store_st")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store State]")
+                        .withColumn("store_st")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store City]")
-                        .column("store_cty")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store City]")
+                        .withColumn("store_cty")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store Name]")
-                        .column("store_name")
-                        .properties(List.of(
-                            AggLevelPropertyRBuilder.builder()
-                                .name("Street address")
-                                .column("store_add")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store Name]")
+                        .withColumn("store_name")
+                        .withAggregationLevelProperties(List.of(
+                            AggregationLevelPropertyMappingImpl.builder()
+                                .withName("Street address")
+                                .withColumn("store_add")
                                 .build()
                         ))
                         .build()
@@ -719,49 +718,49 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
         setupMultiColDimCube(context,
-            List.of(AggNameRBuilder.builder()
-                .name("exp_agg_test_distinct_count")
-                .aggFactCount(AggColumnNameRBuilder.builder()
-                    .column("FACT_COUNT")
+            List.of(AggregationNameMappingImpl.builder()
+                .withName("exp_agg_test_distinct_count")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
+                    .withColumn("FACT_COUNT")
                     .build())
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("unit_s")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("unit_s")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Customer Count]")
-                        .column("cust_cnt")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Customer Count]")
+                        .withColumn("cust_cnt")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Year]")
-                        .column("testyear")
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Year]")
+                        .withColumn("testyear")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Gender].[Gender]")
-                        .column("gender")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Gender].[Gender]")
+                        .withColumn("gender")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store Country]")
-                        .column("store_country")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store Country]")
+                        .withColumn("store_country")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store State]")
-                        .column("store_st")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store State]")
+                        .withColumn("store_st")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store City]")
-                        .column("store_cty")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store City]")
+                        .withColumn("store_cty")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store Name]")
-                        .column("store_name")
-                        .properties(List.of(
-                            AggLevelPropertyRBuilder.builder()
-                                .name("Street address")
-                                .column("store_add")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store Name]")
+                        .withColumn("store_name")
+                        .withAggregationLevelProperties(List.of(
+                            AggregationLevelPropertyMappingImpl.builder()
+                                .withName("Street address")
+                                .withColumn("store_add")
                                 .build()
                         ))
                         .build()
@@ -845,49 +844,49 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
         setupMultiColDimCube(context,
-            List.of(AggNameRBuilder.builder()
-                .name("exp_agg_test_distinct_count")
-                .aggFactCount(AggColumnNameRBuilder.builder()
-                    .column("FACT_COUNT")
+            List.of(AggregationNameMappingImpl.builder()
+                .withName("exp_agg_test_distinct_count")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
+                    .withColumn("FACT_COUNT")
                     .build())
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("unit_s")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("unit_s")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Customer Count]")
-                        .column("cust_cnt")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Customer Count]")
+                        .withColumn("cust_cnt")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[TimeExtra].[Year]")
-                        .column("testyear")
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[TimeExtra].[Year]")
+                        .withColumn("testyear")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Gender].[Gender]")
-                        .column("gender")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Gender].[Gender]")
+                        .withColumn("gender")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store Country]")
-                        .column("store_country")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store Country]")
+                        .withColumn("store_country")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store State]")
-                        .column("store_st")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store State]")
+                        .withColumn("store_st")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store City]")
-                        .column("store_cty")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store City]")
+                        .withColumn("store_cty")
                         .build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Store].[Store Name]")
-                        .column("store_name")
-                        .properties(List.of(
-                            AggLevelPropertyRBuilder.builder()
-                                .name("Street address")
-                                .column("store_add")
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Store].[Store Name]")
+                        .withColumn("store_name")
+                        .withAggregationLevelProperties(List.of(
+                            AggregationLevelPropertyMappingImpl.builder()
+                                .withName("Street address")
+                                .withColumn("store_add")
                                 .build()
                         ))
                         .build()
@@ -935,20 +934,25 @@ class ExplicitRecognizerTest extends AggTableTestCase {
     }
 
     public static void setupMultiColDimCube(
-        Context context, List<MappingAggTable> aggTables, String yearCols, String qtrCols, String monthCols,
-        String monthCaptionCol, String monthOrdinalCol, String monthNameCol, List<MappingProperty> monthProp)
+        Context context, List<AggregationTableMappingImpl> aggTables, String yearCols, String qtrCols, String monthCols,
+        String monthCaptionCol, String monthOrdinalCol, String monthNameCol, List<AggregationLevelPropertyMappingImpl> monthProp)
     {
         setupMultiColDimCube(context,
             aggTables, yearCols, qtrCols, monthCols, monthCaptionCol, monthOrdinalCol, monthNameCol, monthProp, "Unit Sales");
     }
 
     public static void setupMultiColDimCube(
-        Context context, List<MappingAggTable> aggTables, String yearCol, String qtrCol, String monthCol,
+        Context context, List<AggregationTableMappingImpl> aggTables, String yearCol, String qtrCol, String monthCol,
         String monthCaptionCol, String monthOrdinalCol, String monthNameCol,
-        List<MappingProperty> monthProp, String defaultMeasure)
+        List<AggregationLevelPropertyMappingImpl> monthProp, String defaultMeasure)
     {
         class ExplicitRecognizerTestModifierInner extends ExplicitRecognizerTestModifier {
 
+            public ExplicitRecognizerTestModifierInner(CatalogMapping catalog) {
+                super(catalog);
+            }
+
+        	 /* TODO: DENIS MAPPING-MODIFIER  modifiers
             @Override
             protected List<MappingProperty> getMonthProp() {
                 return monthProp;
@@ -969,9 +973,6 @@ class ExplicitRecognizerTest extends AggTableTestCase {
                 return monthCaptionCol;
             }
 
-            public ExplicitRecognizerTestModifierInner(CatalogMapping catalog) {
-                super(catalog);
-            }
 
             @Override
             protected List<MappingAggTable> getAggTables() {
@@ -1002,6 +1003,7 @@ class ExplicitRecognizerTest extends AggTableTestCase {
             protected String getYearCol() {
                 return yearCol;
             }
+            */
 
         }
 

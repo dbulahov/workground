@@ -13,24 +13,13 @@
  */
 package mondrian.rolap.aggmatcher;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+public class Checkin_7641Modifier  extends PojoMappingModifier {
 
-public class Checkin_7641Modifier  extends RDbMappingSchemaModifier {
-
-    public Checkin_7641Modifier(MappingSchema mappingSchema) {
-        super(mappingSchema);
+    public Checkin_7641Modifier(CatalogMapping catalog) {
+        super(catalog);
     }
 
     /*
@@ -64,7 +53,7 @@ public class Checkin_7641Modifier  extends RDbMappingSchemaModifier {
             + "</Cube>";
 
      */
-
+    /* TODO: DENIS MAPPING-MODIFIER  modifiers
     @Override
     protected List<MappingCube> schemaCubes(MappingSchema mappingSchemaOriginal) {
         List<MappingCube> result = new ArrayList<>();
@@ -163,5 +152,6 @@ public class Checkin_7641Modifier  extends RDbMappingSchemaModifier {
             .build());
         return result;
     }
+    */
 
 }

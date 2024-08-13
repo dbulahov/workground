@@ -33,7 +33,7 @@ import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.calc.api.todo.TupleList;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.CalculatedMemberImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.CalculatedMemberMappingImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -73,7 +73,7 @@ class RolapCubeTest {
             (RolapCube) context.getConnection().getSchema().lookupCube("Sales", false);
         StringBuilder builder = new StringBuilder();
         cube.processFormatStringAttribute(
-            new CalculatedMemberImpl(), builder);
+            CalculatedMemberMappingImpl.builder().build(), builder);
         assertEquals(0, builder.length());
     }
 
@@ -83,8 +83,8 @@ class RolapCubeTest {
         RolapCube cube =
             (RolapCube) context.getConnection().getSchema().lookupCube("Sales", false);
         StringBuilder builder = new StringBuilder();
-        CalculatedMemberImpl xmlCalcMember =
-            new CalculatedMemberImpl();
+        CalculatedMemberMappingImpl xmlCalcMember =
+        		CalculatedMemberMappingImpl.builder().build();
         String format = "FORMAT";
         xmlCalcMember.setFormatString(format);
         cube.processFormatStringAttribute(xmlCalcMember, builder);

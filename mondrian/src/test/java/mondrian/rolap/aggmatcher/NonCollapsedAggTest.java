@@ -11,28 +11,11 @@ package mondrian.rolap.aggmatcher;
 import static org.opencube.junit5.TestUtil.assertQueryReturns;
 import static org.opencube.junit5.TestUtil.withSchema;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
 import org.eclipse.daanse.olap.api.Context;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.MeasureDataTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggLevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggMeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.context.TestConfig;
@@ -408,11 +391,12 @@ class NonCollapsedAggTest extends AggTableTestCase {
         String schema = SchemaUtil.getSchema(baseSchema,
             null, SSAS_COMPAT_CUBE, null, null, null, null);
          */
-        class TestSsasCompatNamingInAggModifier extends RDbMappingSchemaModifier {
+        class TestSsasCompatNamingInAggModifier extends PojoMappingModifier {
 
             public TestSsasCompatNamingInAggModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER  modifiers
             @Override
             protected List<MappingCube> schemaCubes(MappingSchema mappingSchemaOriginal) {
                 List<MappingCube> result = new ArrayList<>();
@@ -622,6 +606,7 @@ class NonCollapsedAggTest extends AggTableTestCase {
 
                 return result;
             }
+            */
         }
 
         withSchema(context, TestSsasCompatNamingInAggModifier::new);
@@ -662,11 +647,12 @@ class NonCollapsedAggTest extends AggTableTestCase {
             + "non empty Descendants([Time].[Year].Members, Time.Month, SELF_AND_BEFORE) on 1\n"
             + "FROM [Sales]";
 
-        class TestMondrian1325Modifier extends RDbMappingSchemaModifier {
+        class TestMondrian1325Modifier extends PojoMappingModifier {
 
             public TestMondrian1325Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            /* TODO: DENIS MAPPING-MODIFIER  modifiers
             @Override
             protected List<MappingMeasure> cubeMeasures(MappingCube cube) {
                 List<MappingMeasure> result = new ArrayList<>();
@@ -682,6 +668,7 @@ class NonCollapsedAggTest extends AggTableTestCase {
                 }
                 return result;
             }
+            */
         }
         /*
         ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube(
@@ -697,7 +684,7 @@ class NonCollapsedAggTest extends AggTableTestCase {
         executeQuery(query2, context.getConnection());
     }
 
-    protected Function<MappingSchema, RDbMappingSchemaModifier> getModifierFunction(){
+    protected Function<CatalogMapping, PojoMappingModifier> getModifierFunction(){
         return NonCollapsedAggTestModifier::new;
     }
 

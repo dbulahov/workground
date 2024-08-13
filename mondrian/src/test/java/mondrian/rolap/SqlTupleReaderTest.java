@@ -24,8 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingColumn;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingExpression;
+import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
@@ -47,7 +46,7 @@ class SqlTupleReaderTest {
     SqlQuery sqlQuery = mock( SqlQuery.class, Answers.RETURNS_MOCKS );
     RolapCube baseCube = mock( RolapCube.class );
     RolapLevel targetLevel = mock( RolapLevel.class );
-    MappingExpression expression =  mock(MappingColumn.class);
+    SQLExpressionMapping expression =  mock(mondrian.rolap.Column.class);
     RolapCubeLevel levelIter = mock( RolapCubeLevel.class, Answers.RETURNS_MOCKS );
     RolapProperty rolapProperty = mock( TestPublicRolapProperty.class, Answers.RETURNS_MOCKS );
     String propertyName = "property_1";
@@ -56,8 +55,8 @@ class SqlTupleReaderTest {
     when(rolapProperty.getExp()).thenReturn(expression);
     RolapProperty[] properties = { rolapProperty };
     when( levelIter.getProperties() ).thenReturn( properties );
-    when( levelIter.getKeyExp() ).thenReturn( mock( MappingColumn.class ) );
-    when( levelIter.getOrdinalExp() ).thenReturn( mock( MappingColumn.class ) );
+    when( levelIter.getKeyExp() ).thenReturn( mock( mondrian.rolap.Column.class ) );
+    when( levelIter.getOrdinalExp() ).thenReturn( mock( mondrian.rolap.Column.class ) );
     when( levelIter.getParentExp() ).thenReturn( null );
     RolapHierarchy hierarchy = mock( RolapHierarchy.class, Answers.RETURNS_MOCKS );
     when( targetLevel.getHierarchy() ).thenReturn( hierarchy );
@@ -78,15 +77,15 @@ class SqlTupleReaderTest {
         new Class[] { mondrian.rolap.aggmatcher.AggStar.class, JdbcSchema.Table.class },
         new Object[] { aggStar, dbTable }, AggStar.FactTable.class.getClassLoader() );
     factTable = spy( factTable );
-    Map<String, MappingExpression> propertiesAgg = new HashMap<>();
-    propertiesAgg.put( propertyName, mock( MappingColumn.class ) );
+    Map<String, SQLExpressionMapping> propertiesAgg = new HashMap<>();
+    propertiesAgg.put( propertyName, mock( mondrian.rolap.Column.class ) );
     Class[] constructorArgsClasses =
-      { mondrian.rolap.aggmatcher.AggStar.Table.class, String.class, MappingExpression.class, int.class,
+      { mondrian.rolap.aggmatcher.AggStar.Table.class, String.class, SQLExpressionMapping.class, int.class,
         RolapStar.Column.class, boolean.class,
-        MappingExpression.class, MappingExpression.class, Map.class };
+        SQLExpressionMapping.class, SQLExpressionMapping.class, Map.class };
     Object[] constructorArgs =
-      { factTable, "name", mock( MappingColumn.class ), 0, starColumn, true,
-        mock( MappingColumn.class ), null,
+      { factTable, "name", mock( mondrian.rolap.Column.class ), 0, starColumn, true,
+        mock( mondrian.rolap.Column.class ), null,
         propertiesAgg };
     AggStar.Table.Level aggStarLevel =
       (AggStar.Table.Level) createInstance( "mondrian.rolap.aggmatcher.AggStar$Table$Level", constructorArgsClasses,

@@ -44,6 +44,13 @@ import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.AccessCubeGrantMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AccessHierarchyGrantMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AccessMemberGrantMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AccessRoleMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AccessSchemaGrantMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.HierarchyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.PhysicalCubeMappingImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
@@ -2408,7 +2415,7 @@ class AccessControlTest {
     		connection,
             "select [Customers].[City].Members on 0 from [Sales]");
         List<AccessRoleMapping> roles = new ArrayList<>();
-        List<MappingRoleUsage> roleUsages = new ArrayList<>();
+        List<AccessRoleMappingImpl> roleUsages = new ArrayList<>();
         for (Position position : result.getAxes()[0].getPositions()) {
             Member member = position.get(0);
             String name = member.getParentMember().getName()
@@ -2423,46 +2430,46 @@ class AccessControlTest {
             // e.g. "[Customers3].[State Province].[BC].[Burnaby]"
             String uniqueName3 =
                 uniqueName.replace("Customers", "Customers3");
-            roles.add(RoleRBuilder.builder()
-                .name(name)
-                .schemaGrants(List.of(
-                    SchemaGrantRBuilder.builder()
-                        .access(AccessEnum.NONE)
-                        .cubeGrants(List.of(
-                            CubeGrantRBuilder.builder()
-                                .access("all")
-                                .cube(cubeName)
-                                .hierarchyGrants(List.of(
-                                    HierarchyGrantRBuilder.builder()
-                                        .access(AccessEnum.CUSTOM)
-                                        .hierarchy("[Customers]")
-                                        .rollupPolicy("partial")
-                                        .memberGrants(List.of(
-                                            MemberGrantRBuilder.builder()
-                                                .access(MemberGrantAccessEnum.ALL)
-                                                .member(uniqueName)
+            roles.add(AccessRoleMappingImpl.builder()
+                .withName(name)
+                .withAccessSchemaGrants(List.of(
+                    AccessSchemaGrantMappingImpl.builder()
+                        .withAccess("none")
+                        .withCubeGrant(List.of(
+                            AccessCubeGrantMappingImpl.builder()
+                                .withAccess("all")
+                                .withCube(PhysicalCubeMappingImpl.builder().withName(cubeName).build())
+                                .withHierarchyGrants(List.of(
+                                    AccessHierarchyGrantMappingImpl.builder()
+                                        .withAccess("custom")
+                                        .withHierarchy(HierarchyMappingImpl.builder().withName("Customers").build())
+                                        .withRollupPolicy("partial")
+                                        .withMemberGrants(List.of(
+                                            AccessMemberGrantMappingImpl.builder()
+                                                .withAccess("All")
+                                                .withMember(uniqueName)
                                                 .build()
                                         ))
                                         .build(),
-                                    HierarchyGrantRBuilder.builder()
-                                        .access(AccessEnum.CUSTOM)
-                                        .hierarchy("[Customers2]")
-                                        .rollupPolicy("partial")
-                                        .memberGrants(List.of(
-                                            MemberGrantRBuilder.builder()
-                                                .access(MemberGrantAccessEnum.ALL)
-                                                .member(uniqueName2)
+                                    AccessHierarchyGrantMappingImpl.builder()
+                                        .withAccess("custom")
+                                        .withHierarchy(HierarchyMappingImpl.builder().withName("Customers2").build())
+                                        .withRollupPolicy("partial")
+                                        .withMemberGrants(List.of(
+                                        	AccessMemberGrantMappingImpl.builder()
+                                                .withAccess("All")
+                                                .withMember(uniqueName2)
                                                 .build()
                                         ))
                                         .build(),
-                                    HierarchyGrantRBuilder.builder()
-                                        .access(AccessEnum.CUSTOM)
-                                        .hierarchy("[Customers3]")
-                                        .rollupPolicy("partial")
-                                        .memberGrants(List.of(
-                                            MemberGrantRBuilder.builder()
-                                                .access(MemberGrantAccessEnum.ALL)
-                                                .member(uniqueName3)
+                                    AccessHierarchyGrantMappingImpl.builder()
+                                        .withAccess("custom")
+                                        .withHierarchy(HierarchyMappingImpl.builder().withName("Customers3").build())
+                                        .withRollupPolicy("partial")
+                                        .withMemberGrants(List.of(
+                                        	AccessMemberGrantMappingImpl.builder()
+                                                .withAccess("All")
+                                                .withMember(uniqueName3)
                                                 .build()
                                         ))
                                         .build()
@@ -2474,19 +2481,17 @@ class AccessControlTest {
                 .build()
             );
 
-            roleUsages.add(RoleUsageRBuilder.builder().roleName(name).build());
+            roleUsages.add(AccessRoleMappingImpl.builder().withName(name).build());
         }
-        roles.add(RoleRBuilder.builder()
-            .name("Test")
-            .union(UnionRBuilder.builder()
-                .roleUsages(roleUsages)
-                .build())
+        roles.add(AccessRoleMappingImpl.builder()
+            .withName("Test")
+            .withReferencedAccessRoles(roleUsages)
             .build());
 
         final long t0 = System.currentTimeMillis();
         RolapSchemaPool.instance().clear();
-        MappingSchema schema = foodMartContext.getDatabaseMappingSchemaProviders().get(0).get();
-        ((TestContext)foodMartContext).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.AccessControlTestModifier12(schema, roles)));
+        CatalogMapping schema = foodMartContext.getCatalogMapping();
+        ((TestContext)foodMartContext).setCatalogMappingSupplier(new SchemaModifiers.AccessControlTestModifier12(schema, roles));
         ConnectionProps props = new RolapConnectionPropsR(List.of("Test"), true, Locale.getDefault(), -1, TimeUnit.SECONDS, Optional.empty(), Optional.empty());
         connection = foodMartContext.getConnection(props);
         TestUtil.executeQuery(connection, "select from [" + cubeName + "]");

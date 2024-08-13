@@ -11,16 +11,16 @@ package mondrian.rolap.format;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.ElementFormatterImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MemberFormatterMappingImpl;
 import org.junit.jupiter.api.Test;
 
 class FormatterCreateContextTest {
 
 	@Test
     void testElementDataShouldSupersedeAttributeData() {
-        ElementFormatterImpl elementData =
-            new ElementFormatterImpl();
-        elementData.setClassName("elementClassName");
+		MemberFormatterMappingImpl elementData =
+				MemberFormatterMappingImpl.builder().build();
+        elementData.setRef("elementClassName");
 
         FormatterCreateContext context1 =
             new FormatterCreateContext.Builder("elementName")

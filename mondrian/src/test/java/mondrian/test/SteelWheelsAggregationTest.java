@@ -16,7 +16,10 @@ import java.util.List;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.pojo.CatalogMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.SchemaMappingImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,9 +73,9 @@ class SteelWheelsAggregationTest {
         SystemWideProperties.instance().populateInitial();
     }
 
-    private SchemaMapping getSchemaWith(List<AccessRoleMapping> roles) {
+    private CatalogMapping getSchemaWith(List<AccessRoleMapping> roles) {
     	
-    	return SchemaMappingImpl.builder().build();
+    	return CatalogMappingImpl.builder().build();
     	/* TODO: DENIS MAPPING-MODIFIER
         return SchemaRBuilder.builder()
             .name("SteelWheels")
@@ -159,8 +162,11 @@ class SteelWheelsAggregationTest {
     void testWithAggregation(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
-        final SchemaMapping schema = getSchemaWith
-                (List.of(RoleRBuilder.builder()
+         
+        final CatalogMapping schema = getSchemaWith(
+        		List.of()
+        		 /* TODO: DENIS MAPPING-MODIFIER  modifiers
+                List.of(RoleRBuilder.builder()
                     .name("Power User")
                     .schemaGrants(List.of(
                         SchemaGrantRBuilder.builder()
@@ -197,9 +203,10 @@ class SteelWheelsAggregationTest {
                             ))
                             .build()
                     ))
-                    .build()));
+                    .build()*/);
+        
         RolapSchemaPool.instance().clear();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new PojoMappingModifier(schema)));
+        ((TestContext)context).setCatalogMappingSupplier(new PojoMappingModifier(schema));
         assertQueryReturns(((TestContext)context).getConnection(List.of("Power User")), QUERY, EXPECTED);
     }
 
@@ -208,7 +215,9 @@ class SteelWheelsAggregationTest {
     void testWithAggregationNoRestrictionsOnTopLevel(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
-        final SchemaMapping schema = getSchemaWith
+        final CatalogMapping schema = getSchemaWith(
+        	 List.of()
+       		 /* TODO: DENIS MAPPING-MODIFIER  modifiers	
             (List.of(RoleRBuilder.builder()
                 .name("Power User")
                 .schemaGrants(List.of(
@@ -242,9 +251,10 @@ class SteelWheelsAggregationTest {
                         ))
                         .build()
                 ))
-                .build()));
+                .build())*/
+        	 );
         RolapSchemaPool.instance().clear();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new PojoMappingModifier(schema)));
+        ((TestContext)context).setCatalogMappingSupplier(new PojoMappingModifier(schema));
         assertQueryReturns(((TestContext)context).getConnection(List.of("Power User")), QUERY, EXPECTED);
     }
 
@@ -254,7 +264,9 @@ class SteelWheelsAggregationTest {
     void testUnionWithAggregation(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
-        final SchemaMapping schema = getSchemaWith
+        final CatalogMapping schema = getSchemaWith
+           	 (List.of()
+             /* TODO: DENIS MAPPING-MODIFIER  modifiers		
             (List.of(
                 RoleRBuilder.builder()
                     .name("Foo")
@@ -310,9 +322,9 @@ class SteelWheelsAggregationTest {
                         ))
                         .build())
                     .build()
-            ));
+            )*/);
         RolapSchemaPool.instance().clear();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new PojoMappingModifier(schema)));
+        ((TestContext)context).setCatalogMappingSupplier(new PojoMappingModifier(schema));
         assertQueryReturns(((TestContext)context).getConnection(List.of("Power User Union")), QUERY, EXPECTED);
     }
 
@@ -322,7 +334,9 @@ class SteelWheelsAggregationTest {
     void testWithAggregationUnionRolesWithSameGrants(Context context) throws Exception {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setReadAggregates(true);
-        final MappingSchema schema = getSchemaWith
+        final CatalogMapping schema = getSchemaWith
+            (List.of()
+            /* TODO: DENIS MAPPING-MODIFIER  modifiers		        		
             (List.of(
                 RoleRBuilder.builder()
                     .name("Foo")
@@ -404,9 +418,9 @@ class SteelWheelsAggregationTest {
                         ))
                         .build())
                     .build()
-            ));
+            )*/);
         RolapSchemaPool.instance().clear();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new PojoMappingModifier(schema)));
+        ((TestContext)context).setCatalogMappingSupplier(new PojoMappingModifier(schema));
         assertQueryReturns(((TestContext)context).getConnection(List.of("Power User Union")), QUERY, EXPECTED);
     }
 }

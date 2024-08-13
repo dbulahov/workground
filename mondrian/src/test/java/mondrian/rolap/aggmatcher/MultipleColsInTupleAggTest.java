@@ -19,8 +19,8 @@ import java.util.function.Function;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -315,7 +315,7 @@ class MultipleColsInTupleAggTest extends AggTableTestCase {
     }
 
     @Override
-    protected Function<MappingSchema, RDbMappingSchemaModifier> getModifierFunction(){
+    protected Function<CatalogMapping, PojoMappingModifier> getModifierFunction(){
         return MultipleColsInTupleAggTestModifier::new;
     }
 

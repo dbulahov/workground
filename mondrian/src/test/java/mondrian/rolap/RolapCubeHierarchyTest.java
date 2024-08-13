@@ -22,9 +22,9 @@ import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.core.BasicContextConfig;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.QueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.TableQueryMapping;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
@@ -76,7 +76,7 @@ class RolapCubeHierarchyTest {
     doReturn(context).when(schemaReader).getContext();
 
 
-    MappingCubeDimension cubeDim = null;
+    DimensionConnectorMapping cubeDim = null;
 
     RolapHierarchy rolapHierarchy = mock(RolapHierarchy.class);
     Hierarchy rolapHierarchy_hierarchy = null;
@@ -130,7 +130,7 @@ class RolapCubeHierarchyTest {
     doReturn(context).when(schemaReader).getContext();
 
 
-    MappingCubeDimension cubeDim = null;
+    DimensionConnectorMapping cubeDim = null;
 
     RolapHierarchy rolapHierarchy = mock(RolapHierarchy.class);
     Hierarchy rolapHierarchy_hierarchy = null;
@@ -175,13 +175,13 @@ class RolapCubeHierarchyTest {
         mock(RolapConnection.class);
     DataSource cubeDimension_schema_connection_DS = mock(DataSource.class);
 
-    MappingCubeDimension cubeDim = null;
+    DimensionConnectorMapping cubeDim = null;
 
     RolapHierarchy rolapHierarchy = mock(RolapHierarchy.class);
     Hierarchy rolapHierarchy_hierarchy = null;
     String rolapHierarchy_uniqueName = "TheDimUniqueName";
     Level[] rolapHierarchy_levels = new Level[]{};
-    MappingQuery rolapHierarchy_relation = mock(MappingTableQuery.class);
+    QueryMapping rolapHierarchy_relation = mock(TableQueryMapping.class);
     SchemaReader schemaReader = mock(SchemaReader.class);
     BasicContextConfig config = mock(BasicContextConfig.class);
     doReturn(false).when(config).memoryMonitor();
@@ -194,7 +194,7 @@ class RolapCubeHierarchyTest {
     int ordinal = 0;
 
     RolapCube factCube = mock(RolapCube.class);
-    MappingQuery factCube_Fact = mock(MappingTableQuery.class);
+    QueryMapping factCube_Fact = mock(TableQueryMapping.class);
     boolean factCube_Fact_equals = false;
 
     // check
@@ -241,20 +241,20 @@ class RolapCubeHierarchyTest {
     doReturn(config).when(context).getConfig();
     doReturn(context).when(schemaReader).getContext();
 
-    MappingCubeDimension cubeDim = null;
+    DimensionConnectorMapping cubeDim = null;
 
     RolapHierarchy rolapHierarchy = mock(RolapHierarchy.class);
     Hierarchy rolapHierarchy_hierarchy = null;
     String rolapHierarchy_uniqueName = "TheDimUniqueName";
     Level[] rolapHierarchy_levels = new Level[]{};
-    MappingQuery rolapHierarchy_relation = mock(MappingTableQuery.class);
+    QueryMapping rolapHierarchy_relation = mock(TableQueryMapping.class);
 
     String subName = null;
 
     int ordinal = 0;
 
     RolapCube factCube = mock(RolapCube.class);
-    MappingQuery factCube_Fact = rolapHierarchy_relation;
+    QueryMapping factCube_Fact = rolapHierarchy_relation;
     boolean factCube_Fact_equals = true;
 
     // check

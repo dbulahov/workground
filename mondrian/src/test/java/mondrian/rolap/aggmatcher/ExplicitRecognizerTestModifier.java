@@ -13,33 +13,16 @@
  */
 package mondrian.rolap.aggmatcher;
 
-import java.util.List;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.LevelTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.PropertyTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SchemaRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 
-public class ExplicitRecognizerTestModifier extends RDbMappingSchemaModifier {
+public class ExplicitRecognizerTestModifier extends PojoMappingModifier {
 
-    public ExplicitRecognizerTestModifier(MappingSchema mappingSchema) {
-        super(mappingSchema);
+    public ExplicitRecognizerTestModifier(CatalogMapping catalog) {
+        super(catalog);
     }
+    
 
     /*
                 + "<Schema name=\"FoodMart\">\n"
@@ -105,6 +88,8 @@ public class ExplicitRecognizerTestModifier extends RDbMappingSchemaModifier {
             + "</Cube>\n"
             + "</Schema>";
      */
+    
+    /* TODO: DENIS MAPPING-MODIFIER  modifiers
     protected MappingSchema modifyMappingSchema(MappingSchema mappingSchemaOriginal) {
         return SchemaRBuilder.builder()
             .name("FoodMart")
@@ -332,4 +317,5 @@ public class ExplicitRecognizerTestModifier extends RDbMappingSchemaModifier {
     protected String getdefaultMeasure() {
         return null;
     }
+    */
 }

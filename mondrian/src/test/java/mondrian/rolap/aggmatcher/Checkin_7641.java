@@ -15,8 +15,8 @@ import java.util.function.Function;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -82,7 +82,7 @@ public class Checkin_7641 extends CsvDBTestCase {
     }
 
 
-    protected Function<MappingSchema, RDbMappingSchemaModifier> getModifierFunction(){
+    protected Function<CatalogMapping, PojoMappingModifier> getModifierFunction(){
         return Checkin_7641Modifier::new;
     }
 

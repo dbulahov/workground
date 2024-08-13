@@ -24,16 +24,6 @@ import org.eclipse.daanse.emf.model.rolapmapping.impl.AggregationColumnNameImpl;
 import org.eclipse.daanse.emf.model.rolapmapping.impl.AggregationTableImpl;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggExclude;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingAggTable;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggExcludeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggLevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggMeasureFactCountRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggMeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggPatternRBuilder;
 import org.eclipse.daanse.rolap.mapping.api.model.AggregationExcludeMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.AggregationTableMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
@@ -45,6 +35,7 @@ import org.eclipse.daanse.rolap.mapping.pojo.AggregationLevelMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AggregationMeasureFactCountMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AggregationMeasureMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AggregationNameMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationPatternMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AggregationTableMappingImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,7 +113,7 @@ class AggMeasureFactCountTest extends CsvDBTestCase {
         ((TestConfig)context.getConfig()).setUseAggregates(true);
         ((TestConfig)context.getConfig()).setDisableCaching(true);
     	prepareContext(context);
-        List<AggregationNameMappingImpl> aggTables = List.of(
+        List<AggregationTableMappingImpl> aggTables = List.of(
             AggregationNameMappingImpl.builder()
                 .withName("agg_c_6_fact_csv_2016")
                 .withAggregationFactCount(AggregationColumnNameMappingImpl.builder().withColumn("fact_count").build())
@@ -206,7 +197,7 @@ class AggMeasureFactCountTest extends CsvDBTestCase {
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
-        List<AggregationTableMapping> aggTables = List.of(
+        List<AggregationTableMappingImpl> aggTables = List.of(
         	AggregationNameMappingImpl.builder()
                 .withName("agg_c_6_fact_csv_2016")
                 .withAggregationFactCount(AggregationColumnNameMappingImpl.builder().withColumn("fact_count").build())
@@ -279,45 +270,45 @@ class AggMeasureFactCountTest extends CsvDBTestCase {
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
-        List<MappingAggTable> aggTables = List.of(
-            AggNameRBuilder.builder()
-                .name("agg_c_6_fact_csv_2016")
-                .aggFactCount(AggColumnNameRBuilder.builder().column("fact_count").build())
-                .measuresFactCounts(List.of(
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("store_sales_fact_count")
-                        .factColumn("STORE_SALES")
+        List<AggregationTableMappingImpl> aggTables = List.of(
+            AggregationNameMappingImpl.builder()
+                .withName("agg_c_6_fact_csv_2016")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder().withColumn("fact_count").build())
+                .withAggregationMeasureFactCounts(List.of(
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("store_sales_fact_count")
+                        .withFactColumn("STORE_SALES")
                         .build(),
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("store_cost_fact_count")
-                        .factColumn("StOrE_cosT")
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("store_cost_fact_count")
+                        .withFactColumn("StOrE_cosT")
                         .build(),
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("unit_sales_fact_count")
-                        .factColumn("unit_SALES")
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("unit_sales_fact_count")
+                        .withFactColumn("unit_SALES")
                         .build()
                 ))
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("UNIT_SALES")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("UNIT_SALES")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Cost]")
-                        .column("STORE_COST")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Cost]")
+                        .withColumn("STORE_COST")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Sales]")
-                        .column("STORE_SALES")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Sales]")
+                        .withColumn("STORE_SALES")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Year]").column("the_year").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Quarter]").column("quarter").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Month]").column("month_of_year").build()
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Year]").withColumn("the_year").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Quarter]").withColumn("quarter").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Month]").withColumn("month_of_year").build()
                 ))
                 .build()
         );
@@ -363,45 +354,45 @@ class AggMeasureFactCountTest extends CsvDBTestCase {
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
-        List<MappingAggTable> aggTables = List.of(
-            AggNameRBuilder.builder()
-                .name("agg_c_6_fact_csv_2016")
-                .aggFactCount(AggColumnNameRBuilder.builder().column("fact_count").build())
-                .measuresFactCounts(List.of(
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("store_sales_fact_count")
-                        .factColumn("not_exist")
+        List<AggregationTableMappingImpl> aggTables = List.of(
+            AggregationNameMappingImpl.builder()
+                .withName("agg_c_6_fact_csv_2016")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder().withColumn("fact_count").build())
+                .withAggregationMeasureFactCounts(List.of(
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("store_sales_fact_count")
+                        .withFactColumn("not_exist")
                         .build(),
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("store_cost_fact_count")
-                        .factColumn("not_exist")
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("store_cost_fact_count")
+                        .withFactColumn("not_exist")
                         .build(),
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("unit_sales_fact_count")
-                        .factColumn("not_exist")
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("unit_sales_fact_count")
+                        .withFactColumn("not_exist")
                         .build()
                 ))
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("UNIT_SALES")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("UNIT_SALES")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Cost]")
-                        .column("STORE_COST")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Cost]")
+                        .withColumn("STORE_COST")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Sales]")
-                        .column("STORE_SALES")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Sales]")
+                        .withColumn("STORE_SALES")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Year]").column("the_year").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Quarter]").column("quarter").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Month]").column("month_of_year").build()
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Year]").withColumn("the_year").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Quarter]").withColumn("quarter").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Month]").withColumn("month_of_year").build()
                 ))
                 .build()
         );
@@ -447,31 +438,31 @@ class AggMeasureFactCountTest extends CsvDBTestCase {
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
-        List<MappingAggTable> aggTables = List.of(
-            AggNameRBuilder.builder()
-                .name("agg_c_6_fact_csv_2016")
-                .aggFactCount(AggColumnNameRBuilder.builder().column("fact_count").build())
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("UNIT_SALES")
+        List<AggregationTableMappingImpl> aggTables = List.of(
+            AggregationNameMappingImpl.builder()
+                .withName("agg_c_6_fact_csv_2016")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder().withColumn("fact_count").build())
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("UNIT_SALES")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Cost]")
-                        .column("STORE_COST")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Cost]")
+                        .withColumn("STORE_COST")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Sales]")
-                        .column("STORE_SALES")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Sales]")
+                        .withColumn("STORE_SALES")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Year]").column("the_year").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Quarter]").column("quarter").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Month]").column("month_of_year").build()
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Year]").withColumn("the_year").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Quarter]").withColumn("quarter").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Month]").withColumn("month_of_year").build()
                 ))
                 .build()
         );
@@ -516,45 +507,45 @@ class AggMeasureFactCountTest extends CsvDBTestCase {
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
 
-        List<MappingAggTable> aggTables = List.of(
-            AggNameRBuilder.builder()
-                .name("agg_c_6_fact_csv_2016")
-                .aggFactCount(AggColumnNameRBuilder.builder().column("not_exist").build())
-                .measuresFactCounts(List.of(
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("store_sales_fact_count")
-                        .factColumn("not_exist")
+        List<AggregationTableMappingImpl> aggTables = List.of(
+            AggregationNameMappingImpl.builder()
+                .withName("agg_c_6_fact_csv_2016")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder().withColumn("not_exist").build())
+                .withAggregationMeasureFactCounts(List.of(
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("store_sales_fact_count")
+                        .withFactColumn("not_exist")
                         .build(),
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("store_cost_fact_count")
-                        .factColumn("not_exist")
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("store_cost_fact_count")
+                        .withFactColumn("not_exist")
                         .build(),
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("unit_sales_fact_count")
-                        .factColumn("not_exist")
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("unit_sales_fact_count")
+                        .withFactColumn("not_exist")
                         .build()
                 ))
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("UNIT_SALES")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("UNIT_SALES")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Cost]")
-                        .column("STORE_COST")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Cost]")
+                        .withColumn("STORE_COST")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Sales]")
-                        .column("STORE_SALES")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Sales]")
+                        .withColumn("STORE_SALES")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Year]").column("the_year").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Quarter]").column("quarter").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Month]").column("month_of_year").build()
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Year]").withColumn("the_year").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Quarter]").withColumn("quarter").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Month]").withColumn("month_of_year").build()
                 ))
                 .build()
         );
@@ -592,50 +583,50 @@ class AggMeasureFactCountTest extends CsvDBTestCase {
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
-        List<MappingAggExclude> aggExcludes = List.of(
-            AggExcludeRBuilder.builder()
-                .name("agg_c_6_fact_csv_2016")
+        List<AggregationExcludeMappingImpl> aggExcludes = List.of(
+            AggregationExcludeMappingImpl.builder()
+                .withName("agg_c_6_fact_csv_2016")
                 .build()
         );
-        List<MappingAggTable> aggTables = List.of(
-            AggNameRBuilder.builder()
-                .name("agg_csv_different_column_names")
-                .aggFactCount(AggColumnNameRBuilder.builder().column("fact_count").build())
-                .measuresFactCounts(List.of(
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("ss_fc")
-                        .factColumn("store_sales")
+        List<AggregationTableMappingImpl> aggTables = List.of(
+            AggregationNameMappingImpl.builder()
+                .withName("agg_csv_different_column_names")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder().withColumn("fact_count").build())
+                .withAggregationMeasureFactCounts(List.of(
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("ss_fc")
+                        .withFactColumn("store_sales")
                         .build(),
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("sc_fc")
-                        .factColumn("store_cost")
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("sc_fc")
+                        .withFactColumn("store_cost")
                         .build(),
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("us_fc")
-                        .factColumn("unit_sales")
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("us_fc")
+                        .withFactColumn("unit_sales")
                         .build()
                 ))
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("UNIT_SALES")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("UNIT_SALES")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Cost]")
-                        .column("STORE_COST")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Cost]")
+                        .withColumn("STORE_COST")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Sales]")
-                        .column("STORE_SALES")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Sales]")
+                        .withColumn("STORE_SALES")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Year]").column("the_year").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Quarter]").column("quarter").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Month]").column("month_of_year").build()
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Year]").withColumn("the_year").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Quarter]").withColumn("quarter").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Month]").withColumn("month_of_year").build()
                 ))
                 .build()
         );
@@ -681,50 +672,50 @@ class AggMeasureFactCountTest extends CsvDBTestCase {
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
-        List<MappingAggExclude> aggExcludes = List.of(
-            AggExcludeRBuilder.builder()
-                .name("agg_c_6_fact_csv_2016")
+        List<AggregationExcludeMappingImpl> aggExcludes = List.of(
+            AggregationExcludeMappingImpl.builder()
+                .withName("agg_c_6_fact_csv_2016")
                 .build()
         );
-        List<MappingAggTable> aggTables = List.of(
-            AggNameRBuilder.builder()
-                .name("agg_csv_divide_by_zero")
-                .aggFactCount(AggColumnNameRBuilder.builder().column("fact_count").build())
-                .measuresFactCounts(List.of(
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("store_sales_fact_count")
-                        .factColumn("store_sales")
+        List<AggregationTableMappingImpl> aggTables = List.of(
+            AggregationNameMappingImpl.builder()
+                .withName("agg_csv_divide_by_zero")
+                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder().withColumn("fact_count").build())
+                .withAggregationMeasureFactCounts(List.of(
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("store_sales_fact_count")
+                        .withFactColumn("store_sales")
                         .build(),
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("store_cost_fact_count")
-                        .factColumn("store_cost")
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("store_cost_fact_count")
+                        .withFactColumn("store_cost")
                         .build(),
-                    AggMeasureFactCountRBuilder.builder()
-                        .column("unit_sales_fact_count")
-                        .factColumn("unit_sales")
+                    AggregationMeasureFactCountMappingImpl.builder()
+                        .withColumn("unit_sales_fact_count")
+                        .withFactColumn("unit_sales")
                         .build()
                 ))
-                .aggMeasures(List.of(
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Unit Sales]")
-                        .column("UNIT_SALES")
+                .withAggregationMeasures(List.of(
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Unit Sales]")
+                        .withColumn("UNIT_SALES")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Cost]")
-                        .column("STORE_COST")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Cost]")
+                        .withColumn("STORE_COST")
                         .build(),
-                    AggMeasureRBuilder.builder()
-                        .name("[Measures].[Store Sales]")
-                        .column("STORE_SALES")
+                    AggregationMeasureMappingImpl.builder()
+                        .withName("[Measures].[Store Sales]")
+                        .withColumn("STORE_SALES")
                         .build()
                 ))
-                .aggLevels(List.of(
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Year]").column("the_year").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Quarter]").column("quarter").build(),
-                    AggLevelRBuilder.builder()
-                        .name("[Time].[Month]").column("month_of_year").build()
+                .withAggregationLevels(List.of(
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Year]").withColumn("the_year").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Quarter]").withColumn("quarter").build(),
+                    AggregationLevelMappingImpl.builder()
+                        .withName("[Time].[Month]").withColumn("month_of_year").build()
                     ))
                 .build()
         );
@@ -765,51 +756,51 @@ class AggMeasureFactCountTest extends CsvDBTestCase {
         ((TestConfig)context.getConfig()).setReadAggregates(true);
         ((TestConfig)context.getConfig()).setDisableCaching(true);
         prepareContext(context);
-        List<MappingAggTable> aggTables = List.of(AggPatternRBuilder.builder()
-            .pattern("agg_c_6_fact_csv_2016")
-            .aggFactCount(AggColumnNameRBuilder.builder()
-                .column("fact_count")
+        List<AggregationTableMappingImpl> aggTables = List.of(AggregationPatternMappingImpl.builder()
+            .withPattern("agg_c_6_fact_csv_2016")
+            .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
+                .withColumn("fact_count")
                 .build())
-            .measuresFactCounts(List.of(
-                AggMeasureFactCountRBuilder.builder()
-                    .column("store_sales_fact_count")
-                    .factColumn("store_sales")
+            .withAggregationMeasureFactCounts(List.of(
+                AggregationMeasureFactCountMappingImpl.builder()
+                    .withColumn("store_sales_fact_count")
+                    .withFactColumn("store_sales")
                     .build(),
-                AggMeasureFactCountRBuilder.builder()
-                    .column("store_cost_fact_count")
-                    .factColumn("store_cost")
+                AggregationMeasureFactCountMappingImpl.builder()
+                    .withColumn("store_cost_fact_count")
+                    .withFactColumn("store_cost")
                     .build(),
-                AggMeasureFactCountRBuilder.builder()
-                    .column("unit_sales_fact_count")
-                    .factColumn("unit_sales")
+                AggregationMeasureFactCountMappingImpl.builder()
+                    .withColumn("unit_sales_fact_count")
+                    .withFactColumn("unit_sales")
                     .build()
             ))
-            .aggMeasures(List.of(
-                AggMeasureRBuilder.builder()
-                    .name("[Measures].[Unit Sales]")
-                    .column("UNIT_SALES")
+            .withAggregationMeasures(List.of(
+                AggregationMeasureMappingImpl.builder()
+                    .withName("[Measures].[Unit Sales]")
+                    .withColumn("UNIT_SALES")
                     .build(),
-                AggMeasureRBuilder.builder()
-                    .name("[Measures].[Store Cost]")
-                    .column("STORE_COST")
+                AggregationMeasureMappingImpl.builder()
+                    .withName("[Measures].[Store Cost]")
+                    .withColumn("STORE_COST")
                     .build(),
-                AggMeasureRBuilder.builder()
-                    .name("[Measures].[Store Sales]")
-                    .column("STORE_SALES")
+                AggregationMeasureMappingImpl.builder()
+                    .withName("[Measures].[Store Sales]")
+                    .withColumn("STORE_SALES")
                     .build()
             ))
-            .aggLevels(List.of(
-                AggLevelRBuilder.builder()
-                    .name("[Time].[Year]")
-                    .column("the_year")
+            .withAggregationLevels(List.of(
+                AggregationLevelMappingImpl.builder()
+                    .withName("[Time].[Year]")
+                    .withColumn("the_year")
                     .build(),
-                AggLevelRBuilder.builder()
-                    .name("[Time].[Quarter]")
-                    .column("quarter")
+                AggregationLevelMappingImpl.builder()
+                    .withName("[Time].[Quarter]")
+                    .withColumn("quarter")
                     .build(),
-                AggLevelRBuilder.builder()
-                    .name("[Time].[Month]")
-                    .column("month_of_year")
+                AggregationLevelMappingImpl.builder()
+                    .withName("[Time].[Month]")
+                    .withColumn("month_of_year")
                     .build()
             ))
             .build());

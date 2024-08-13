@@ -36,27 +36,6 @@ import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggExcludeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggLevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggMeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.DimensionUsageRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.ExpressionViewRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SQLRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.SqlSelectQueryRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 import org.junit.jupiter.api.AfterEach;
@@ -2048,8 +2027,8 @@ class TestAggregationManager extends BatchTestCase {
             + "</Dimension>", false));
          */
         RolapSchemaPool.instance().clear();
-        MappingSchema schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.TestAggregationManagerModifier2(schema, colName)));
+        CatalogMapping catalog = context.getCatalogMapping();
+        ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.TestAggregationManagerModifier2(catalog, colName));
         assertQueryThrows(context,
             mdxQuery,
             "ERROR_TEST_FUNCTION_NAME");
@@ -2068,8 +2047,8 @@ class TestAggregationManager extends BatchTestCase {
             + "</Dimension>", false));
          */
         RolapSchemaPool.instance().clear();
-        schema = context.getDatabaseMappingSchemaProviders().get(0).get();
-        ((TestContext)context).setDatabaseMappingSchemaProviders(List.of(new SchemaModifiers.TestAggregationManagerModifier10(schema, colName)));
+        catalog = context.getCatalogMapping();
+        ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.TestAggregationManagerModifier10(catalog, colName));
         assertQueryReturns(context.getConnection(),
             "select non empty{[Promotions].[All Promotions].Children} ON rows, "
             + "non empty {[Store].[All Stores]} ON columns "

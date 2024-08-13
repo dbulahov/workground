@@ -13,31 +13,13 @@
  */
 package mondrian.rolap.aggmatcher;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.JoinedQueryElementR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.TableR;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggColumnNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggLevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggMeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.AggNameRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.CubeRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.HierarchyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.LevelRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.MeasureRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PrivateDimensionRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.record.builder.PropertyRBuilder;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.modifier.record.RDbMappingSchemaModifier;
+public class MultipleColsInTupleAggTestModifier extends PojoMappingModifier {
 
-public class MultipleColsInTupleAggTestModifier extends RDbMappingSchemaModifier {
-
-    public MultipleColsInTupleAggTestModifier(MappingSchema mappingSchema) {
-        super(mappingSchema);
+    public MultipleColsInTupleAggTestModifier(CatalogMapping catalog) {
+        super(catalog);
     }
 
     /*
@@ -92,6 +74,7 @@ public class MultipleColsInTupleAggTestModifier extends RDbMappingSchemaModifier
            + "</Cube>";
 
      */
+    /* TODO: DENIS MAPPING-MODIFIER  modifiers
     @Override
     protected List<MappingCube> schemaCubes(MappingSchema mappingSchemaOriginal) {
         List<MappingCube> result = new ArrayList<>();
@@ -232,5 +215,6 @@ public class MultipleColsInTupleAggTestModifier extends RDbMappingSchemaModifier
             .build());
         return result;
     }
+    */
 
 }

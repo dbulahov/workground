@@ -14,14 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.HideMemberIfEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.LevelTypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.enums.TypeEnum;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.HierarchyImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.LevelImpl;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.jaxb.PrivateDimensionImpl;
+import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.HierarchyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.LevelMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.QueryMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.StandardDimensionMappingImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -36,9 +35,9 @@ class RolapDimensionTest {
 
   private RolapSchema schema;
   private RolapCube cube;
-  private PrivateDimensionImpl xmlDimension;
-  private MappingCubeDimension xmlCubeDimension;
-  private HierarchyImpl hierarchy;
+  private DimensionMappingImpl xmlDimension;
+  private DimensionConnectorMappingImpl xmlCubeDimension;
+  private HierarchyMappingImpl hierarchy;
 
 
   @BeforeEach
@@ -46,15 +45,22 @@ class RolapDimensionTest {
 
     schema = Mockito.mock(RolapSchema.class);
     cube = Mockito.mock(RolapCube.class);
-    MappingRelationQuery fact = Mockito.mock(MappingRelationQuery.class);
+    RelationalQueryMapping fact = Mockito.mock(RelationalQueryMapping.class);
 
     Mockito.when(cube.getSchema()).thenReturn(schema);
     Mockito.when(cube.getFact()).thenReturn(fact);
 
-    xmlDimension = new PrivateDimensionImpl();
-    hierarchy = new HierarchyImpl();
-    LevelImpl level = new LevelImpl();
-    xmlCubeDimension = new PrivateDimensionImpl();
+    xmlDimension = StandardDimensionMappingImpl.builder().build();
+    hierarchy = HierarchyMappingImpl.builder().build();
+    LevelMappingImpl level = LevelMappingImpl.builder()
+    	    .withVisible(true)
+            .withMemberProperties(List.of())
+            .withUniqueMembers(true)
+            .withType("String")
+            .withHideMemberIf("never")
+            .withLevelType("Regular")
+    		.build();
+    xmlCubeDimension = DimensionConnectorMappingImpl.builder().build();
 
     xmlDimension.setName("dimensionName");
     xmlDimension.setVisible(true);
@@ -65,12 +71,6 @@ class RolapDimensionTest {
     hierarchy.setHasAll(false);
     hierarchy.setLevels(List.of(level));
 
-    level.setVisible(true);
-    level.setProperties(List.of());
-    level.setUniqueMembers(true);
-    level.setType(TypeEnum.STRING);
-    level.setHideMemberIf(HideMemberIfEnum.NEVER);
-    level.setLevelType(LevelTypeEnum.REGULAR);
   }
 
   @AfterEach
@@ -81,13 +81,13 @@ class RolapDimensionTest {
   @Disabled("disabled for CI build") //disabled for CI build
   @Test
   void testHierarchyRelation() {
-    MappingRelationQuery hierarchyTable = Mockito
-            .mock(MappingRelationQuery.class);
-    hierarchy.setRelation(hierarchyTable);
+	  QueryMappingImpl hierarchyTable = (QueryMappingImpl) Mockito
+            .mock(RelationalQueryMapping.class);
+    hierarchy.setQuery(hierarchyTable);
 
     new RolapDimension(schema, cube, xmlDimension, xmlCubeDimension);
     assertNotNull(hierarchy);
-    assertEquals(hierarchyTable, hierarchy.relation());
+    assertEquals(hierarchyTable, hierarchy.getQuery());
   }
 
   /**
@@ -99,7 +99,7 @@ class RolapDimensionTest {
     new RolapDimension(schema, cube, xmlDimension, xmlCubeDimension);
 
     assertNotNull(hierarchy);
-    assertNull(hierarchy.relation());
+    assertNull(hierarchy.getQuery());
   }
 
 }
