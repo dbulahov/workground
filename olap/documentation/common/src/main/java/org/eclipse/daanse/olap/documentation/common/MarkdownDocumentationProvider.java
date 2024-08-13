@@ -13,16 +13,34 @@
  */
 package org.eclipse.daanse.olap.documentation.common;
 
-import jakarta.xml.bind.JAXBException;
-import org.eclipse.daanse.jdbc.db.api.DatabaseService;
-import org.eclipse.daanse.jdbc.db.api.schema.TableDefinition;
-import org.eclipse.daanse.jdbc.db.api.schema.ColumnDefinition;
-import org.eclipse.daanse.jdbc.db.api.schema.SchemaReference;
-import org.eclipse.daanse.jdbc.db.api.schema.TableReference;
-import org.eclipse.daanse.jdbc.db.record.schema.SchemaReferenceR;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.eclipse.daanse.db.jdbc.util.impl.Column;
 import org.eclipse.daanse.db.jdbc.util.impl.DBStructure;
 import org.eclipse.daanse.db.jdbc.util.impl.Table;
+import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
+import org.eclipse.daanse.jdbc.db.api.DatabaseService;
+import org.eclipse.daanse.jdbc.db.api.schema.ColumnDefinition;
+import org.eclipse.daanse.jdbc.db.api.schema.SchemaReference;
+import org.eclipse.daanse.jdbc.db.api.schema.TableDefinition;
+import org.eclipse.daanse.jdbc.db.api.schema.TableReference;
+import org.eclipse.daanse.jdbc.db.record.schema.SchemaReferenceR;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.documentation.api.ConntextDocumentationProvider;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMember;
@@ -37,8 +55,8 @@ import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingNamedSet;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingQuery;
+import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRelationQuery;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingTableQuery;
@@ -62,23 +80,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.util.converter.Converter;
 import org.osgi.util.converter.Converters;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import jakarta.xml.bind.JAXBException;
 
 @Designate(ocd = DocumentationProviderConfig.class, factory = true)
 @Component(service = ConntextDocumentationProvider.class, configurationPolicy = ConfigurationPolicy.REQUIRE)
@@ -98,6 +100,9 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
 
     @Reference
     DatabaseService databaseService;
+    
+    @Reference
+    StatisticsProvider statisticsProvider;
 
     @Activate
     public void activate(Map<String, Object> configMap) {
@@ -211,7 +216,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
         try {
             MappingRelationQuery relation = c.fact();
             if (relation instanceof MappingTableQuery mt) {
-                return context.getStatisticsProvider().getTableCardinality(
+                return statisticsProvider.getTableCardinality(
                     context.getConnection().getDataSource().getConnection().getCatalog(),
                     context.getConnection().getDataSource().getConnection().getSchema(), mt.getName());
             }
@@ -1350,7 +1355,7 @@ public class MarkdownDocumentationProvider extends AbstractContextDocumentationP
                 writer.write(ENTER);
                 for (ColumnDefinition c : columnList) {
                     String columnName = c.column().name();
-                    String type = TYPE_MAP.get(c.columnType().dataType().getVendorTypeNumber());
+                    String type = TYPE_MAP.get(c.columnMetaData().dataType().getVendorTypeNumber());
                     String flag = POSITIVE_FLAG;
                     if (type != null) {
                     	writer.write(type);
