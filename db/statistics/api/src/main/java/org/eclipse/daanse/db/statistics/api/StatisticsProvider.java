@@ -13,9 +13,13 @@
 
 package org.eclipse.daanse.db.statistics.api;
 
+import java.sql.Connection;
+import java.text.CollationElementIterator;
+
 import javax.sql.DataSource;
 
-import org.eclipse.daanse.db.dialect.api.Dialect;
+import org.eclipse.daanse.jdbc.db.api.schema.ColumnReference;
+import org.eclipse.daanse.jdbc.db.api.schema.TableReference;
 
 /**
  * Provides estimates of the number of rows in a database.
@@ -28,28 +32,28 @@ public interface StatisticsProvider {
     public static final long CARDINALITY_UNKNOWN = -1;
 
     /**
-     * Initializes the {@link StatisticsProvider} with a {@link DataSource}. The
-     * {@link DataSource} will be used to provide estimates of the number of rows in
-     * a database.
-     * 
-     * @param dataSource
-     * @param dialect
-     */
-    void initialize(DataSource dataSource, Dialect dialect);
-
-    /**
      * Returns an estimate of the number of rows in a table.
      *
-     * @param dataSource Data source
-     * @param catalog    Catalog name
-     * @param schema     Schema name
-     * @param table      Table name
+     * @param dataSource Data source 
+     * @param tableReference    TableReference tablereference
      *
      * @return Estimated number of rows in table, or -1
      *         ({@link StatisticsProvider.CARDINALITY_UNKNOWN}) if there is no
      *         estimate
      */
-    long getTableCardinality(String catalog, String schema, String table);
+    long getTableCardinality(DataSource dataSource, TableReference tableReference);
+
+    /**
+     * Returns an estimate of the number of rows in a table.
+     *
+     * @param connection Connection source 
+     * @param tableReference    TableReference tablereference
+     *
+     * @return Estimated number of rows in table, or -1
+     *         ({@link StatisticsProvider.CARDINALITY_UNKNOWN}) if there is no
+     *         estimate
+     */
+    long getTableCardinality(Connection connection, TableReference tableReference);
 
     /**
      * Returns an estimate of the number of rows returned by a query.
@@ -61,20 +65,42 @@ public interface StatisticsProvider {
      *         ({@link StatisticsProvider.CARDINALITY_UNKNOWN}) if there is no
      *         estimate
      */
-    long getQueryCardinality(String sql);
+    long getQueryCardinality(DataSource dataSource, String sql);
+
+    /**
+     * Returns an estimate of the number of rows returned by a query.
+     *
+     * @param connection Connection
+     * @param sql        Query, e.g. "select * from customers where age < 20"
+     *
+     * @return Estimated number of rows returned by query, or -1
+     *         ({@link StatisticsProvider.CARDINALITY_UNKNOWN}) if there is no
+     *         estimate
+     */
+    long getQueryCardinality(Connection connection, String sql);
 
     /**
      * Returns the column cardinality.
      *
      * @param dataSource Data source
-     * @param catalog    Catalog name
-     * @param schema     Schema name
-     * @param table      Table name
-     * @param column     Column name
+     * @param column     ColumnReference 
      *
      * @return column cardinality, or -1
      *         ({@link StatisticsProvider.CARDINALITY_UNKNOWN}) if there is no
      *         estimate
      */
-    long getColumnCardinality(String catalog, String schema, String table, String column);
+    long getColumnCardinality(DataSource dataSource, ColumnReference column);
+    
+    
+    /**
+     * Returns the column cardinality.
+     *
+     * @param connection Connection
+     * @param column     ColumnReference 
+     *
+     * @return column cardinality, or -1
+     *         ({@link StatisticsProvider.CARDINALITY_UNKNOWN}) if there is no
+     *         estimate
+     */
+    long getColumnCardinality(Connection connection, ColumnReference column);
 }

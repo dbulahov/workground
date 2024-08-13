@@ -13,10 +13,13 @@
 */
 package org.eclipse.daanse.db.statistics.nop;
 
+import java.sql.Connection;
+
 import javax.sql.DataSource;
 
-import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
+import org.eclipse.daanse.jdbc.db.api.schema.ColumnReference;
+import org.eclipse.daanse.jdbc.db.api.schema.TableReference;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -29,52 +32,36 @@ import org.slf4j.LoggerFactory;
 @Component(service = StatisticsProvider.class, scope = ServiceScope.SINGLETON)
 public class NopStatisticsProvider implements StatisticsProvider {
 
-    private static final String FIELD_CATALOG = "catalog";
-    private static final String FIELD_COLUMN = "column";
-    private static final String FIELD_SCHEMA = "schema";
-    private static final String FIELD_SQL = "sql";
-    private static final String FIELD_TABLE = "table";
     private static final Logger LOGGER = LoggerFactory.getLogger(NopStatisticsProvider.class);
 
     @Override
-    public void initialize(DataSource dataSource, Dialect dialect) {
-        // initializer
-    }
-
-    @Override
-    public long getColumnCardinality(String catalog, String schema, String table, String column) {
-
-        LOGGER.atDebug()
-                .addKeyValue(FIELD_CATALOG, catalog)
-                .addKeyValue(FIELD_SCHEMA, schema)
-                .addKeyValue(FIELD_TABLE, table)
-                .addKeyValue(FIELD_COLUMN, column)
-                .log("getColumnCardinality");
-
+    public long getTableCardinality(DataSource dataSource, TableReference tableReference) {
         return CARDINALITY_UNKNOWN;
     }
 
     @Override
-    public long getQueryCardinality(String sql) {
-
-        LOGGER.atDebug()
-                .addKeyValue(FIELD_SQL, sql)
-                .log("getQueryCardinality");
-
+    public long getTableCardinality(Connection connection, TableReference tableReference) {
         return CARDINALITY_UNKNOWN;
     }
 
     @Override
-    public long getTableCardinality(String catalog, String schema, String table) {
-
-        LOGGER.atDebug()
-                .addKeyValue(FIELD_CATALOG, catalog)
-                .addKeyValue(FIELD_SCHEMA, schema)
-                .addKeyValue(FIELD_TABLE, table)
-                .log("getTableCardinality");
-
+    public long getQueryCardinality(DataSource dataSource, String sql) {
         return CARDINALITY_UNKNOWN;
     }
 
+    @Override
+    public long getQueryCardinality(Connection connection, String sql) {
+        return CARDINALITY_UNKNOWN;
+    }
+
+    @Override
+    public long getColumnCardinality(DataSource dataSource, ColumnReference column) {
+        return CARDINALITY_UNKNOWN;
+    }
+
+    @Override
+    public long getColumnCardinality(Connection connection, ColumnReference column) {
+        return CARDINALITY_UNKNOWN;
+    }
 
 }
