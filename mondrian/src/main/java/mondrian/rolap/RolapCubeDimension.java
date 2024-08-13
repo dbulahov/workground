@@ -76,7 +76,7 @@ public class RolapCubeDimension extends RolapDimension {
 
         RolapCube factCube = null;
         if (cube.isVirtual()) {
-          factCube = lookupFactCube(cubeDim.getDimension(), cube.getSchema());
+          factCube = lookupFactCube(cubeDim, cube.getSchema());
         }
         for (int i = 0; i < rolapDim.getHierarchies().length; i++) {
           final RolapCubeHierarchy cubeHierarchy =
@@ -93,13 +93,12 @@ public class RolapCubeDimension extends RolapDimension {
     }
 
     RolapCube lookupFactCube(
-        DimensionMapping cubeDim, RolapSchema schema)
+        DimensionConnectorMapping cubeDim, RolapSchema schema)
     {
-      /* TODO: DENIS MAPPING-MODIFIER	
-      if (cubeDim instanceof MappingVirtualCubeDimension virtualCubeDim && virtualCubeDim.cubeName() != null) {
-          return schema.lookupCube(virtualCubeDim.cubeName());
-      }
-      */
+      	
+      if (cubeDim.getPhysicalCube() != null && cubeDim.getPhysicalCube().getName() != null) {
+          return schema.lookupCube(cubeDim.getPhysicalCube().getName());
+      }      
       return null;
     }
 

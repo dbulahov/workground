@@ -1077,18 +1077,7 @@ public class RolapCube extends CubeBase {
     {
         for (CalculatedMemberMapping mappingCalcMember : mappingCalcMembers) {
             Hierarchy hierarchy = null;
-            if (mappingCalcMember.getDimensionConector() != null) {
-                Dimension dimension =
-                    lookupDimension(
-                        new IdImpl.NameSegmentImpl(
-                            mappingCalcMember.getDimensionConector().getDimension().getName(),
-                            Quoting.UNQUOTED));
-                if (dimension != null
-                    && dimension.getHierarchy() != null)
-                {
-                    hierarchy = dimension.getHierarchy();
-                }
-            } else if (mappingCalcMember.getHierarchy() != null) {
+            if (mappingCalcMember.getHierarchy() != null) {
                 hierarchy =
                     lookupHierarchy(
                         new IdImpl.NameSegmentImpl(
@@ -1429,28 +1418,10 @@ public class RolapCube extends CubeBase {
     {
         CalculatedMemberMapping mappingCalcMember = list.get(j);
 
-        if (mappingCalcMember.getHierarchy() != null
-            && mappingCalcMember.getDimensionConector() != null)
-        {
-            throw  new MondrianException(MessageFormat.format(
-                calcMemberHasBothDimensionAndHierarchy,
-                    mappingCalcMember.getName(), getName()));
-        }
-
         // Lookup dimension
         Hierarchy hierarchy = null;
         String dimName = null;
-        if (mappingCalcMember.getDimensionConector() != null) {
-            dimName = mappingCalcMember.getDimensionConector().getOverrideDimensionName();
-            final Dimension dimension =
-                lookupDimension(
-                    new IdImpl.NameSegmentImpl(
-                        mappingCalcMember.getDimensionConector().getDimension().getName(),
-                        Quoting.UNQUOTED));
-            if (dimension != null) {
-                hierarchy = dimension.getHierarchy();
-            }
-        } else if (mappingCalcMember.getHierarchy() != null && mappingCalcMember.getHierarchy().getName() !=null) {
+        if (mappingCalcMember.getHierarchy() != null && mappingCalcMember.getHierarchy().getName() !=null) {
             dimName = mappingCalcMember.getHierarchy().getName();
             hierarchy = (Hierarchy)
                 getSchemaReader().withLocus().lookupCompound(

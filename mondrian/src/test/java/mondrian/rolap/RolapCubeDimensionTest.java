@@ -21,8 +21,8 @@ import static org.mockito.Mockito.verify;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.element.Hierarchy;
-import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
 import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.PhysicalCubeMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.StandardDimensionMappingImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -68,7 +68,7 @@ class RolapCubeDimensionTest {
   @Test
   void testLookupCube_notVirtual() {
     RolapCubeDimension rcd = stubRolapCubeDimension(false);
-    DimensionMapping cubeDim = StandardDimensionMappingImpl.builder().build();
+    DimensionConnectorMappingImpl cubeDim = DimensionConnectorMappingImpl.builder().build();
     RolapSchema schema = mock(RolapSchema.class);
 
     assertEquals(null, rcd.lookupFactCube(cubeDim, schema));
@@ -81,13 +81,14 @@ class RolapCubeDimensionTest {
     RolapCubeDimension rcd = stubRolapCubeDimension(false);
     RolapSchema schema = mock(RolapSchema.class);
     final String cubeName = "TheCubeName";
-    DimensionMapping cubeDim = StandardDimensionMappingImpl.builder()
-    		.withName(cubeName)
+    PhysicalCubeMappingImpl cube = PhysicalCubeMappingImpl.builder().withName(cubeName).build();   
+    DimensionConnectorMappingImpl dimCon = DimensionConnectorMappingImpl.builder()
+    		.withPhysicalCube(cube)
     		.build();
     // explicit doReturn - just to make it evident
     doReturn(null).when(schema).lookupCube(anyString());
 
-    assertEquals(null, rcd.lookupFactCube(cubeDim, schema));
+    assertEquals(null, rcd.lookupFactCube(dimCon, schema));
     Mockito.verify(schema).lookupCube(cubeName);
   }
 
@@ -95,13 +96,14 @@ class RolapCubeDimensionTest {
   void testLookupCube_found() {
     RolapCubeDimension rcd = stubRolapCubeDimension(false);
     final String cubeName = "TheCubeName";
-    DimensionMapping cubeDim = StandardDimensionMappingImpl.builder()
-    		//.withCubeName(cubeName)
+    PhysicalCubeMappingImpl cube = PhysicalCubeMappingImpl.builder().withName(cubeName).build();
+    DimensionConnectorMappingImpl cubeCon = DimensionConnectorMappingImpl.builder()
+    		.withPhysicalCube(cube)
     		.build();
     RolapSchema schema = mock(RolapSchema.class);
     RolapCube factCube = mock(RolapCube.class);        
     doReturn(factCube).when(schema).lookupCube(cubeName);
 
-    assertEquals(factCube, rcd.lookupFactCube(cubeDim, schema));
+    assertEquals(factCube, rcd.lookupFactCube(cubeCon, schema));
   }
 }

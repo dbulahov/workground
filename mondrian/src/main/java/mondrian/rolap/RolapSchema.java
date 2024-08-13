@@ -803,14 +803,12 @@ public class RolapSchema implements Schema {
 
     public static String calcMemberFqName(CalculatedMemberMapping mappingCalcMember)
     {
-        if (mappingCalcMember.getDimensionConector() != null) {
-            return Util.makeFqName(
-                Util.quoteMdxIdentifier(mappingCalcMember.getDimensionConector().getDimension().getName()),// is this okay Denis?
-                mappingCalcMember.getName());
-        } else {
+        if (mappingCalcMember.getHierarchy() != null) {
             return Util.makeFqName(
                 mappingCalcMember.getHierarchy().getName(), mappingCalcMember.getName());
-    }}
+        }
+        return null;
+    }
 
     public List<RolapCube> getCubesWithStar(RolapStar star) {
         List<RolapCube> list = new ArrayList<>();
