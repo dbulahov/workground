@@ -362,15 +362,25 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.daanse</groupId>
+			<artifactId>org.eclipse.daanse.rdb.structure.modifier.pojo</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
 
-
-
-    <dependency>
-      <groupId>org.eclipse.daanse</groupId>
-      <artifactId>org.eclipse.daanse.rolap.mapping.modifier</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
-    </dependency>
+		<dependency>
+			<groupId>org.eclipse.daanse</groupId>
+			<artifactId>org.eclipse.daanse.rolap.mapping.modifier.common</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.daanse</groupId>
+			<artifactId>org.eclipse.daanse.rolap.mapping.modifier.pojo</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
 
 
 		<dependency>
@@ -403,12 +413,7 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>org.eclipse.daanse</groupId>
-      <artifactId>org.eclipse.daanse.rolap.mapping.modifier</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
-    </dependency>
+
     
     
     
@@ -439,7 +444,7 @@
 					</filesets>
 				</configuration>
 			</plugin>
-      <!--plugin>
+			<!--plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>javacc-maven-plugin</artifactId>
         <version>3.0.1</version>
