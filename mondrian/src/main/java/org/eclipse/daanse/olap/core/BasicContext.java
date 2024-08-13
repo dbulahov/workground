@@ -22,7 +22,6 @@ import javax.sql.DataSource;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.db.dialect.api.DialectResolver;
-import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
 import org.eclipse.daanse.mdx.parser.api.MdxParserProvider;
 import org.eclipse.daanse.olap.api.ConnectionProps;
 import org.eclipse.daanse.olap.api.Context;
@@ -76,9 +75,6 @@ public class BasicContext extends AbstractBasicContext {
 	@Reference(name = REF_NAME_DIALECT_RESOLVER)
 	private DialectResolver dialectResolver = null;
 
-	@Reference(name = REF_NAME_STATISTICS_PROVIDER, target = UnresolvableNamespace.UNRESOLVABLE_FILTER)
-	private StatisticsProvider statisticsProvider = null;
-
 	@Reference(name = REF_NAME_DB_MAPPING_CATALOG_SUPPLIER, target = UnresolvableNamespace.UNRESOLVABLE_FILTER, cardinality = ReferenceCardinality.MANDATORY)
 	private CatalogMappingSupplier catalogMappingSupplier;
     
@@ -107,28 +103,7 @@ public class BasicContext extends AbstractBasicContext {
 
         this.config = configuration;
 		this.monitor = new NopEventBus();
-		//TODO: rm was just for testing
-		statisticsProvider=new StatisticsProvider(){
-	        @Override
-	        public void initialize(DataSource dataSource, Dialect dialect) {
-
-	        }
-
-	        @Override
-	        public long getTableCardinality(String catalog, String schema, String table) {
-	            return 0;
-	        }
-
-	        @Override
-	        public long getQueryCardinality(String sql) {
-	            return 0;
-	        }
-
-	        @Override
-	        public long getColumnCardinality(String catalog, String schema, String table, String column) {
-	            return 0;
-	        }
-	    };
+	
 
 		queryLimitSemaphore = new Semaphore(config.queryLimit());
 
@@ -136,7 +111,7 @@ public class BasicContext extends AbstractBasicContext {
 			Optional<Dialect> optionalDialect = dialectResolver.resolve(dataSource);
 			dialect = optionalDialect.orElseThrow(() -> new Exception(ERR_MSG_DIALECT_INIT));
 		}
-		statisticsProvider.initialize(dataSource, getDialect());
+
 		shepherd = new RolapResultShepherd(config.rolapConnectionShepherdThreadPollingInterval(),
 				config.rolapConnectionShepherdThreadPollingIntervalUnit(), config.rolapConnectionShepherdNbThreads());
 		aggMgr = new AggregationManager(this);
@@ -159,11 +134,6 @@ public class BasicContext extends AbstractBasicContext {
 	@Override
 	public Dialect getDialect() {
 		return dialect;
-	}
-
-	@Override
-	public StatisticsProvider getStatisticsProvider() {
-		return statisticsProvider;
 	}
 
 	@Override

@@ -58,16 +58,6 @@ public interface Context {
      */
     Dialect getDialect();
 
-    /**
-     * Gives access to a {@link StatisticsProvider} that is initialized with the
-     * {@link DataSource} of this {@link Context}.
-     *
-     * @return StatisticsProvider
-     */
-    StatisticsProvider getStatisticsProvider();
-
-
-
     CatalogMapping getCatalogMapping();
 
 

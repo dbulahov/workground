@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
-import org.eclipse.daanse.db.statistics.api.StatisticsProvider;
 import org.eclipse.daanse.mdx.parser.api.MdxParserProvider;
 import org.eclipse.daanse.mdx.parser.ccc.MdxParserProviderImpl;
 import org.eclipse.daanse.olap.api.ConnectionProps;
@@ -24,7 +23,6 @@ import org.eclipse.daanse.olap.core.BasicContextConfig;
 import org.eclipse.daanse.olap.function.core.FunctionServiceImpl;
 import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
-import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
 
 import mondrian.rolap.RolapConnection;
 import mondrian.rolap.RolapConnectionPropsR;
@@ -35,7 +33,6 @@ import mondrian.server.NopEventBus;
 public class TestContextImpl extends AbstractBasicContext implements TestContext {
 
 	private Dialect dialect;
-	private StatisticsProvider statisticsProvider = new NullStatisticsProvider();
 	private DataSource dataSource;
 
 	private ExpressionCompilerFactory expressionCompilerFactory = new BaseExpressionCompilerFactory();
@@ -78,10 +75,6 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
 		return dialect;
 	}
 
-	@Override
-	public StatisticsProvider getStatisticsProvider() {
-		return statisticsProvider;
-	}
 
 	@Override
 	public Optional<String> getDescription() {
@@ -146,32 +139,6 @@ public class TestContextImpl extends AbstractBasicContext implements TestContext
 		this.expressionCompilerFactory = expressionCompilerFactory;
 	}
 
-	@Override
-	public void setStatisticsProvider(StatisticsProvider statisticsProvider) {
-		this.statisticsProvider = statisticsProvider;
-	}
-
-	private final class NullStatisticsProvider implements StatisticsProvider {
-		@Override
-		public void initialize(DataSource dataSource, Dialect dialect) {
-
-		}
-
-		@Override
-		public long getTableCardinality(String catalog, String schema, String table) {
-			return -1;
-		}
-
-		@Override
-		public long getQueryCardinality(String sql) {
-			return -1;
-		}
-
-		@Override
-		public long getColumnCardinality(String catalog, String schema, String table, String column) {
-			return -1;
-		}
-	}
 
 	@Override
 	public Semaphore getQueryLimitSemaphore() {

@@ -14,8 +14,6 @@
 package org.eclipse.daanse.db.statistics.api;
 
 import java.sql.Connection;
-import java.text.CollationElementIterator;
-
 import javax.sql.DataSource;
 
 import org.eclipse.daanse.jdbc.db.api.schema.ColumnReference;

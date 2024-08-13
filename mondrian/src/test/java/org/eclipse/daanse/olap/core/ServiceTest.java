@@ -68,9 +68,6 @@ class ServiceTest {
 	@Mock
 	Connection connection;
 
-	@Mock
-	StatisticsProvider statisticsProvider;
-
 //    @Mock
 //    QueryProvider queryProvider;
 //
@@ -110,7 +107,6 @@ class ServiceTest {
 
         bc.registerService(DataSource.class, dataSource, dictionaryOf("ds", "1"));
         bc.registerService(DialectResolver.class, dialectResolver, dictionaryOf("dr", "2"));
-        bc.registerService(StatisticsProvider.class, statisticsProvider, dictionaryOf("sp", "3"));
         bc.registerService(ExpressionCompilerFactory.class, expressionCompilerFactory, dictionaryOf("ecf", "1"));
         bc.registerService(CatalogMappingSupplier.class, catalogMappingSupplier, dictionaryOf("dbmsp", "1"));
         bc.registerService(MdxParserProvider.class, mdxParserProvider, dictionaryOf("parser", "1"));

@@ -22,7 +22,6 @@ public interface TestContext extends Context{
 	void setName(String name);
 	void setDescription(Optional<String> description);
 	void setExpressionCompilerFactory(ExpressionCompilerFactory expressionCompilerFactory);
-	void setStatisticsProvider(StatisticsProvider statisticsProvider);
     Connection getConnection(List<String> roles);
     BasicContextConfig getConfig();
 	void setQueryLimitSemaphore(Semaphore semaphore);
