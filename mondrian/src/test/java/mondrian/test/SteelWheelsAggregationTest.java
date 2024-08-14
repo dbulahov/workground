@@ -18,7 +18,7 @@ import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
-import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 import org.eclipse.daanse.rolap.mapping.pojo.CatalogMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.SchemaMappingImpl;
 import org.junit.jupiter.api.AfterEach;

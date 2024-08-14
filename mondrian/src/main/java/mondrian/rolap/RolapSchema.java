@@ -592,7 +592,7 @@ public class RolapSchema implements Schema {
     // package-local visibility for testing purposes
     void handleSchemaGrant(RoleImpl role, AccessSchemaGrantMapping schemaGrantMapings) {
         role.grant(this, getAccess(schemaGrantMapings.getAccess(), schemaAllowed));
-        for (AccessCubeGrantMapping cubeGrant : schemaGrantMapings.getCubeGrant()) {
+        for (AccessCubeGrantMapping cubeGrant : schemaGrantMapings.getCubeGrants()) {
             handleCubeGrant(role, cubeGrant);
         }
     }

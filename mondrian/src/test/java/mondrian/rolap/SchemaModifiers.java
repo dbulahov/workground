@@ -22,8 +22,8 @@ import org.eclipse.daanse.olap.api.access.RollupPolicy;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
-import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
-import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 
 import mondrian.test.BasicQueryTest;
 import mondrian.test.PerformanceTest;

@@ -14,7 +14,7 @@
 package mondrian.rolap.aggmatcher;
 
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
-import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 
 
 public class ExplicitRecognizerTestModifier extends PojoMappingModifier {

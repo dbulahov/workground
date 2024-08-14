@@ -34,7 +34,7 @@ import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Position;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
-import org.eclipse.daanse.rolap.mapping.modifier.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -306,7 +306,7 @@ TestUtil.flushSchemaCache(conn);
             + "    </Hierarchy>\n"
             + "  </Dimension>";
         */
-        class VerifyMemberLevelNamesIdentityOlap4jDateDimModifier extends PojoMappingModifier {
+        class VerifyMemberLevelNamesIdentityOlap4jDateDimModifier extends org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier {
 
            public VerifyMemberLevelNamesIdentityOlap4jDateDimModifier(CatalogMapping catalog) {
                 super(catalog);
