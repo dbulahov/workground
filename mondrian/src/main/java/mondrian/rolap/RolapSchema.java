@@ -558,7 +558,7 @@ public class RolapSchema implements Schema {
     }
 
     private Role createRole(AccessRoleMapping roleMapping) {
-        if (roleMapping.getAccessSchemaGrants() != null) {
+        if (!roleMapping.getReferencedAccessRoles().isEmpty()) {
             return createUnionRole(roleMapping);
         }
 
@@ -572,7 +572,7 @@ public class RolapSchema implements Schema {
 
     // package-local visibility for testing purposes
     Role createUnionRole(AccessRoleMapping roleMapping) {
-        if (roleMapping.getAccessSchemaGrants() != null && !roleMapping.getAccessSchemaGrants().isEmpty()) {
+        if (!roleMapping.getAccessSchemaGrants().isEmpty()) {
             throw new RoleUnionGrantsException();
         }
 
