@@ -17,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -28,10 +27,9 @@ import javax.sql.DataSource;
 import org.eclipse.daanse.olap.api.Connection;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.core.AbstractBasicContext;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 import org.eclipse.daanse.olap.xmla.bridge.ContextGroupXmlaServiceConfig;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
 import org.eclipse.daanse.xmla.api.annotation.Enumerator;
 import org.eclipse.daanse.xmla.api.annotation.Operation;
 import org.eclipse.daanse.xmla.api.common.enums.AccessEnum;
@@ -303,8 +301,7 @@ public class OtherDiscoverService {
             Optional<Context> oContext = contextsListSupplyer.tryGetFirstByName(databaseId.get());
             if (oContext.isPresent()) {
                 Context context = oContext.get();
-                for (DatabaseMappingSchemaProvider p : context.getDatabaseMappingSchemaProviders()) {
-                    MappingSchema schema = p.get();
+                for (SchemaMapping schema : context.getCatalogMapping().getSchemas()) {                    
                     //SerializerModifier serializerModifier = new SerializerModifier(schema);
                     //try {
                         result.add(new DiscoverXmlMetaDataResponseRowR(""));

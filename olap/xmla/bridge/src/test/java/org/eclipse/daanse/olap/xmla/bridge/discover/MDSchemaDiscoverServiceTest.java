@@ -46,12 +46,12 @@ import org.eclipse.daanse.olap.api.result.Property;
 import org.eclipse.daanse.olap.operation.api.FunctionOperationAtom;
 import org.eclipse.daanse.olap.operation.api.MethodOperationAtom;
 import org.eclipse.daanse.olap.operation.api.OperationAtom;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 import org.eclipse.daanse.olap.xmla.bridge.ContextsSupplyerImpl;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.KpiMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.VirtualCubeMapping;
 import org.eclipse.daanse.xmla.api.common.enums.DimensionCardinalityEnum;
 import org.eclipse.daanse.xmla.api.common.enums.DimensionUniqueSettingEnum;
 import org.eclipse.daanse.xmla.api.common.enums.HierarchyOriginEnum;
@@ -124,16 +124,13 @@ class MDSchemaDiscoverServiceTest {
     private Context context2;
 
     @Mock
-    private DatabaseMappingSchemaProvider dmsp1;
+    private CatalogMapping catalog;
 
     @Mock
-    private DatabaseMappingSchemaProvider dmsp2;
+    private SchemaMapping mappingSchema1;
 
     @Mock
-    private MappingSchema mappingSchema1;
-
-    @Mock
-    private MappingSchema mappingSchema2;
+    private SchemaMapping mappingSchema2;
 
     @Mock
     private Schema schema1;
@@ -142,19 +139,19 @@ class MDSchemaDiscoverServiceTest {
     private Schema schema2;
 
     @Mock
-    private MappingCube mappingCube1;
+    private CubeMapping mappingCube1;
 
     @Mock
-    private MappingVirtualCube mappingVirtualCube1;
+    private VirtualCubeMapping mappingVirtualCube1;
 
     @Mock
-    private MappingCube mappingCube2;
+    private CubeMapping mappingCube2;
 
     @Mock
-    private MappingKpi mappingKpi1;
+    private KpiMapping mappingKpi1;
 
     @Mock
-    private MappingKpi mappingKpi2;
+    private KpiMapping mappingKpi2;
 
     @Mock
     private Cube cube1;
@@ -560,60 +557,57 @@ class MDSchemaDiscoverServiceTest {
         when(request.restrictions()).thenReturn(restrictions);
         when(restrictions.catalogName()).thenReturn(Optional.of("foo"));
 
-        when(context2.getDatabaseMappingSchemaProviders()).thenAnswer(setupDummyListAnswer(dmsp1, dmsp2));
+        when(context2.getCatalogMapping()).thenReturn(catalog);
 
 
-        when(dmsp1.get()).thenReturn(mappingSchema1);
-        when(dmsp2.get()).thenReturn(mappingSchema2);
-        when(mappingSchema1.name()).thenReturn("schema1Name");
-        when(mappingSchema2.name()).thenReturn("schema2Name");
+        when(catalog.getSchemas()).thenAnswer(setupDummyListAnswer(mappingSchema1, mappingSchema2));        
+        when(mappingSchema1.getName()).thenReturn("schema1Name");
+        when(mappingSchema2.getName()).thenReturn("schema2Name");
 
 
-        when(mappingSchema1.cubes()).thenAnswer(setupDummyListAnswer(mappingCube1, mappingCube2));
-        when(mappingSchema2.cubes()).thenAnswer(setupDummyListAnswer(mappingCube1, mappingCube2));
-        when(mappingSchema2.virtualCubes()).thenAnswer(setupDummyListAnswer(mappingVirtualCube1));
+        when(mappingSchema1.getCubes()).thenAnswer(setupDummyListAnswer(mappingCube1, mappingCube2));
+        when(mappingSchema2.getCubes()).thenAnswer(setupDummyListAnswer(mappingCube1, mappingCube2));       
 
-        when(mappingCube1.name()).thenReturn("cube1Name");
-        when(mappingCube2.name()).thenReturn("cube2Name");
-        when(mappingVirtualCube1.name()).thenReturn("virtualCube1Name");
-
-
-        when(mappingCube1.kpis()).thenAnswer(setupDummyListAnswer(mappingKpi1, mappingKpi2));
-        when(mappingCube2.kpis()).thenAnswer(setupDummyListAnswer(mappingKpi1, mappingKpi2));
-        when(mappingVirtualCube1.kpis()).thenAnswer(setupDummyListAnswer(mappingKpi1, mappingKpi2));
+        when(mappingCube1.getName()).thenReturn("cube1Name");
+        when(mappingCube2.getName()).thenReturn("cube2Name");
+        when(mappingVirtualCube1.getName()).thenReturn("virtualCube1Name");
 
 
-        when(mappingKpi1.name()).thenReturn("kpi1Name");
+        when(mappingCube1.getKpis()).thenAnswer(setupDummyListAnswer(mappingKpi1, mappingKpi2));
+        when(mappingCube2.getKpis()).thenAnswer(setupDummyListAnswer(mappingKpi1, mappingKpi2));
+        when(mappingVirtualCube1.getKpis()).thenAnswer(setupDummyListAnswer(mappingKpi1, mappingKpi2));
 
-        when(mappingKpi1.caption()).thenReturn("kpi1Caption");
-        when(mappingKpi1.description()).thenReturn("kpi1Description");
-        when(mappingKpi1.displayFolder()).thenReturn("kpi1DisplayFolder");
 
-        when(mappingKpi1.value()).thenReturn("kpi1Value");
-        when(mappingKpi1.goal()).thenReturn("kpi1Goal");
-        when(mappingKpi1.status()).thenReturn("kpi1Status");
-        when(mappingKpi1.trend()).thenReturn("kpi1Trend");
-        when(mappingKpi1.weight()).thenReturn("kpi1Weight");
-        when(mappingKpi1.trendGraphic()).thenReturn("kpi1TrendGraphic");
-        when(mappingKpi1.statusGraphic()).thenReturn("kpi1StatusGraphic");
-        when(mappingKpi1.currentTimeMember()).thenReturn("kpi1CurrentTimeMember");
-        when(mappingKpi1.parentKpiID()).thenReturn("kpi1ParentKpiID");
+        when(mappingKpi1.getName()).thenReturn("kpi1Name");
+        //when(mappingKpi1.getCaption()).thenReturn("kpi1Caption");
+        when(mappingKpi1.getDescription()).thenReturn("kpi1Description");
+        when(mappingKpi1.getDisplayFolder()).thenReturn("kpi1DisplayFolder");
 
-        when(mappingKpi2.name()).thenReturn("kpi2name");
+        when(mappingKpi1.getValue()).thenReturn("kpi1Value");
+        when(mappingKpi1.getGoal()).thenReturn("kpi1Goal");
+        when(mappingKpi1.getStatus()).thenReturn("kpi1Status");
+        when(mappingKpi1.getTrend()).thenReturn("kpi1Trend");
+        when(mappingKpi1.getWeight()).thenReturn("kpi1Weight");
+        when(mappingKpi1.getTrendGraphic()).thenReturn("kpi1TrendGraphic");
+        when(mappingKpi1.getStatusGraphic()).thenReturn("kpi1StatusGraphic");
+        when(mappingKpi1.getCurrentTimeMember()).thenReturn("kpi1CurrentTimeMember");
+        when(mappingKpi1.getParentKpiID()).thenReturn("kpi1ParentKpiID");
 
-        when(mappingKpi2.caption()).thenReturn("kpi2caption");
-        when(mappingKpi2.description()).thenReturn("kpi2description");
-        when(mappingKpi2.displayFolder()).thenReturn("kpi2DisplayFolder");
+        when(mappingKpi2.getName()).thenReturn("kpi2name");
 
-        when(mappingKpi2.value()).thenReturn("kpi2Value");
-        when(mappingKpi2.goal()).thenReturn("kpi2Goal");
-        when(mappingKpi2.status()).thenReturn("kpi2Status");
-        when(mappingKpi2.trend()).thenReturn("kpi2Trend");
-        when(mappingKpi2.weight()).thenReturn("kpi2Weight");
-        when(mappingKpi2.trendGraphic()).thenReturn("kpi2TrendGraphic");
-        when(mappingKpi2.statusGraphic()).thenReturn("kpi2StatusGraphic");
-        when(mappingKpi2.currentTimeMember()).thenReturn("kpi2CurrentTimeMember");
-        when(mappingKpi2.parentKpiID()).thenReturn("kpi2ParentKpiID");
+        //when(mappingKpi2.getCaption()).thenReturn("kpi2caption");
+        when(mappingKpi2.getDescription()).thenReturn("kpi2description");
+        when(mappingKpi2.getDisplayFolder()).thenReturn("kpi2DisplayFolder");
+
+        when(mappingKpi2.getValue()).thenReturn("kpi2Value");
+        when(mappingKpi2.getGoal()).thenReturn("kpi2Goal");
+        when(mappingKpi2.getStatus()).thenReturn("kpi2Status");
+        when(mappingKpi2.getTrend()).thenReturn("kpi2Trend");
+        when(mappingKpi2.getWeight()).thenReturn("kpi2Weight");
+        when(mappingKpi2.getTrendGraphic()).thenReturn("kpi2TrendGraphic");
+        when(mappingKpi2.getStatusGraphic()).thenReturn("kpi2StatusGraphic");
+        when(mappingKpi2.getCurrentTimeMember()).thenReturn("kpi2CurrentTimeMember");
+        when(mappingKpi2.getParentKpiID()).thenReturn("kpi2ParentKpiID");
 
         when(context1.getName()).thenReturn("bar");
         when(context2.getName()).thenReturn("foo");
@@ -785,22 +779,21 @@ class MDSchemaDiscoverServiceTest {
         when(request.restrictions()).thenReturn(restrictions);
         when(restrictions.catalogName()).thenReturn(Optional.of("foo"));
 
-        when(mappingSchema1.name()).thenReturn("schema1Name");
+        when(mappingSchema1.getName()).thenReturn("schema1Name");
 
-        when(mappingSchema2.name()).thenReturn("schema2Name");
+        when(mappingSchema2.getName()).thenReturn("schema2Name");
 
-        when(mappingCube1.name()).thenReturn("cube1Name");
-        when(mappingCube2.name()).thenReturn("cube2Name");
+        when(mappingCube1.getName()).thenReturn("cube1Name");
+        when(mappingCube2.getName()).thenReturn("cube2Name");
 
-        when(mappingSchema1.cubes()).thenAnswer(setupDummyListAnswer(mappingCube1, mappingCube2));
-        when(mappingSchema2.cubes()).thenAnswer(setupDummyListAnswer(mappingCube1, mappingCube2));
+        when(mappingSchema1.getCubes()).thenAnswer(setupDummyListAnswer(mappingCube1, mappingCube2));
+        when(mappingSchema2.getCubes()).thenAnswer(setupDummyListAnswer(mappingCube1, mappingCube2));
 
-        when(dmsp1.get()).thenReturn(mappingSchema1);
-        when(dmsp2.get()).thenReturn(mappingSchema2);
+        when(catalog.getSchemas()).thenAnswer(setupDummyListAnswer(mappingSchema1, mappingSchema2));        
 
         when(context1.getName()).thenReturn("bar");
         when(context2.getName()).thenReturn("foo");
-        when(context2.getDatabaseMappingSchemaProviders()).thenAnswer(setupDummyListAnswer(dmsp1, dmsp2));
+        when(context2.getCatalogMapping()).thenReturn(catalog);
 
         List<MdSchemaMeasureGroupsResponseRow> rows = service.mdSchemaMeasureGroups(request);
         verify(context1, times(1)).getName();

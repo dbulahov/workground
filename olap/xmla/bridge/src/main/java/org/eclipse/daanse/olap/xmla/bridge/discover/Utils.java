@@ -39,18 +39,18 @@ import org.eclipse.daanse.olap.impl.XmlaConstants;
 import org.eclipse.daanse.olap.operation.api.EmptyOperationAtom;
 import org.eclipse.daanse.olap.operation.api.InternalOperationAtom;
 import org.eclipse.daanse.olap.operation.api.ParenthesesOperationAtom;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCalculatedMemberProperty;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCubeDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingDimensionUsage;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingKpi;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingVirtualCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
+import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CalculatedMemberPropertyMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.KpiMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.MeasureGroupMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.MeasureMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.VirtualCubeMapping;
 import org.eclipse.daanse.xmla.api.common.enums.ColumnOlapTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CubeSourceEnum;
 import org.eclipse.daanse.xmla.api.common.enums.CubeTypeEnum;
@@ -128,9 +128,9 @@ public class Utils {
         // constructor
     }
 
-    static Optional<String> getRoles(List<MappingRole> roles) {
+    static Optional<String> getRoles(List<? extends AccessRoleMapping> roles) {
         if (roles != null) {
-            return Optional.of(roles.stream().map(MappingRole::name).collect(Collectors.joining(",")));
+            return Optional.of(roles.stream().map(AccessRoleMapping::getName).collect(Collectors.joining(",")));
         }
         return Optional.empty();
     }
@@ -143,81 +143,65 @@ public class Utils {
         Optional<ColumnOlapTypeEnum> oColumnOlapType
     ) {
 
-        List<DatabaseMappingSchemaProvider> schemas =
-            getDatabaseMappingSchemaProviderWithFilter(context.getDatabaseMappingSchemaProviders(), oTableSchema);
-        return schemas.stream().map(dsp -> {
-            MappingSchema schema = dsp.get();
-            return getDbSchemaColumnsResponseRow(context.getName(), schema, oTableName, oColumnName, oColumnOlapType,
-                schema.dimensions());
+        List<? extends SchemaMapping> schemas =
+            getDatabaseMappingSchemaProviderWithFilter(context.getCatalogMapping(), oTableSchema);
+        return schemas.stream().map(schema -> {            
+            return getDbSchemaColumnsResponseRow(context.getName(), schema, oTableName, oColumnName, oColumnOlapType
+                );
         }).flatMap(Collection::stream).toList();
     }
 
     static List<DbSchemaColumnsResponseRow> getDbSchemaColumnsResponseRow(
         String catalogName,
-        MappingSchema schema,
+        SchemaMapping schema,
         Optional<String> oTableName,
         Optional<String> oColumnName,
-        Optional<ColumnOlapTypeEnum> oColumnOlapType,
-        List<MappingPrivateDimension> dimensions
+        Optional<ColumnOlapTypeEnum> oColumnOlapType
     ) {
-        return schema.cubes().stream().sorted(Comparator.comparing(MappingCube::name))
-            .map(c -> getDbSchemaColumnsResponseRow(catalogName, schema.name(), c, oTableName, oColumnName,
-                oColumnOlapType, schema.dimensions()))
+        return schema.getCubes().stream().sorted(Comparator.comparing(CubeMapping::getName))
+            .map(c -> getDbSchemaColumnsResponseRow(catalogName, schema.getName(), c, oTableName, oColumnName,
+                oColumnOlapType))
             .flatMap(Collection::stream).toList();
     }
 
     static List<DbSchemaColumnsResponseRow> getDbSchemaColumnsResponseRow(
         String catalogName,
         String schemaName,
-        MappingCube cube,
+        CubeMapping cube,
         Optional<String> oTableName,
         Optional<String> oColumnName,
-        Optional<ColumnOlapTypeEnum> oColumnOlapType,
-        List<MappingPrivateDimension> dimensions
+        Optional<ColumnOlapTypeEnum> oColumnOlapType        
     ) {
         int ordinalPosition = 1;
         List<DbSchemaColumnsResponseRow> result = new ArrayList<>();
-        if (!oTableName.isPresent() || (oTableName.isPresent() && oTableName.get().equals(cube.name()))) {
+        if (!oTableName.isPresent() || (oTableName.isPresent() && oTableName.get().equals(cube.getName()))) {
             final boolean emitInvisibleMembers = true; //TODO
-            for (MappingCubeDimension dimension : cube.dimensionUsageOrDimensions()) {
-                if (dimension instanceof MappingPrivateDimension pd) {
+            for (DimensionConnectorMapping dimensionConnector : cube.getDimensionConnectors()) {               
                     populateDimensionForDbSchemaColumns(
                         catalogName,
                         schemaName,
-                        cube, pd,
-                        ordinalPosition, result);
-                }
-                if (dimension instanceof MappingDimensionUsage du) {
-                    Optional<MappingPrivateDimension> od =
-                        dimensions.stream().filter(d -> d.name().equals(du.source())).findFirst();
-                    if (od.isPresent()) {
-                        populateDimensionForDbSchemaColumns(
-                            catalogName,
-                            schemaName,
-                            cube, od.get(),
-                            ordinalPosition, result);
-                    }
-                }
+                        cube, dimensionConnector.getDimension(),
+                        ordinalPosition, result);                
             }
-            for (MappingMeasure measure : cube.measures()) {
-
+            for (MeasureGroupMapping measureGroup : cube.getMeasureGroups()) {
+            	for (MeasureMapping measure : measureGroup.getMeasures()) { 
                 Boolean visible = true;
-                Optional<MappingCalculatedMemberProperty> oP = measure.calculatedMemberProperties()
+                Optional<? extends CalculatedMemberPropertyMapping> oP = measure.getCalculatedMemberProperty()
                     .stream()
-                    .filter(p -> "$visible".equals(p.name())).findFirst();
+                    .filter(p -> "$visible".equals(p.getName())).findFirst();
                 if (oP.isPresent()) {
-                    visible = Boolean.valueOf(oP.get().value());
+                    visible = Boolean.valueOf(oP.get().getValue());
                 }
                 if (!emitInvisibleMembers && !visible) {
                     continue;
                 }
 
-                String memberName = measure.name();
+                String memberName = measure.getName();
                 final String columnName = "Measures:" + memberName;
                 if (oColumnName.isPresent() && oColumnName.get().equals(columnName)) {
                     continue;
                 }
-                String cubeName = cube.name();
+                String cubeName = cube.getName();
                 result.add(new DbSchemaColumnsResponseRowR(
                     Optional.of(cubeName),
                     Optional.of(schemaName),
@@ -249,6 +233,7 @@ public class Utils {
                     Optional.empty(),
                     Optional.empty()
                 ));
+            	}    
             }
         }
 
@@ -258,12 +243,12 @@ public class Utils {
     private static void populateDimensionForDbSchemaColumns(
         String catalogName,
         String schemaName,
-        MappingCube cube,
-        MappingPrivateDimension dimension,
+        CubeMapping cube,
+        DimensionMapping dimension,
         int ordinalPosition,
         List<DbSchemaColumnsResponseRow> result
     ) {
-        for (MappingHierarchy hierarchy : dimension.hierarchies()) {
+        for (HierarchyMapping hierarchy : dimension.getHierarchies()) {
             ordinalPosition =
                 populateHierarchyForDbSchemaColumns(
                     catalogName,
@@ -277,13 +262,13 @@ public class Utils {
     static int populateHierarchyForDbSchemaColumns(
         String catalogName,
         String schemaName,
-        MappingCube cube,
-        MappingHierarchy hierarchy,
+        CubeMapping cube,
+        HierarchyMapping hierarchy,
         int ordinalPosition,
         List<DbSchemaColumnsResponseRow> result
     ) {
-        String cubeName = cube.name();
-        String hierarchyName = hierarchy.name();
+        String cubeName = cube.getName();
+        String hierarchyName = hierarchy.getName();
         result.add(new DbSchemaColumnsResponseRowR(
             Optional.of(catalogName),
             Optional.of(schemaName),
@@ -350,14 +335,14 @@ public class Utils {
         return ordinalPosition;
     }
 
-    static List<DatabaseMappingSchemaProvider> getDatabaseMappingSchemaProviderWithFilter(
-        List<DatabaseMappingSchemaProvider> databaseMappingSchemaProviders,
+    static List<? extends SchemaMapping> getDatabaseMappingSchemaProviderWithFilter(
+        CatalogMapping catalog,
         Optional<String> oSchemaName
     ) {
         if (oSchemaName.isPresent()) {
-            return databaseMappingSchemaProviders.stream().filter(dmsp -> dmsp.get().name().equals(oSchemaName.get())).toList();
+            return catalog.getSchemas().stream().filter(s -> s.getName().equals(oSchemaName.get())).toList();
         }
-        return databaseMappingSchemaProviders;
+        return catalog.getSchemas();
     }
 
     static List<DbSchemaSchemataResponseRow> getDbSchemaSchemataResponseRow(
@@ -365,35 +350,33 @@ public class Utils {
         String schemaName,
         String schemaOwner
     ) {
-        List<DatabaseMappingSchemaProvider> schemas = context.getDatabaseMappingSchemaProviders();
-        if (schemas != null) {
-            return getDatabaseMappingSchemaProviderWithFilter(schemas, schemaName).stream()
-                .filter(dmsp -> (dmsp != null && dmsp.get() != null))
-                .map(dmsp -> getDbSchemaSchemataResponseRow(context.getName(), dmsp, schemaOwner)).toList();
+        CatalogMapping catalog = context.getCatalogMapping();
+        if (catalog != null) {
+            return getDatabaseMappingSchemaProviderWithFilter(catalog, schemaName).stream()
+                .map(s -> getDbSchemaSchemataResponseRow(context.getName(), s, schemaOwner)).toList();
         }
         return List.of();
     }
 
     static DbSchemaSchemataResponseRow getDbSchemaSchemataResponseRow(
         String catalogName,
-        DatabaseMappingSchemaProvider dmsp,
+        SchemaMapping schema,
         String schemaOwner
-    ) {
-        MappingSchema schema = dmsp.get();
+    ) {        
         return new DbSchemaSchemataResponseRowR(
             catalogName,
-            schema.name(),
+            schema.getName(),
             "");
     }
 
-    static List<DatabaseMappingSchemaProvider> getDatabaseMappingSchemaProviderWithFilter(
-        List<DatabaseMappingSchemaProvider> schemas,
+    static List<? extends SchemaMapping> getDatabaseMappingSchemaProviderWithFilter(
+        CatalogMapping catalog,
         String schemaName
     ) {
         if (schemaName != null) {
-            return schemas.stream().filter(dmsp -> dmsp.get().name().equals(schemaName)).toList();
+            return catalog.getSchemas().stream().filter(s -> s.getName().equals(schemaName)).toList();
         }
-        return schemas;
+        return catalog.getSchemas();
     }
 
     static List<MdSchemaCubesResponseRow> getMdSchemaCubesResponseRow(
@@ -549,24 +532,24 @@ public class Utils {
         return List.of();
     }
 
-    private static List<MappingCube> getMappingCubeWithFilter(List<MappingCube> cubes, Optional<String> cubeName) {
+    private static List<? extends CubeMapping> getMappingCubeWithFilter(List<? extends CubeMapping> cubes, Optional<String> cubeName) {
         if (cubeName.isPresent()) {
             return getMappingCubeWithFilter(cubes, cubeName.get());
         }
         return cubes;
     }
 
-    private static List<MappingCube> getMappingCubeWithFilter(List<MappingCube> cubes, String cubeName) {
+    private static List<? extends CubeMapping> getMappingCubeWithFilter(List<? extends CubeMapping> cubes, String cubeName) {
         if (cubeName != null) {
-            return cubes.stream().filter(c -> cubeName.equals(c.name())).toList();
+            return cubes.stream().filter(c -> cubeName.equals(c.getName())).toList();
         }
         return cubes;
     }
 
-    private static List<MappingVirtualCube> getMappingVirtualCubeWithFilter(List<MappingVirtualCube> cubes, Optional<String> cubeName) {
+    private static List<VirtualCubeMapping> getMappingVirtualCubeWithFilter(List<VirtualCubeMapping> cubes, Optional<String> cubeName) {
         if (cubes != null) {
             if (cubeName.isPresent()) {
-                return cubes.stream().filter(c -> cubeName.get().equals(c.name())).toList();
+                return cubes.stream().filter(c -> cubeName.get().equals(c.getName())).toList();
             }
             return cubes;
         }
@@ -735,29 +718,29 @@ public class Utils {
         String tableName,
         TableTypeEnum tableType
     ) {
-        return getDatabaseMappingSchemaProviderWithFilter(context.getDatabaseMappingSchemaProviders(), oSchemaName)
-            .stream().filter(dmsp -> (dmsp != null && dmsp.get() != null))
-            .map(dmsp -> getDbSchemaTablesInfoResponseRow(context.getName(), dmsp.get(), tableName, tableType))
+        return getDatabaseMappingSchemaProviderWithFilter(context.getCatalogMapping(), oSchemaName)
+            .stream()
+            .map(s -> getDbSchemaTablesInfoResponseRow(context.getName(), s, tableName, tableType))
             .flatMap(Collection::stream).toList();
     }
 
     private static List<DbSchemaTablesInfoResponseRow> getDbSchemaTablesInfoResponseRow(
-        String catalogName, MappingSchema schema, String tableName, TableTypeEnum tableType
+        String catalogName, SchemaMapping schema, String tableName, TableTypeEnum tableType
     ) {
-        if (schema.cubes() != null) {
-            return schema.cubes().stream()
-                .sorted(Comparator.comparing(MappingCube::name))
-                .map(c -> getDbSchemaTablesInfoResponseRow(catalogName, schema.name(), c, tableName, tableType))
+        if (schema.getCubes() != null) {
+            return schema.getCubes().stream()
+                .sorted(Comparator.comparing(CubeMapping::getName))
+                .map(c -> getDbSchemaTablesInfoResponseRow(catalogName, schema.getName(), c, tableName, tableType))
                 .toList();
         }
         return List.of();
     }
 
     private static DbSchemaTablesInfoResponseRow getDbSchemaTablesInfoResponseRow(
-        String catalogName, String schemaName, MappingCube cube, String tableName, TableTypeEnum tableType
+        String catalogName, String schemaName, CubeMapping cube, String tableName, TableTypeEnum tableType
     ) {
-        String cubeName = cube.name();
-        String desc = cube.description();
+        String cubeName = cube.getName();
+        String desc = cube.getDescription();
         if (desc == null) {
             desc = catalogName + " - " + cubeName + " Cube";
         }
@@ -872,10 +855,9 @@ public class Utils {
         Optional<String> oCubeName,
         Optional<String> oKpiName
     ) {
-        List<DatabaseMappingSchemaProvider> schemas =
-            getDatabaseMappingSchemaProviderWithFilter(context.getDatabaseMappingSchemaProviders(), oSchemaName);
-        return schemas.stream().map(dsp -> {
-            MappingSchema schema = dsp.get();
+        List<? extends SchemaMapping> schemas =
+            getDatabaseMappingSchemaProviderWithFilter(context.getCatalogMapping(), oSchemaName);
+        return schemas.stream().map(schema -> {
             return getMdSchemaKpisResponseRow(context.getName(), schema, oCubeName, oKpiName);
         }).flatMap(Collection::stream).toList();
     }
@@ -972,57 +954,45 @@ public class Utils {
 
     private static List<MdSchemaKpisResponseRow> getMdSchemaKpisResponseRow(
         String catalogName,
-        MappingSchema schema,
+        SchemaMapping schema,
         Optional<String> oCubeName,
         Optional<String> oKpiName
     ) {
         List<MdSchemaKpisResponseRow> result = new ArrayList<>();
-        result.addAll(getMappingCubeWithFilter(schema.cubes(), oCubeName).stream()
-            .map(c -> getMdSchemaKpisResponseRow(catalogName, schema.name(), c, oKpiName))
+        result.addAll(getMappingCubeWithFilter(schema.getCubes(), oCubeName).stream()
+            .map(c -> getMdSchemaKpisResponseRow(catalogName, schema.getName(), c, oKpiName))
             .flatMap(Collection::stream)
             .toList());
-
-        result.addAll(getMappingVirtualCubeWithFilter(schema.virtualCubes(), oCubeName).stream()
-            .map(c -> getMdSchemaKpisResponseRow(catalogName, schema.name(), c, oKpiName))
-            .flatMap(Collection::stream)
-            .toList());
-
         return result;
     }
 
-    private static List<MdSchemaKpisResponseRow> getMdSchemaKpisResponseRow(String catalogName, String schemaName, MappingCube c, Optional<String> oKpiName) {
-        return getMappingKpiWithFilter(c.kpis(), oKpiName).stream()
-            .map(kpi -> getMdSchemaKpisResponseRow(catalogName, schemaName, c.name(), kpi))
+    private static List<MdSchemaKpisResponseRow> getMdSchemaKpisResponseRow(String catalogName, String schemaName, CubeMapping c, Optional<String> oKpiName) {
+        return getMappingKpiWithFilter(c.getKpis(), oKpiName).stream()
+            .map(kpi -> getMdSchemaKpisResponseRow(catalogName, schemaName, c.getName(), kpi))
             .toList();
 
     }
 
-    private static List<MdSchemaKpisResponseRow> getMdSchemaKpisResponseRow(String catalogName, String schemaName, MappingVirtualCube c, Optional<String> oKpiName) {
-        return getMappingKpiWithFilter(c.kpis(), oKpiName).stream()
-            .map(kpi -> getMdSchemaKpisResponseRow(catalogName, schemaName, c.name(), kpi))
-            .toList();
-    }
-
-    private static MdSchemaKpisResponseRow getMdSchemaKpisResponseRow(String catalogName, String schemaName, String cubeName, MappingKpi kpi) {
+    private static MdSchemaKpisResponseRow getMdSchemaKpisResponseRow(String catalogName, String schemaName, String cubeName, KpiMapping kpi) {
         if (kpi != null) {
             return new MdSchemaKpisResponseRowR(
                 Optional.ofNullable(catalogName),
                 Optional.ofNullable(schemaName),
                 Optional.ofNullable(cubeName),
                 Optional.ofNullable(cubeName),
-                Optional.ofNullable(kpi.name()),
-                Optional.ofNullable(kpi.caption()),
-                Optional.ofNullable(kpi.description()),
-                Optional.ofNullable(kpi.displayFolder()),
-                Optional.ofNullable(kpi.value()),
-                Optional.ofNullable(kpi.goal()),
-                Optional.ofNullable(kpi.status()),
-                Optional.ofNullable(kpi.trend()),
-                Optional.ofNullable(kpi.statusGraphic()),
-                Optional.ofNullable(kpi.trendGraphic()),
-                Optional.ofNullable(kpi.weight()),
-                Optional.ofNullable(kpi.currentTimeMember()),
-                Optional.ofNullable(kpi.parentKpiID()),
+                Optional.ofNullable(kpi.getName()),
+                Optional.ofNullable(kpi.getName()),
+                Optional.ofNullable(kpi.getDescription()),
+                Optional.ofNullable(kpi.getDisplayFolder()),
+                Optional.ofNullable(kpi.getValue()),
+                Optional.ofNullable(kpi.getGoal()),
+                Optional.ofNullable(kpi.getStatus()),
+                Optional.ofNullable(kpi.getTrend()),
+                Optional.ofNullable(kpi.getStatusGraphic()),
+                Optional.ofNullable(kpi.getTrendGraphic()),
+                Optional.ofNullable(kpi.getWeight()),
+                Optional.ofNullable(kpi.getCurrentTimeMember()),
+                Optional.ofNullable(kpi.getParentKpiID()),
                 Optional.empty(),
                 Optional.of(ScopeEnum.GLOBAL)
             );
@@ -1030,9 +1000,9 @@ public class Utils {
         return null;
     }
 
-    private static List<MappingKpi> getMappingKpiWithFilter(List<MappingKpi> kpis, Optional<String> oKpiName) {
+    private static List<? extends KpiMapping> getMappingKpiWithFilter(List<? extends KpiMapping> kpis, Optional<String> oKpiName) {
         if (oKpiName.isPresent()) {
-            return kpis.stream().filter(k -> oKpiName.get().equals(k.name())).toList();
+            return kpis.stream().filter(k -> oKpiName.get().equals(k.getName())).toList();
         }
         return kpis;
     }
@@ -1796,21 +1766,21 @@ public class Utils {
         return levels;
     }
 
-    private static List<MappingHierarchy> getHierarchiesWithFilter(
-        List<MappingHierarchy> hierarchies,
+    private static List<HierarchyMapping> getHierarchiesWithFilter(
+        List<HierarchyMapping> hierarchies,
         Optional<String> oHierarchyUniqueName
     ) {
         if (oHierarchyUniqueName.isPresent()) {
-            return hierarchies.stream().filter(h -> h.name().equals(oHierarchyUniqueName.get())).toList();
+            return hierarchies.stream().filter(h -> h.getName().equals(oHierarchyUniqueName.get())).toList();
         }
         return hierarchies;
     }
 
-    private static List<MappingCubeDimension> getMappingCubeDimensionsWithFilter(
-        List<MappingCubeDimension> dimensions, Optional<String> oDimensionUniqueName
+    private static List<DimensionMapping> getMappingCubeDimensionsWithFilter(
+        List<DimensionMapping> dimensions, Optional<String> oDimensionUniqueName
     ) {
         if (oDimensionUniqueName.isPresent()) {
-            return dimensions.stream().filter(d -> oDimensionUniqueName.get().equals(d.name())).toList();
+            return dimensions.stream().filter(d -> oDimensionUniqueName.get().equals(d.getName())).toList();
         }
         return dimensions;
     }
@@ -2081,9 +2051,9 @@ oHierarchyName)
         Optional<String> oCubeName,
         Optional<String> oMeasureGroupName
     ) {
-        return getDatabaseMappingSchemaProviderWithFilter(context.getDatabaseMappingSchemaProviders(), oSchemaName)
-            .stream().filter(dmsp -> (dmsp != null && dmsp.get() != null))
-            .map(dmsp -> getMdSchemaMeasureGroupsResponseRow(context.getName(), dmsp.get(), oCubeName,
+        return getDatabaseMappingSchemaProviderWithFilter(context.getCatalogMapping(), oSchemaName)
+            .stream()
+            .map(s -> getMdSchemaMeasureGroupsResponseRow(context.getName(), s, oCubeName,
                 oMeasureGroupName))
             .flatMap(Collection::stream).toList();
 
@@ -2091,29 +2061,29 @@ oHierarchyName)
 
     private static List<MdSchemaMeasureGroupsResponseRow> getMdSchemaMeasureGroupsResponseRow(
         String catalogName,
-        MappingSchema schema,
+        SchemaMapping schema,
         Optional<String> oCubeName,
         Optional<String> oMeasureGroupName
     ) {
-        return getMappingCubeWithFilter(schema.cubes(), oCubeName).stream()
-            .map(c -> getMdSchemaMeasureGroupsResponseRow(catalogName, schema.name(), c, oMeasureGroupName))
+        return getMappingCubeWithFilter(schema.getCubes(), oCubeName).stream()
+            .map(c -> getMdSchemaMeasureGroupsResponseRow(catalogName, schema.getName(), c, oMeasureGroupName))
             .toList();
     }
 
     private static MdSchemaMeasureGroupsResponseRow getMdSchemaMeasureGroupsResponseRow(
         String catalogName,
         String schemaName,
-        MappingCube c,
+        CubeMapping c,
         Optional<String> oMeasureGroupName
     ) {
         return new MdSchemaMeasureGroupsResponseRowR(
             Optional.ofNullable(catalogName),
             Optional.ofNullable(schemaName),
-            Optional.of(c.name()),
-            Optional.of(c.name()),
+            Optional.of(c.getName()),
+            Optional.of(c.getName()),
             Optional.of(""),
             Optional.of(false),
-            Optional.of(c.name())
+            Optional.of(c.getName())
         );
     }
 

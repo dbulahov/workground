@@ -15,7 +15,6 @@ package org.eclipse.daanse.olap.xmla.bridge.discover;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.impl.XmlaConstants;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
 import org.eclipse.daanse.olap.xmla.bridge.ContextListSupplyer;
 import org.eclipse.daanse.xmla.api.common.enums.ColumnOlapTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.LevelDbTypeEnum;
@@ -66,12 +65,11 @@ public class DBSchemaDiscoverService {
             Optional<Context> oContext = oName.flatMap(name -> contextsListSupplyer.tryGetFirstByName(name));
             if (oContext.isPresent()) {
                 Context context = oContext.get();
-                return context.getDatabaseMappingSchemaProviders().stream().map(p -> {
-                        MappingSchema s = p.get();
+                return context.getCatalogMapping().getSchemas().stream().map(s -> {                        
                         return (DbSchemaCatalogsResponseRow) new DbSchemaCatalogsResponseRowR(
                             Optional.ofNullable(context.getName()),
-                            Optional.ofNullable(s.description()),
-                            getRoles(s.roles()),
+                            Optional.ofNullable(s.getDescription()),
+                            getRoles(s.getAccessRoles()),
                             Optional.of(LocalDateTime.now()),
                             Optional.empty(),
                             Optional.empty(),
@@ -87,12 +85,11 @@ public class DBSchemaDiscoverService {
             }
         }
         else {
-            return contextsListSupplyer.get().stream().map(c -> c.getDatabaseMappingSchemaProviders().stream().map(p -> {
-                    MappingSchema s = p.get();
+            return contextsListSupplyer.get().stream().map(c -> c.getCatalogMapping().getSchemas().stream().map(s -> {                    
                     return (DbSchemaCatalogsResponseRow) new DbSchemaCatalogsResponseRowR(
                         Optional.ofNullable(c.getName()),
-                        Optional.ofNullable(s.description()),
-                        getRoles(s.roles()),
+                        Optional.ofNullable(s.getDescription()),
+                        getRoles(s.getAccessRoles()),
                         Optional.of(LocalDateTime.now()),
                         Optional.empty(),
                         Optional.empty(),

@@ -13,17 +13,25 @@
  */
 package org.eclipse.daanse.olap.xmla.bridge.discover;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
+import javax.sql.DataSource;
+
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.ContextGroup;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 import org.eclipse.daanse.olap.xmla.bridge.ContextGroupXmlaServiceConfig;
 import org.eclipse.daanse.olap.xmla.bridge.ContextsSupplyerImpl;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.xmla.api.discover.Properties;
 import org.eclipse.daanse.xmla.api.discover.discover.datasources.DiscoverDataSourcesRequest;
 import org.eclipse.daanse.xmla.api.discover.discover.datasources.DiscoverDataSourcesResponseRow;
@@ -48,24 +56,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OtherDiscoverServiceTest {
@@ -77,43 +68,7 @@ class OtherDiscoverServiceTest {
     private Context context2;
 
     @Mock
-    private DatabaseMappingSchemaProvider dmsp1;
-
-    @Mock
-    private DatabaseMappingSchemaProvider dmsp2;
-
-    @Mock
-    private MappingSchema schema1;
-
-    @Mock
-    private MappingSchema schema2;
-
-    @Mock
-    private MappingRole role1;
-
-    @Mock
-    private MappingRole role2;
-
-    @Mock
-    private MappingCube cube1;
-
-    @Mock
-    private MappingCube cube2;
-
-    @Mock
-    private MappingPrivateDimension dimension1;
-
-    @Mock
-    private MappingPrivateDimension dimension2;
-
-    @Mock
-    private MappingHierarchy hierarchy1;
-
-    @Mock
-    private MappingHierarchy hierarchy2;
-
-    @Mock
-    private MappingMeasure measure;
+    private CatalogMapping catalog;
 
     @Mock
     private DataSource dataSource;
@@ -336,8 +291,6 @@ class OtherDiscoverServiceTest {
 
     @Test
     void discoverSchemaRowsetsWithRestriction() {
-        //when(cls.get()).thenReturn(List.of(context1, context2));
-
         DiscoverSchemaRowsetsRequest request = mock(DiscoverSchemaRowsetsRequest.class);
         DiscoverSchemaRowsetsRestrictions restrictions = mock(DiscoverSchemaRowsetsRestrictions.class);
         when(restrictions.schemaName()).thenReturn(Optional.of("DISCOVER_SCHEMA_ROWSETS"));
@@ -352,10 +305,9 @@ class OtherDiscoverServiceTest {
     @Test
     void xmlMetaData() {
         when(cls.tryGetFirstByName(any())).thenReturn(Optional.of(context1));
-        when(context1.getDatabaseMappingSchemaProviders()).thenAnswer(setupDummyListAnswer(dmsp1, dmsp2));
+        when(context1.getCatalogMapping()).thenReturn(catalog);
         DiscoverXmlMetaDataRequest request = mock(DiscoverXmlMetaDataRequest.class);
-        DiscoverXmlMetaDataRestrictions restrictions = mock(DiscoverXmlMetaDataRestrictions.class);
-        Properties properties = mock(Properties.class);
+        DiscoverXmlMetaDataRestrictions restrictions = mock(DiscoverXmlMetaDataRestrictions.class);        
         when(restrictions.databaseId()).thenReturn(Optional.of("foo"));
         when(request.restrictions()).thenReturn(restrictions);
         List<DiscoverXmlMetaDataResponseRow> rows = service.xmlMetaData(request);
@@ -365,18 +317,6 @@ class OtherDiscoverServiceTest {
         assertThat(rows.get(1)).isNotNull();
         assertThat(rows.get(1).metaData()).isEmpty();
 
-    }
-
-    private static <N> Answer<List<N>> setupDummyListAnswer(N... values) {
-        final List<N> someList = new ArrayList<>(Arrays.asList(values));
-
-        Answer<List<N>> answer = new Answer<>() {
-            @Override
-            public List<N> answer(InvocationOnMock invocation) throws Throwable {
-                return someList;
-            }
-        };
-        return answer;
     }
 
 }

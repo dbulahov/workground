@@ -36,15 +36,17 @@ import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
 import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Schema;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingCube;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingHierarchy;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingLevel;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingMeasure;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingPrivateDimension;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingRole;
-import org.eclipse.daanse.olap.rolap.dbmapper.model.api.MappingSchema;
-import org.eclipse.daanse.olap.rolap.dbmapper.provider.api.DatabaseMappingSchemaProvider;
 import org.eclipse.daanse.olap.xmla.bridge.ContextsSupplyerImpl;
+import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.LevelMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.MeasureGroupMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.MeasureMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
 import org.eclipse.daanse.xmla.api.common.enums.LevelDbTypeEnum;
 import org.eclipse.daanse.xmla.api.common.enums.TableTypeEnum;
 import org.eclipse.daanse.xmla.api.discover.dbschema.catalogs.DbSchemaCatalogsRequest;
@@ -89,16 +91,13 @@ class DbSchemaDiscoverServiceTest {
     private Context context2;
 
     @Mock
-    private DatabaseMappingSchemaProvider dmsp1;
+    private CatalogMapping catalog;
 
     @Mock
-    private DatabaseMappingSchemaProvider dmsp2;
+    private SchemaMapping schema1;
 
     @Mock
-    private MappingSchema schema1;
-
-    @Mock
-    private MappingSchema schema2;
+    private SchemaMapping schema2;
 
     @Mock
     private Schema schem1;
@@ -107,16 +106,16 @@ class DbSchemaDiscoverServiceTest {
     private Schema schem2;
 
     @Mock
-    private MappingRole role1;
+    private AccessRoleMapping role1;
 
     @Mock
-    private MappingRole role2;
+    private AccessRoleMapping role2;
 
     @Mock
-    private MappingCube cube1;
+    private CubeMapping cube1;
 
     @Mock
-    private MappingCube cube2;
+    private CubeMapping cube2;
 
     @Mock
     private Cube cub1;
@@ -125,10 +124,16 @@ class DbSchemaDiscoverServiceTest {
     private Cube cub2;
 
     @Mock
-    private MappingPrivateDimension dimension1;
+    private DimensionConnectorMapping dimensionConnector1;
 
     @Mock
-    private MappingPrivateDimension dimension2;
+    private DimensionConnectorMapping dimensionConnector2;
+
+    @Mock
+    private DimensionMapping dimension1;
+
+    @Mock
+    private DimensionMapping dimension2;
 
     @Mock
     private Dimension dim1;
@@ -137,10 +142,10 @@ class DbSchemaDiscoverServiceTest {
     private Dimension dim2;
 
     @Mock
-    private MappingHierarchy hierarchy1;
+    private HierarchyMapping hierarchy1;
 
     @Mock
-    private MappingHierarchy hierarchy2;
+    private HierarchyMapping hierarchy2;
 
     @Mock
     private Hierarchy hierar1;
@@ -149,7 +154,10 @@ class DbSchemaDiscoverServiceTest {
     private Hierarchy hierar2;
 
     @Mock
-    private MappingMeasure measure;
+    private MeasureGroupMapping measureGroup;
+
+    @Mock
+    private MeasureMapping measure;
 
     @Mock
     private DataSource dataSource;
@@ -184,22 +192,22 @@ class DbSchemaDiscoverServiceTest {
         when(request.restrictions()).thenReturn(restrictions);
         when(restrictions.catalogName()).thenReturn(Optional.of("foo"));
 
-        when(schema1.description()).thenReturn("schema1Description");
+        when(schema1.getDescription()).thenReturn("schema1Description");
 
-        when(schema2.description()).thenReturn("schema2Description");
+        when(schema2.getDescription()).thenReturn("schema2Description");
 
-        when(role1.name()).thenReturn("role1");
-        when(role2.name()).thenReturn("role2");
+        when(role1.getName()).thenReturn("role1");
+        when(role2.getName()).thenReturn("role2");
 
-        when(schema1.roles()).thenAnswer(setupDummyListAnswer(role1, role2));
-        when(schema2.roles()).thenAnswer(setupDummyListAnswer(role1, role2));
+        when(schema1.getAccessRoles()).thenAnswer(setupDummyListAnswer(role1, role2));
+        when(schema2.getAccessRoles()).thenAnswer(setupDummyListAnswer(role1, role2));
 
-        when(dmsp1.get()).thenReturn(schema1);
-        when(dmsp2.get()).thenReturn(schema2);
+        when(catalog.getSchemas()).thenAnswer(setupDummyListAnswer(schema1, schema2));
+        
 
         when(context1.getName()).thenReturn("bar");
         when(context2.getName()).thenReturn("foo");
-        when(context2.getDatabaseMappingSchemaProviders()).thenAnswer(setupDummyListAnswer(dmsp1, dmsp2));
+        when(context2.getCatalogMapping()).thenReturn(catalog);
 
         List<DbSchemaCatalogsResponseRow> rows = service.dbSchemaCatalogs(request);
         verify(context1, times(1)).getName();
@@ -229,34 +237,34 @@ class DbSchemaDiscoverServiceTest {
         when(request.restrictions()).thenReturn(restrictions);
         when(restrictions.tableCatalog()).thenReturn(Optional.of("foo"));
 
-        when(schema1.name()).thenReturn("schema1Name");
+        when(schema1.getName()).thenReturn("schema1Name");
 
-        when(schema2.name()).thenReturn("schema2Name");
+        when(schema2.getName()).thenReturn("schema2Name");
 
-        when(hierarchy1.name()).thenReturn("hierarchy1Name");
-        when(hierarchy2.name()).thenReturn("hierarchy2Name");
+        when(hierarchy1.getName()).thenReturn("hierarchy1Name");
+        when(hierarchy2.getName()).thenReturn("hierarchy2Name");
 
-        when(dimension1.hierarchies()).thenAnswer(setupDummyListAnswer(hierarchy1, hierarchy2));
+        when(dimension1.getHierarchies()).thenAnswer(setupDummyListAnswer(hierarchy1, hierarchy2));
 
-        when(measure.name()).thenReturn("measureName");
+        when(measure.getName()).thenReturn("measureName");
 
-        when(cube1.name()).thenReturn("cube1Name");
-        when(cube1.dimensionUsageOrDimensions()).thenAnswer(setupDummyListAnswer(dimension1, dimension2));
-        when(cube1.measures()).thenAnswer(setupDummyListAnswer(measure));
+        when(cube1.getName()).thenReturn("cube1Name");
+        when(cube1.getDimensionConnectors()).thenAnswer(setupDummyListAnswer(dimensionConnector1, dimensionConnector2));        
+        when(cube1.getMeasureGroups()).thenAnswer(setupDummyListAnswer(measureGroup));
 
-        when(cube2.name()).thenReturn("cube2Name");
-        when(cube2.dimensionUsageOrDimensions()).thenAnswer(setupDummyListAnswer(dimension1, dimension2));
-        when(cube2.measures()).thenAnswer(setupDummyListAnswer(measure));
+        when(cube2.getName()).thenReturn("cube2Name");
+        when(cube2.getDimensionConnectors()).thenAnswer(setupDummyListAnswer(dimensionConnector1, dimensionConnector2));
+        when(cube2.getMeasureGroups()).thenAnswer(setupDummyListAnswer(measureGroup));
 
-        when(schema1.cubes()).thenAnswer(setupDummyListAnswer(cube1, cube2));
-        when(schema2.cubes()).thenAnswer(setupDummyListAnswer(cube1, cube2));
+        when(schema1.getCubes()).thenAnswer(setupDummyListAnswer(cube1, cube2));
+        when(schema2.getCubes()).thenAnswer(setupDummyListAnswer(cube1, cube2));
 
-        when(dmsp1.get()).thenReturn(schema1);
-        when(dmsp2.get()).thenReturn(schema2);
+        when(catalog.getSchemas()).thenAnswer(setupDummyListAnswer(schema1, schema2));
+        
 
         when(context1.getName()).thenReturn("bar");
         when(context2.getName()).thenReturn("foo");
-        when(context2.getDatabaseMappingSchemaProviders()).thenAnswer(setupDummyListAnswer(dmsp1, dmsp2));
+        when(context2.getCatalogMapping()).thenReturn(catalog);
 
         List<DbSchemaColumnsResponseRow> rows = service.dbSchemaColumns(request);
         verify(context1, times(1)).getName();
@@ -371,16 +379,16 @@ class DbSchemaDiscoverServiceTest {
         when(request.restrictions()).thenReturn(restrictions);
         when(restrictions.catalogName()).thenReturn("foo");
 
-        when(schema1.name()).thenReturn("schema1Name");
+        when(schema1.getName()).thenReturn("schema1Name");
 
-        when(schema2.name()).thenReturn("schema2Name");
+        when(schema2.getName()).thenReturn("schema2Name");
 
-        when(dmsp1.get()).thenReturn(schema1);
-        when(dmsp2.get()).thenReturn(schema2);
+        when(catalog.getSchemas()).thenAnswer(setupDummyListAnswer(schema1, schema2));
+        
 
         when(context1.getName()).thenReturn("bar");
         when(context2.getName()).thenReturn("foo");
-        when(context2.getDatabaseMappingSchemaProviders()).thenAnswer(setupDummyListAnswer(dmsp1, dmsp2));
+        when(context2.getCatalogMapping()).thenReturn(catalog);;
 
         List<DbSchemaSchemataResponseRow> rows = service.dbSchemaSchemata(request);
         verify(context1, times(1)).getName();
@@ -543,8 +551,8 @@ class DbSchemaDiscoverServiceTest {
 
         DbSchemaTablesRequest request = mock(DbSchemaTablesRequest.class);
         DbSchemaTablesRestrictions restrictions = mock(DbSchemaTablesRestrictions.class);
-        MappingLevel level1 = mock(MappingLevel.class);
-        MappingLevel level2 = mock(MappingLevel.class);
+        LevelMapping level1 = mock(LevelMapping.class);
+        LevelMapping level2 = mock(LevelMapping.class);
 
         when(request.restrictions()).thenReturn(restrictions);
         when(restrictions.tableCatalog()).thenReturn(Optional.of("foo"));
@@ -583,19 +591,18 @@ class DbSchemaDiscoverServiceTest {
         when(request.restrictions()).thenReturn(restrictions);
         when(restrictions.catalogName()).thenReturn(Optional.of("foo"));
 
-        when(schema2.name()).thenReturn("schema2Name");
-        when(schema2.cubes()).thenAnswer(setupDummyListAnswer(cube1, cube2));
+        when(schema2.getName()).thenReturn("schema2Name");
+        when(schema2.getCubes()).thenAnswer(setupDummyListAnswer(cube1, cube2));
 
-        when(cube1.name()).thenReturn("cube1Name");
+        when(cube1.getName()).thenReturn("cube1Name");
 
-        when(cube2.name()).thenReturn("cube2Name");
+        when(cube2.getName()).thenReturn("cube2Name");
 
-        when(dmsp1.get()).thenReturn(schema1);
-        when(dmsp2.get()).thenReturn(schema2);
+        when(catalog.getSchemas()).thenAnswer(setupDummyListAnswer(schema1, schema2));
 
         when(context1.getName()).thenReturn("bar");
         when(context2.getName()).thenReturn("foo");
-        when(context2.getDatabaseMappingSchemaProviders()).thenAnswer(setupDummyListAnswer(dmsp1, dmsp2));
+        when(context2.getCatalogMapping()).thenReturn(catalog);
 
         List<DbSchemaTablesInfoResponseRow> rows = service.dbSchemaTablesInfo(request);
         verify(context1, times(1)).getName();
