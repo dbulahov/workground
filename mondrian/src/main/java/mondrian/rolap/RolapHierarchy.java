@@ -252,14 +252,14 @@ public class RolapHierarchy extends HierarchyBase {
      *
      * @param dimension the dimension this hierarchy belongs to
      * @param xmlHierarchy the xml object defining this hierarchy
-     * @param xmlCubeDimension the xml object defining the cube
+     * @param cubeDimensionMapping the xml object defining the cube
      *   dimension for this object
      */
     RolapHierarchy(
         RolapCube cube,
         RolapDimension dimension,
         HierarchyMapping xmlHierarchy,
-        DimensionConnectorMapping xmlCubeDimension)
+        DimensionConnectorMapping cubeDimensionMapping)
     {
         this(
             dimension,
@@ -283,8 +283,7 @@ public class RolapHierarchy extends HierarchyBase {
           // if cube is virtual than there is no fact in it,
           // so look for it in source cube
           if(cube.isVirtual()) {  
-            String cubeName = xmlCubeDimension.getPhysicalCube().getName();        
-            RolapCube sourceCube = cube.getSchema().lookupCube(cubeName);
+            RolapCube sourceCube = cube.getSchema().lookupCube(cubeDimensionMapping.getPhysicalCube());
             if(sourceCube != null) {
               xmlHierarchyRelation = sourceCube.getFact();
             }
@@ -333,7 +332,7 @@ public class RolapHierarchy extends HierarchyBase {
                 RolapLevel.HideMemberCondition.Never,
                 LevelType.REGULAR, ALL_LEVEL_CARDINALITY,
                 Map.of());
-        allLevel.init(xmlCubeDimension);
+        allLevel.init(cubeDimensionMapping);
         this.allMember = new RolapMemberBase(
             null, allLevel, RolapUtil.sqlNullValue,
             allMemberName, Member.MemberType.ALL);
@@ -379,7 +378,7 @@ public class RolapHierarchy extends HierarchyBase {
             }
         }
 
-        String sharedDimensionName = xmlCubeDimension.getDimension().getName();
+        String sharedDimensionName = cubeDimensionMapping.getDimension().getName();
         this.sharedHierarchyName = sharedDimensionName;
         if (subName != null) {
             this.sharedHierarchyName += "." + subName; // e.g. "Time.Weekly"

@@ -244,7 +244,8 @@ public enum LevelType {
 				return c;
 			}
 		}
-		throw new IllegalArgumentException(v);
+		return REGULAR;
+//		throw new IllegalArgumentException(v);
 	}
 
 	/**

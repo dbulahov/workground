@@ -343,8 +343,6 @@ public class RolapCube extends CubeBase {
         } else {
             closureColumnBitKey = null;
         }
-
-        schema.addCube(this);
     }
 
     /**
@@ -367,6 +365,7 @@ public class RolapCube extends CubeBase {
             (RelationalQueryMapping) cubeMapping.getQuery(),
             cubeMapping.getDimensionConnectors(),
             RolapHierarchy.createMetadataMap(cubeMapping.getAnnotations()), context);
+        schema.addCube(cubeMapping,this);
 
         if (getFact() == null) {
             throw Util.newError(
@@ -792,7 +791,7 @@ public class RolapCube extends CubeBase {
             // Lookup a measure in an existing cube.
         	Optional<CubeMapping> oCube = lookupCube(mappingVirtualCube.getCubeUsages(), mappingMeasure);
         	if (oCube.isPresent()) {
-            RolapCube cube = schema.lookupCube(oCube.get().getName());
+            RolapCube cube = schema.lookupCube(oCube.get());
             if (cube == null) {
                 throw Util.newError(
                     new StringBuilder("Cube '").append(oCube.get().getName()).append("' not found").toString());

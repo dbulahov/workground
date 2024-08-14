@@ -97,7 +97,7 @@ public class RolapCubeDimension extends RolapDimension {
     {
       	
       if (cubeDim.getPhysicalCube() != null && cubeDim.getPhysicalCube().getName() != null) {
-          return schema.lookupCube(cubeDim.getPhysicalCube().getName());
+          return schema.lookupCube(cubeDim.getPhysicalCube());
       }      
       return null;
     }

@@ -17,6 +17,7 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.daanse.db.dialect.api.BestFitColumnType;
 import org.eclipse.daanse.db.dialect.api.Datatype;
@@ -370,9 +371,9 @@ public class RolapLevel extends LevelBase {
             (mappingLevel.isUniqueMembers() ? FLAG_UNIQUE : 0),
             org.eclipse.daanse.db.dialect.api.Datatype.fromValue(mappingLevel.getType()),
             toInternalType(mappingLevel.getInternalType()),
-            HideMemberCondition.valueOf(mappingLevel.getHideMemberIf()),
+            HideMemberCondition.fromValue(mappingLevel.getHideMemberIf()),
             LevelType.fromValue(
-                mappingLevel.getLevelType().equals("TimeHalfYear")
+                "TimeHalfYear".equals(mappingLevel.getLevelType())
                     ? "TimeHalfYears"
                     : mappingLevel.getLevelType()),
             mappingLevel.getApproxRowCount(),
@@ -444,25 +445,29 @@ public class RolapLevel extends LevelBase {
     private static Property.Datatype convertPropertyTypeNameToCode(
         String type)
     {
-        if (type.equals("String")) {
+        if ("String".equals(type)) {
             return Property.Datatype.TYPE_STRING;
-        } else if (type.equalsIgnoreCase("Numeric")) {
+        } else if ("Numeric".equalsIgnoreCase(type)) {
             return Property.Datatype.TYPE_NUMERIC;
-        } else if (type.equalsIgnoreCase("Integer")) {
+        } else if ("Integer".equalsIgnoreCase(type)) {
             return Property.Datatype.TYPE_INTEGER;
-        } else if (type.equalsIgnoreCase("Long")) {
+        } else if ("Long".equalsIgnoreCase(type)) {
             return Property.Datatype.TYPE_LONG;
-        } else if (type.equalsIgnoreCase("Boolean")) {
+        } else if ("Boolean".equalsIgnoreCase(type)) {
             return Property.Datatype.TYPE_BOOLEAN;
-        } else if (type.equalsIgnoreCase("Timestamp")) {
+        } else if ("Timestamp".equalsIgnoreCase(type)) {
             return Property.Datatype.TYPE_TIMESTAMP;
-        } else if (type.equalsIgnoreCase("Time")) {
+        } else if ("Time".equalsIgnoreCase(type)) {
             return Property.Datatype.TYPE_TIME;
-        } else if (type.equalsIgnoreCase("Date")) {
+        } else if ("Date".equalsIgnoreCase(type)) {
             return Property.Datatype.TYPE_DATE;
         } else {
-            throw Util.newError(new StringBuilder("Unknown property type '")
-                .append(type).append("'").toString());
+            
+            //TODO: Do log as warn
+//            throw Util.newError(new StringBuilder("Unknown property type '")
+//                .append(type).append("'").toString());
+            return Property.Datatype.TYPE_STRING;
+
         }
     }
 
@@ -575,7 +580,18 @@ public class RolapLevel extends LevelBase {
         IfBlankName,
 
         /** A member appears unless its name matches its parent's. */
-        IfParentsName
+        IfParentsName;
+        
+        public static HideMemberCondition fromValue(String v) {
+            return Stream.of(HideMemberCondition.values())
+                .filter(e -> (e.toString().equalsIgnoreCase(v)))
+                .findFirst().orElse(Never);
+            // TODO:  care about fallback
+//                .orElseThrow(() -> new IllegalArgumentException(
+//                    new StringBuilder("HideMemberCondition enum Illegal argument ").append(v)
+//                        .toString())
+//                );
+        }
     }
 
     public OlapElement lookupChild(SchemaReader schemaReader, Segment name) {

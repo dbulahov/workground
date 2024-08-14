@@ -71,6 +71,7 @@ import org.eclipse.daanse.olap.api.element.OlapElement;
 import org.eclipse.daanse.olap.api.element.Schema;
 import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.Formula;
+import org.eclipse.daanse.olap.api.query.component.Query;
 import org.eclipse.daanse.olap.api.type.Type;
 import org.eclipse.daanse.olap.impl.IdentifierSegment;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessCubeGrantMapping;
@@ -150,7 +151,7 @@ public class RolapSchema implements Schema {
     /**
      * Holds cubes in this schema.
      */
-    private final Map<String, RolapCube> mapNameToCube =
+    private final Map<CubeMapping, RolapCube> mapMappingToRolapCube =
         new HashMap<>();
 
     /**
@@ -472,16 +473,17 @@ public class RolapSchema implements Schema {
 
         // Create cubes.
         for (CubeMapping cubeMapping : mappingSchema2.getCubes()) {
-            if (cubeMapping.isEnabled()) {
+//            if (cubeMapping.isEnabled()) {
+                RolapCube cube=null;
             	if (cubeMapping instanceof PhysicalCubeMapping physicalCubeMapping) {
-            		RolapCube cube = new RolapCube(this, mappingSchema2, physicalCubeMapping, context);
-            		//discard(cube);
+            	  cube = new RolapCube(this, mappingSchema2, physicalCubeMapping, context);
+            		
             	}
             	if (cubeMapping instanceof VirtualCubeMapping virtualCubeMapping) {
-            		RolapCube cube = new RolapCube(this, mappingSchema2, virtualCubeMapping, context);
+            		cube = new RolapCube(this, mappingSchema2, virtualCubeMapping, context);
             	}
-
-            }
+                addCube(cubeMapping, cube);
+//            }
         }
 
         // Create virtual cubes.
@@ -601,7 +603,7 @@ public class RolapSchema implements Schema {
     public void handleCubeGrant(RoleImpl role, AccessCubeGrantMapping cubeGrant) {
         RolapCube cube = lookupCube(cubeGrant.getCube());
         if (cube == null) {
-            throw Util.newError(new StringBuilder("Unknown cube '").append(cubeGrant.getCube()).append("'").toString());
+            throw Util.newError(new StringBuilder("Unknown cube '").append(cubeGrant.getCube().getName()).append("'").toString());
         }
         role.grant(cube, getAccess(cubeGrant.getAccess(), cubeAllowed));
 
@@ -750,7 +752,7 @@ public class RolapSchema implements Schema {
     }
 
     @Override
-	public Cube lookupCube(final String cube, final boolean failIfNotFound) {
+	public Cube lookupCube(final CubeMapping cube, final boolean failIfNotFound) {
         RolapCube mdxCube = lookupCube(cube);
         if (mdxCube == null && failIfNotFound) {
             throw new MondrianException(MessageFormat.format("MDX cube ''{0}'' not found", cube));
@@ -763,12 +765,27 @@ public class RolapSchema implements Schema {
      * cube exists.
      */
     protected RolapCube lookupCube(final CubeMapping cubeMapping) {
-        return mapNameToCube.get(Util.normalizeName(cubeMapping.getName()));
-    }
-    protected RolapCube lookupCube(final String cubeName) {
-        return mapNameToCube.get(Util.normalizeName(cubeName));
+        return mapMappingToRolapCube.get(cubeMapping);
     }
 
+    
+    @Override
+    public RolapCube lookupCube(String cubeName) {
+        return mapMappingToRolapCube.entrySet().stream().filter(e -> e.getKey().getName().equals(cubeName)).findFirst()
+                .map(Entry::getValue).orElse(null);
+
+    }
+    
+    @Override
+    public RolapCube lookupCube(String cubeName, boolean failIfNotFound) {
+        RolapCube cube = lookupCube(cubeName);
+        if (cube == null && failIfNotFound) {
+            throw new MondrianException(MessageFormat.format("MDX cube ''{0}'' not found", cubeName));
+        }
+        return cube;
+    }
+    
+    
     /**
      * Returns an xmlCalculatedMember called 'calcMemberName' in the
      * cube called 'cubeName' or return null if no calculatedMember or
@@ -812,7 +829,7 @@ public class RolapSchema implements Schema {
 
     public List<RolapCube> getCubesWithStar(RolapStar star) {
         List<RolapCube> list = new ArrayList<>();
-        for (RolapCube cube : mapNameToCube.values()) {
+        for (RolapCube cube : mapMappingToRolapCube.values()) {
             if (star == cube.getStar()) {
                 list.add(cube);
             }
@@ -822,24 +839,23 @@ public class RolapSchema implements Schema {
 
     /**
      * Adds a cube to the cube name map.
+     * @param cubeMapping 
      * @see #lookupCube(String)
      */
-    protected void addCube(final RolapCube cube) {
-        mapNameToCube.put(
-            Util.normalizeName(cube.getName()),
-            cube);
+    protected void addCube(CubeMapping cubeMapping, final RolapCube cube) {
+        mapMappingToRolapCube.put(cubeMapping, cube);
     }
 
 
 
     @Override
 	public Cube[] getCubes() {
-        Collection<RolapCube> cubes = mapNameToCube.values();
+        Collection<RolapCube> cubes = mapMappingToRolapCube.values();
         return cubes.toArray(new RolapCube[cubes.size()]);
     }
 
     public List<RolapCube> getCubeList() {
-        return new ArrayList<>(mapNameToCube.values());
+        return new ArrayList<>(mapMappingToRolapCube.values());
     }
 
     @Override
@@ -1193,6 +1209,8 @@ System.out.println("RolapSchema.createMemberReader: CONTAINS NAME");
     RolapNativeRegistry getNativeRegistry() {
         return nativeRegistry;
     }
+
+
 
 
 }

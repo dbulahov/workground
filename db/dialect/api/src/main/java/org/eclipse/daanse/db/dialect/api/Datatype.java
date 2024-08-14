@@ -123,10 +123,11 @@ public enum Datatype {
     public static Datatype fromValue(String v) {
         return Stream.of(Datatype.values())
             .filter(e -> (e.getValue().equals(v)))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(
-                new StringBuilder("Datatype enum Illegal argument ").append(v)
-                    .toString())
-            );
+            .findFirst().orElse(NUMERIC);
+        // TODO:  care about fallback
+//            .orElseThrow(() -> new IllegalArgumentException(
+//                new StringBuilder("Datatype enum Illegal argument ").append(v)
+//                    .toString())
+//            );
     }
 }

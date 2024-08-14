@@ -77,7 +77,6 @@ public class BasicContext extends AbstractBasicContext {
 
 	@Reference(name = REF_NAME_DB_MAPPING_CATALOG_SUPPLIER, target = UnresolvableNamespace.UNRESOLVABLE_FILTER, cardinality = ReferenceCardinality.MANDATORY)
 	private CatalogMappingSupplier catalogMappingSupplier;
-    
 
     @Reference(name = REF_NAME_EXPRESSION_COMPILER_FACTORY, target = UnresolvableNamespace.UNRESOLVABLE_FILTER)
 	private ExpressionCompilerFactory expressionCompilerFactory = null;

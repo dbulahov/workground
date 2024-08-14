@@ -18,6 +18,9 @@ import java.util.List;
 import org.eclipse.daanse.olap.api.Parameter;
 import org.eclipse.daanse.olap.api.SchemaReader;
 import org.eclipse.daanse.olap.api.access.Role;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
+
+import mondrian.rolap.RolapCube;
 
 /**
  * A <code>Schema</code> is a collection of cubes, shared dimensions, and roles.
@@ -43,7 +46,7 @@ public interface Schema extends MetaElement {
      * exists, <code>failIfNotFound</code> controls whether to raise an error
      * or return <code>null</code>.
      */
-    Cube lookupCube(String cube, boolean failIfNotFound);
+    Cube lookupCube(CubeMapping cube, boolean failIfNotFound);
 
     /**
      * Returns a list of all cubes in this schema.
@@ -85,4 +88,11 @@ public interface Schema extends MetaElement {
      * @return list of warnings
      */
     List<Exception> getWarnings();
+
+    
+    @Deprecated
+    Cube lookupCube(String cubeName, boolean failIfNotFound);
+    
+    @Deprecated
+    Cube lookupCube(String cubeName);
 }

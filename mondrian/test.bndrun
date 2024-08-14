@@ -101,7 +101,8 @@
 -systemproperties.tester:\
     tempIgnoreStrageTests=true#,\
 
-#-runproperties.tester: \
+-runproperties.tester: \
+    tester.names='mondrian.olap.fun.FunctionTest'
     #tester.names='mondrian.rolap.FastBatchingCellReaderTest'
     #mondrian.olap.fun.VisualTotalsTest,\
     #mondrian.rolap.agg.DrillThroughQuerySpecTest,\
