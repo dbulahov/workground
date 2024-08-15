@@ -44,6 +44,10 @@ import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessCubeEnum;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessHierarchyEnum;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessMemberGrantEnum;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessSchemaEnum;
 import org.eclipse.daanse.rolap.mapping.pojo.AccessCubeGrantMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AccessHierarchyGrantMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AccessMemberGrantMappingImpl;
@@ -2434,41 +2438,41 @@ class AccessControlTest {
                 .withName(name)
                 .withAccessSchemaGrants(List.of(
                     AccessSchemaGrantMappingImpl.builder()
-                        .withAccess("none")
+                        .withAccess(AccessSchemaEnum.NONE)
                         .withCubeGrant(List.of(
                             AccessCubeGrantMappingImpl.builder()
-                                .withAccess("all")
+                                .withAccess(AccessCubeEnum.ALL)
                                 .withCube(PhysicalCubeMappingImpl.builder().withName(cubeName).build())
                                 .withHierarchyGrants(List.of(
                                     AccessHierarchyGrantMappingImpl.builder()
-                                        .withAccess("custom")
+                                        .withAccess(AccessHierarchyEnum.CUSTOM)
                                         .withHierarchy(HierarchyMappingImpl.builder().withName("Customers").build())
                                         .withRollupPolicy("partial")
                                         .withMemberGrants(List.of(
                                             AccessMemberGrantMappingImpl.builder()
-                                                .withAccess("All")
+                                                .withAccess(AccessMemberGrantEnum.ALL)
                                                 .withMember(uniqueName)
                                                 .build()
                                         ))
                                         .build(),
                                     AccessHierarchyGrantMappingImpl.builder()
-                                        .withAccess("custom")
+                                        .withAccess(AccessHierarchyEnum.CUSTOM)
                                         .withHierarchy(HierarchyMappingImpl.builder().withName("Customers2").build())
                                         .withRollupPolicy("partial")
                                         .withMemberGrants(List.of(
                                         	AccessMemberGrantMappingImpl.builder()
-                                                .withAccess("All")
+                                                .withAccess(AccessMemberGrantEnum.ALL)
                                                 .withMember(uniqueName2)
                                                 .build()
                                         ))
                                         .build(),
                                     AccessHierarchyGrantMappingImpl.builder()
-                                        .withAccess("custom")
+                                        .withAccess(AccessHierarchyEnum.CUSTOM)
                                         .withHierarchy(HierarchyMappingImpl.builder().withName("Customers3").build())
                                         .withRollupPolicy("partial")
                                         .withMemberGrants(List.of(
                                         	AccessMemberGrantMappingImpl.builder()
-                                                .withAccess("All")
+                                                .withAccess(AccessMemberGrantEnum.ALL)
                                                 .withMember(uniqueName3)
                                                 .build()
                                         ))

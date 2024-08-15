@@ -89,6 +89,7 @@ import org.eclipse.daanse.rolap.mapping.api.model.PhysicalCubeMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.VirtualCubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.ParameterTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -455,9 +456,9 @@ public class RolapSchema implements Schema {
                     name));
             }
             Type type;
-            if ("String".equalsIgnoreCase(mappingParameter.getType())) {
+            if (ParameterTypeEnum.STRING.equals(mappingParameter.getType())) {
                 type = StringType.INSTANCE;
-            } else if ("Numeric".equalsIgnoreCase(mappingParameter.getType())) {
+            } else if (ParameterTypeEnum.NUMERIC.equals(mappingParameter.getType())) {
                 type = NumericType.INSTANCE;
             } else {
                 type = new MemberType(null, null, null, null);
@@ -593,7 +594,7 @@ public class RolapSchema implements Schema {
 
     // package-local visibility for testing purposes
     void handleSchemaGrant(RoleImpl role, AccessSchemaGrantMapping schemaGrantMapings) {
-        role.grant(this, getAccess(schemaGrantMapings.getAccess(), schemaAllowed));
+        role.grant(this, getAccess(schemaGrantMapings.getAccess().getValue(), schemaAllowed));
         for (AccessCubeGrantMapping cubeGrant : schemaGrantMapings.getCubeGrants()) {
             handleCubeGrant(role, cubeGrant);
         }
@@ -605,7 +606,7 @@ public class RolapSchema implements Schema {
         if (cube == null) {
             throw Util.newError(new StringBuilder("Unknown cube '").append(cubeGrant.getCube().getName()).append("'").toString());
         }
-        role.grant(cube, getAccess(cubeGrant.getAccess(), cubeAllowed));
+        role.grant(cube, getAccess(cubeGrant.getAccess().name(), cubeAllowed));
 
         SchemaReader reader = cube.getSchemaReader(null);
         for (AccessDimensionGrantMapping accessDimGrantMapping
@@ -615,7 +616,7 @@ public class RolapSchema implements Schema {
                 lookup(cube, reader, DataType.DIMENSION, accessDimGrantMapping.getDimension().getName());//not sure here with switch to mapping
             role.grant(
                 dimension,
-                getAccess(accessDimGrantMapping.getAccess(), dimensionAllowed));
+                getAccess(accessDimGrantMapping.getAccess().name(), dimensionAllowed));
         }
 
         for (AccessHierarchyGrantMapping hierarchyGrant
@@ -635,7 +636,7 @@ public class RolapSchema implements Schema {
         Hierarchy hierarchy =
             lookup(cube, reader, DataType.HIERARCHY, hierarchyGrant.getHierarchy().getName());
         final Access hierarchyAccess =
-            getAccess(hierarchyGrant.getAccess(), hierarchyAllowed);
+            getAccess(hierarchyGrant.getAccess().name(), hierarchyAllowed);
         Level topLevel = findLevelForHierarchyGrant(
             cube, reader, hierarchyAccess, hierarchyGrant.getTopLevel(), "topLevel");
         Level bottomLevel = findLevelForHierarchyGrant(
@@ -691,7 +692,7 @@ public class RolapSchema implements Schema {
                 }
                 role.grant(
                     member,
-                    getAccess(memberGrant.getAccess(), memberAllowed));
+                    getAccess(memberGrant.getAccess().name(), memberAllowed));
             }
         }
 

@@ -17,6 +17,9 @@ import java.util.List;
 
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.LevelTypeEnum;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.PropertyTypeEnum;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.TypeEnum;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 import org.eclipse.daanse.rolap.mapping.pojo.AggregationExcludeMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AggregationTableMappingImpl;
@@ -64,17 +67,17 @@ public class AggMeasureFactCountTestModifier extends PojoMappingModifier {
                             	MemberPropertyMappingImpl.builder().withName("Store Type").withColumn("store_type").build(),
                             	MemberPropertyMappingImpl.builder().withName("Store Manager").withColumn("store_manager").build(),
                             	MemberPropertyMappingImpl.builder().withName("Store Sqft").withColumn("store_sqft")
-                                    .withType("Numeric").build(),
+                                    .withType(PropertyTypeEnum.NUMERIC).build(),
                                 MemberPropertyMappingImpl.builder().withName("Grocery Sqft").withColumn("grocery_sqft")
-                                	.withType("Numeric").build(),
+                                	.withType(PropertyTypeEnum.NUMERIC).build(),
                                 MemberPropertyMappingImpl.builder().withName("Frozen Sqft").withColumn("frozen_sqft")
-                                	.withType("Numeric").build(),
+                                	.withType(PropertyTypeEnum.NUMERIC).build(),
                                 MemberPropertyMappingImpl.builder().withName("Meat Sqft").withColumn("meat_sqft")
-                                	.withType("Numeric").build(),
+                                	.withType(PropertyTypeEnum.NUMERIC).build(),
                                 MemberPropertyMappingImpl.builder().withName("Has coffee bar").withColumn("coffee_bar")
-                                	.withType("Boolean").build(),
+                                	.withType(PropertyTypeEnum.BOOLEAN).build(),
                                 MemberPropertyMappingImpl.builder().withName("Street address").withColumn("store_street_address")
-                                .withType("String").build()
+                                .withType(PropertyTypeEnum.STRING).build()
                                 ))
                             .build()
                     ))
@@ -93,22 +96,22 @@ public class AggMeasureFactCountTestModifier extends PojoMappingModifier {
                         LevelMappingImpl.builder()
                             .withName("Year")
                             .withColumn("the_year")
-                            .withType("Numeric")
+                            .withType(TypeEnum.NUMERIC)
                             .withUniqueMembers(true)
-                            .withLevelType("TimeYears")
+                            .withLevelType(LevelTypeEnum.TIME_YEARS)
                             .build(),
                         LevelMappingImpl.builder()
                             .withName("Quarter")
                             .withColumn("quarter")
                             .withUniqueMembers(false)
-                            .withLevelType("TimeQuarters")
+                            .withLevelType(LevelTypeEnum.TIME_QUARTERS)
                             .build(),
                         LevelMappingImpl.builder()
                             .withName("Month")
                             .withColumn("month_of_year")
                             .withUniqueMembers(false)
-                            .withType("Numeric")
-                            .withLevelType("TimeMonths")
+                            .withType(TypeEnum.NUMERIC)
+                            .withLevelType(LevelTypeEnum.TIME_MONTHS)
                             .build()
                     ))
                     .build(),
@@ -121,23 +124,23 @@ public class AggMeasureFactCountTestModifier extends PojoMappingModifier {
                         LevelMappingImpl.builder()
                             .withName("Year")
                             .withColumn("the_year")
-                            .withType("Numeric")
+                            .withType(TypeEnum.NUMERIC)
                             .withUniqueMembers(true)
-                            .withLevelType("TimeYears")
+                            .withLevelType(LevelTypeEnum.TIME_YEARS)
                             .build(),
                         LevelMappingImpl.builder()
                             .withName("Week")
                             .withColumn("week_of_year")
-                            .withType("Numeric")
+                            .withType(TypeEnum.NUMERIC)
                             .withUniqueMembers(false)
-                            .withLevelType("TimeWeeks")
+                            .withLevelType(LevelTypeEnum.TIME_WEEKS)
                             .build(),
                         LevelMappingImpl.builder()
                             .withName("Day")
                             .withColumn("day_of_month")
-                            .withType("Numeric")
+                            .withType(TypeEnum.NUMERIC)
                             .withUniqueMembers(false)
-                            .withLevelType("TimeDays")
+                            .withLevelType(LevelTypeEnum.TIME_DAYS)
                             .build()
                     ))
                     .build()
