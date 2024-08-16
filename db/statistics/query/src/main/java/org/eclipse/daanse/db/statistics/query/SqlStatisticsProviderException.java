@@ -17,4 +17,8 @@ public class SqlStatisticsProviderException extends RuntimeException {
     public SqlStatisticsProviderException(Exception e) {
         super(e);
     }
+
+	public SqlStatisticsProviderException(String msg) {
+		super(msg);
+	}
 }
