@@ -44,11 +44,12 @@ import org.eclipse.daanse.olap.api.element.OlapElement;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessCubeGrantMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessHierarchyGrantMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessCubeEnum;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessDimensionEnum;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessHierarchyEnum;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessMemberGrantEnum;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessSchemaEnum;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessCube;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessDimension;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessHierarchy;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessMember;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessSchema;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.RollupPolicyType;
 import org.eclipse.daanse.rolap.mapping.pojo.AccessCubeGrantMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AccessDimensionGrantMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AccessHierarchyGrantMappingImpl;
@@ -173,7 +174,7 @@ class RolapSchemaTest {
                 any(RoleImpl.class), any( AccessCubeGrantMapping.class));        
 
         AccessSchemaGrantMappingImpl grant = AccessSchemaGrantMappingImpl.builder()
-        		.withAccess(AccessSchemaEnum.CUSTOM)
+        		.withAccess(AccessSchema.CUSTOM)
         		.withCubeGrant(null)
         		.build();
         
@@ -228,11 +229,11 @@ class RolapSchemaTest {
         AccessDimensionGrantMappingImpl dimensionGrant =
         		AccessDimensionGrantMappingImpl.builder().build();
         dimensionGrant.setDimension(StandardDimensionMappingImpl.builder().withName("dimension").build());
-        dimensionGrant.setAccess(AccessDimensionEnum.NONE);
+        dimensionGrant.setAccess(AccessDimension.NONE);
 
         AccessCubeGrantMappingImpl grant = AccessCubeGrantMappingImpl.builder().build();
         grant.setCube(PhysicalCubeMappingImpl.builder().withName("cube").build());
-        grant.setAccess(AccessCubeEnum.CUSTOM);
+        grant.setAccess(AccessCube.CUSTOM);
         grant.getDimensionGrants().addAll(List.of(dimensionGrant));
         grant.getHierarchyGrants().addAll(List.of(AccessHierarchyGrantMappingImpl.builder().build()));
 
@@ -387,11 +388,11 @@ class RolapSchemaTest {
         RolapCube cube = mockCube(schema);
         mondrian.olap.RoleImpl role = new mondrian.olap.RoleImpl();
 
-        AccessMemberGrantMappingImpl memberGrant = AccessMemberGrantMappingImpl.builder().withMember("member").withAccess(AccessMemberGrantEnum.ALL).build();
+        AccessMemberGrantMappingImpl memberGrant = AccessMemberGrantMappingImpl.builder().withMember("member").withAccess(AccessMember.ALL).build();
 
         AccessHierarchyGrantMappingImpl grant = AccessHierarchyGrantMappingImpl.builder().build();
-        grant.setAccess(AccessHierarchyEnum.CUSTOM);
-        grant.setRollupPolicy("Full");
+        grant.setAccess(AccessHierarchy.CUSTOM);
+        grant.setRollupPolicyType(RollupPolicyType.FULL);
         //grant.setHierarchy("hierarchy");
         grant.setMemberGrants(List.of(memberGrant));
 

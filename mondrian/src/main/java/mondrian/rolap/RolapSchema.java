@@ -89,7 +89,6 @@ import org.eclipse.daanse.rolap.mapping.api.model.PhysicalCubeMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.VirtualCubeMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.ParameterTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -456,9 +455,9 @@ public class RolapSchema implements Schema {
                     name));
             }
             Type type;
-            if (ParameterTypeEnum.STRING.equals(mappingParameter.getType())) {
+            if (DataType.STRING.equals(mappingParameter.getType())) {
                 type = StringType.INSTANCE;
-            } else if (ParameterTypeEnum.NUMERIC.equals(mappingParameter.getType())) {
+            } else if (DataType.NUMERIC.equals(mappingParameter.getType())) {
                 type = NumericType.INSTANCE;
             } else {
                 type = new MemberType(null, null, null, null);
@@ -643,15 +642,15 @@ public class RolapSchema implements Schema {
             cube, reader, hierarchyAccess, hierarchyGrant.getBottomLevel(), "bottomLevel");
 
         RollupPolicy rollupPolicy;
-        if (hierarchyGrant.getRollupPolicy() != null) {
+        if (hierarchyGrant.getRollupPolicyType() != null) {
             try {
                 rollupPolicy =
                     RollupPolicy.valueOf(
-                        hierarchyGrant.getRollupPolicy().toUpperCase());
+                        hierarchyGrant.getRollupPolicyType().getValue().toUpperCase());
             } catch (IllegalArgumentException e) {
                 throw Util.newError(
                     new StringBuilder("Illegal rollupPolicy value '")
-                        .append(hierarchyGrant.getRollupPolicy())
+                        .append(hierarchyGrant.getRollupPolicyType())
                         .append("'").toString());
             }
         } else {

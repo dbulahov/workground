@@ -15,9 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.List;
 
 import org.eclipse.daanse.rolap.mapping.api.model.RelationalQueryMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.HideMemberIfEnum;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.LevelTypeEnum;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.TypeEnum;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.HideMemberIfType;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.LevelType;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.DataType;
 import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.DimensionMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.HierarchyMappingImpl;
@@ -59,9 +59,9 @@ class RolapDimensionTest {
     	    .withVisible(true)
             .withMemberProperties(List.of())
             .withUniqueMembers(true)
-            .withType(TypeEnum.STRING)
-            .withHideMemberIf(HideMemberIfEnum.NEVER)
-            .withLevelType(LevelTypeEnum.REGULAR)
+            .withType(DataType.STRING)
+            .withHideMemberIfType(HideMemberIfType.NEVER)
+            .withLevelType(LevelType.REGULAR)
     		.build();
     xmlCubeDimension = DimensionConnectorMappingImpl.builder().build();
 

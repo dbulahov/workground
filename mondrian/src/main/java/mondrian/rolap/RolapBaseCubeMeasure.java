@@ -14,9 +14,9 @@ import java.util.Map;
 
 import mondrian.olap.MondrianException;
 import mondrian.olap.exceptions.CastInvalidTypeException;
+
 import org.eclipse.daanse.db.dialect.api.Datatype;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.MeasureDataTypeEnum;
 
 import mondrian.olap.Property;
 import mondrian.olap.StringLiteralImpl;
@@ -91,7 +91,7 @@ public class RolapBaseCubeMeasure
         String formatString,
         SQLExpressionMapping expression,
         String aggregatorName,
-        MeasureDataTypeEnum datatype,
+        org.eclipse.daanse.rolap.mapping.api.model.enums.DataType datatype,
         Map<String, Object> metadata)
     {
         super(parentMember, level, name, null, MemberType.MEASURE);
@@ -142,9 +142,9 @@ public class RolapBaseCubeMeasure
             if (aggregator == RolapAggregator.Count
                 || aggregator == RolapAggregator.DistinctCount)
             {
-                datatype = MeasureDataTypeEnum.INTEGER;
+                datatype = org.eclipse.daanse.rolap.mapping.api.model.enums.DataType.INTEGER;
             } else {
-                datatype = MeasureDataTypeEnum.NUMERIC;
+                datatype = org.eclipse.daanse.rolap.mapping.api.model.enums.DataType.NUMERIC;
             }
         }
         if (RolapBaseCubeMeasure.DataType.valueOf(datatype.getValue()) == null) {

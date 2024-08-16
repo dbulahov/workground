@@ -369,9 +369,9 @@ public class RolapLevel extends LevelBase {
             mappingLevel.getParentChildLink(),
             createProperties(mappingLevel),
             (mappingLevel.isUniqueMembers() ? FLAG_UNIQUE : 0),
-            org.eclipse.daanse.db.dialect.api.Datatype.fromValue(mappingLevel.getType().getValue()),
-            toInternalType(mappingLevel.getInternalType().getValue()),
-            HideMemberCondition.fromValue(mappingLevel.getHideMemberIf().getValue()),
+            org.eclipse.daanse.db.dialect.api.Datatype.fromValue(mappingLevel.getDataType().getValue()),
+            toInternalType(mappingLevel.getDataType().getValue()),
+            HideMemberCondition.fromValue(mappingLevel.getHideMemberIfType().getValue()),
             LevelType.fromValue(
                 "TimeHalfYear".equals(mappingLevel.getLevelType().getValue())
                     ? "TimeHalfYears"
@@ -431,7 +431,7 @@ public class RolapLevel extends LevelBase {
             list.add(
                 new RolapProperty(
                     xmlProperty.getName(),
-                    convertPropertyTypeNameToCode(xmlProperty.getType().getValue()),
+                    convertPropertyTypeNameToCode(xmlProperty.getDataType().getValue()),
                     getPropertyExp(xmlLevel, i),
                     formatter,
                     xmlProperty.getName(),

@@ -110,7 +110,7 @@ public class PojoUtil {
 			List<? extends InlineTableColumnDefinitionMapping> columnDefinitions) {
     	if (columnDefinitions != null) {
     		return columnDefinitions.stream().map(cd -> InlineTableColumnDefinitionMappingImpl.builder()
-    				.withName(cd.getName()).withType(cd.getType()).build()).toList();
+    				.withName(cd.getName()).withType(cd.getDataType()).build()).toList();
     	}
 		return List.of();
 	}
