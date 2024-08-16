@@ -647,7 +647,7 @@ public class RolapCube extends CubeBase {
                 getAlias(getFact()), measureMapping.getColumn());
         } else if (measureMapping.getMeasureExpression() != null) {
             measureExp = measureMapping.getMeasureExpression();
-        } else if (measureMapping.getDatatype().equals(MeasureAggregatorType.COUNT)) {
+        } else if (measureMapping.getAggregatorType().equals(MeasureAggregatorType.COUNT)) {
             // it's ok if count has no expression; it means 'count(*)'
             measureExp = null;
         } else {
