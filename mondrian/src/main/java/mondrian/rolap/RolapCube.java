@@ -96,6 +96,7 @@ import org.eclipse.daanse.rolap.mapping.api.model.VirtualCubeMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.WritebackAttributeMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.WritebackMeasureMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.WritebackTableMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.MeasureAggregatorType;
 import org.eclipse.daanse.rolap.mapping.pojo.AnnotationMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.JoinQueryMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.JoinedQueryElementMappingImpl;
@@ -426,12 +427,12 @@ public class RolapCube extends CubeBase {
             final MeasureMappingImpl mappingMeasure = MeasureMappingImpl
             		.builder()
             		.withName("Fact Count")
-            		.withType("count")
+            		.withAggregatorType(MeasureAggregatorType.COUNT)
             		.withVisible(false)
             		.withAnnotations(annotations)
             		.build();
             mappingMeasure.setName("Fact Count");
-            mappingMeasure.setType("count");
+            mappingMeasure.setAggregatorType(MeasureAggregatorType.COUNT);
             mappingMeasure.setVisible(false);
             mappingMeasure.setAnnotations(annotations);
             factCountMeasure =
@@ -646,7 +647,7 @@ public class RolapCube extends CubeBase {
                 getAlias(getFact()), measureMapping.getColumn());
         } else if (measureMapping.getMeasureExpression() != null) {
             measureExp = measureMapping.getMeasureExpression();
-        } else if (measureMapping.getType().equals("count")) {
+        } else if (measureMapping.getDatatype().equals(MeasureAggregatorType.COUNT)) {
             // it's ok if count has no expression; it means 'count(*)'
             measureExp = null;
         } else {
@@ -656,7 +657,7 @@ public class RolapCube extends CubeBase {
 
         // Validate aggregator name. Substitute deprecated "distinct count"
         // with modern "distinct-count".
-        String aggregator = measureMapping.getType();
+        String aggregator = measureMapping.getAggregatorType().getValue();
         if (aggregator.equals("distinct count")) {
             aggregator = RolapAggregator.DistinctCount.getName();
         }

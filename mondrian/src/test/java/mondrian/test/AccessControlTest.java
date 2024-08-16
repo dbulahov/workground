@@ -44,10 +44,13 @@ import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessCubeEnum;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessHierarchyEnum;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessMemberGrantEnum;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessSchemaEnum;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessCube;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessCube;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessHierarchy;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessMember;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessSchema;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.RollupPolicyType;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessSchema;
 import org.eclipse.daanse.rolap.mapping.pojo.AccessCubeGrantMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AccessHierarchyGrantMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AccessMemberGrantMappingImpl;
@@ -2438,41 +2441,41 @@ class AccessControlTest {
                 .withName(name)
                 .withAccessSchemaGrants(List.of(
                     AccessSchemaGrantMappingImpl.builder()
-                        .withAccess(AccessSchemaEnum.NONE)
+                        .withAccess(AccessSchema.NONE)
                         .withCubeGrant(List.of(
                             AccessCubeGrantMappingImpl.builder()
-                                .withAccess(AccessCubeEnum.ALL)
+                                .withAccess(AccessCube.ALL)
                                 .withCube(PhysicalCubeMappingImpl.builder().withName(cubeName).build())
                                 .withHierarchyGrants(List.of(
                                     AccessHierarchyGrantMappingImpl.builder()
-                                        .withAccess(AccessHierarchyEnum.CUSTOM)
+                                        .withAccess(AccessHierarchy.CUSTOM)
                                         .withHierarchy(HierarchyMappingImpl.builder().withName("Customers").build())
-                                        .withRollupPolicy("partial")
+                                        .withRollupPolicyType(RollupPolicyType.PARTIAL)
                                         .withMemberGrants(List.of(
                                             AccessMemberGrantMappingImpl.builder()
-                                                .withAccess(AccessMemberGrantEnum.ALL)
+                                                .withAccess(AccessMember.ALL)
                                                 .withMember(uniqueName)
                                                 .build()
                                         ))
                                         .build(),
                                     AccessHierarchyGrantMappingImpl.builder()
-                                        .withAccess(AccessHierarchyEnum.CUSTOM)
+                                        .withAccess(AccessHierarchy.CUSTOM)
                                         .withHierarchy(HierarchyMappingImpl.builder().withName("Customers2").build())
-                                        .withRollupPolicy("partial")
+                                        .withRollupPolicyType(RollupPolicyType.PARTIAL)
                                         .withMemberGrants(List.of(
                                         	AccessMemberGrantMappingImpl.builder()
-                                                .withAccess(AccessMemberGrantEnum.ALL)
+                                                .withAccess(AccessMember.ALL)
                                                 .withMember(uniqueName2)
                                                 .build()
                                         ))
                                         .build(),
                                     AccessHierarchyGrantMappingImpl.builder()
-                                        .withAccess(AccessHierarchyEnum.CUSTOM)
+                                        .withAccess(AccessHierarchy.CUSTOM)
                                         .withHierarchy(HierarchyMappingImpl.builder().withName("Customers3").build())
-                                        .withRollupPolicy("partial")
+                                        .withRollupPolicyType(RollupPolicyType.PARTIAL)
                                         .withMemberGrants(List.of(
                                         	AccessMemberGrantMappingImpl.builder()
-                                                .withAccess(AccessMemberGrantEnum.ALL)
+                                                .withAccess(AccessMember.ALL)
                                                 .withMember(uniqueName3)
                                                 .build()
                                         ))
