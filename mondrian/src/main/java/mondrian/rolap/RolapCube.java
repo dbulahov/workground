@@ -82,6 +82,7 @@ import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.DimensionMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.DrillThroughActionMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.DrillThroughAttributeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.MeasureGroupMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.MeasureMapping;
@@ -213,7 +214,7 @@ public class RolapCube extends CubeBase {
     private final static String noTimeDimensionInCube =
         "Cannot use the function ''{0}'', no time dimension is available for this cube.";
     private final static String calcMemberHasBadDimension =
-        "Unknown dimension ''{0}'' for calculated member ''{1}'' in cube ''{2}''";
+        "Unknown hierarchy ''{0}'' for calculated member ''{1}'' in cube ''{2}''";
     private final static String calcMemberHasBothDimensionAndHierarchy =
         "Cannot specify both a dimension and hierarchy for calculated member ''{0}'' in cube ''{1}''";
     private final static String calcMemberHasDifferentParentAndHierarchy =
@@ -1420,19 +1421,30 @@ public class RolapCube extends CubeBase {
 
         // Lookup dimension
         Hierarchy hierarchy = null;
-        String dimName = null;
-        if (mappingCalcMember.getHierarchy() != null && mappingCalcMember.getHierarchy().getName() !=null) {
-            dimName = mappingCalcMember.getHierarchy().getName();
-            hierarchy = (Hierarchy)
-                getSchemaReader().withLocus().lookupCompound(
-                    this,
-                    Util.parseIdentifier(dimName),
-                    false,
-                    DataType.HIERARCHY);
+//        String dimName = null;
+        if (mappingCalcMember.getHierarchy() == null) {
+            hierarchy = measuresHierarchy;
+        } else {
+            // with new mapping
+            HierarchyMapping hierarchyMappingOfCalcMember = mappingCalcMember.getHierarchy();
+            hierarchy = hierarchyList.stream(
+                    ).filter(h -> hierarchyMappingOfCalcMember.equals(h.hierarchyMapping))
+                    .findAny().orElse(null);
+
         }
+//        if (mappingCalcMember.getHierarchy() != null && mappingCalcMember.getHierarchy().getName() !=null) {
+//            
+//            dimName = mappingCalcMember.getHierarchy().getName();
+//            hierarchy = (Hierarchy)
+//                getSchemaReader().withLocus().lookupCompound(
+//                    this,
+//                    Util.parseIdentifier(dimName),
+//                    false,
+//                    DataType.HIERARCHY);
+//        }
         if (hierarchy == null) {
             throw new MondrianException(MessageFormat.format(calcMemberHasBadDimension,
-                dimName, mappingCalcMember.getName(), getName()));
+                    mappingCalcMember.getHierarchy().getName(),   mappingCalcMember.getName(), getName()));
         }
 
         // Root of fully-qualified name.
@@ -1535,7 +1547,7 @@ public class RolapCube extends CubeBase {
         }
 
         assert propNames.size() == propExprs.size();
-        processFormatStringAttribute(mappingCalcMember, buf);
+//        processFormatStringAttribute(mappingCalcMember, buf);
 
         for (int i = 0; i < propNames.size(); i++) {
             String name = propNames.get(i);

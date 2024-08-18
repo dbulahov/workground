@@ -546,7 +546,8 @@ public class RolapLevel extends LevelBase {
             "double", BestFitColumnType.DOUBLE,
             "Object", BestFitColumnType.OBJECT,
             "String", BestFitColumnType.STRING,
-            "long", BestFitColumnType.LONG);
+            "long", BestFitColumnType.LONG,
+            "Numeric", BestFitColumnType.DOUBLE);//TODO. May remove
 
     private static BestFitColumnType toInternalType(String internalType) {
         BestFitColumnType type = null;
