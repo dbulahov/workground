@@ -118,7 +118,7 @@ public class JdbcStatisticsProvider implements StatisticsProvider {
 					int type = resultSet.getInt(TYPE_COLUMN);
 					if (type != DatabaseMetaData.tableIndexStatistic) {
 						String columnName = resultSet.getString(COLUMN_NAME);
-						if (columnName != null && columnName.equals(column)) {
+						if (columnName != null && columnName.equals(column.name())) {
 							return resultSet.getInt(CARDINALITY_COLUMN);
 						}
 					}

@@ -455,9 +455,9 @@ public class RolapSchema implements Schema {
                     name));
             }
             Type type;
-            if (DataType.STRING.equals(mappingParameter.getType())) {
+            if (org.eclipse.daanse.rolap.mapping.api.model.enums.DataType.STRING == mappingParameter.getType()) {
                 type = StringType.INSTANCE;
-            } else if (DataType.NUMERIC.equals(mappingParameter.getType())) {
+            } else if (org.eclipse.daanse.rolap.mapping.api.model.enums.DataType.NUMERIC == mappingParameter.getType()) {
                 type = NumericType.INSTANCE;
             } else {
                 type = new MemberType(null, null, null, null);

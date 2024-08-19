@@ -393,13 +393,13 @@ public class RolapCube extends CubeBase {
 
 		AtomicInteger ai=new AtomicInteger();
         Member defaultMeasure = null;
-        for (MeasureMapping measureMapping:measureMappings) {
+        for (MeasureMapping measureMapping : measureMappings) {
             RolapBaseCubeMeasure measure =
                 createMeasure(cubeMapping, measuresLevel, ai.incrementAndGet(), measureMapping);
             measureList.add(measure);
 
             // Is this the default measure?
-            if (measure.getName().equals( cubeMapping.getDefaultMeasure())) {
+            if (measureMapping.equals(cubeMapping.getDefaultMeasure())) {
                 defaultMeasure = measure;
             }
 
@@ -467,7 +467,7 @@ public class RolapCube extends CubeBase {
                         Level level = null;
                         RolapProperty property = null;
                         for(Dimension currntDimension: this.getDimensions()) {
-                            if(currntDimension.getName().equals(mappingDrillThroughAttribute.getDimension())) {
+                            if(currntDimension.getName().equals(mappingDrillThroughAttribute.getDimension().getName())) { //TODO
                                 dimension = currntDimension;
                                 break;
                             }
@@ -478,10 +478,10 @@ public class RolapCube extends CubeBase {
                                         .append(mappingDrillThroughAttribute.getDimension()).append("' not found").toString());
                         }
                         else {
-                            if(mappingDrillThroughAttribute.getHierarchy() != null && !mappingDrillThroughAttribute.getHierarchy().equals("")) {
+                            if(mappingDrillThroughAttribute.getHierarchy() != null) {
                                 for(Hierarchy currentHierarchy: dimension.getHierarchies()) {
                                     if(currentHierarchy instanceof RolapCubeHierarchy rolapCubeHierarchy
-                                        && rolapCubeHierarchy.getSubName().equals(mappingDrillThroughAttribute.getHierarchy())) {
+                                        && rolapCubeHierarchy.getSubName().equals(mappingDrillThroughAttribute.getHierarchy().getName())) { //TODO
                                         hierarchy = currentHierarchy;
                                         break;
                                     }
@@ -493,9 +493,9 @@ public class RolapCube extends CubeBase {
                                                 .append("' not found").toString());
                                 }
                                 else {
-                                    if(mappingDrillThroughAttribute.getLevel() != null && !mappingDrillThroughAttribute.getLevel().equals("")) {
+                                    if(mappingDrillThroughAttribute.getLevel() != null && !mappingDrillThroughAttribute.getLevel().getName().equals("")) { //TODO
                                         for(Level currentLevel: hierarchy.getLevels()) {
-                                            if(currentLevel.getName().equals(mappingDrillThroughAttribute.getLevel())) {
+                                            if(currentLevel.getName().equals(mappingDrillThroughAttribute.getLevel().getName())) {
                                                 level = currentLevel;
                                                 break;
                                             }
@@ -567,7 +567,7 @@ public class RolapCube extends CubeBase {
                 
                     Dimension dimension = null;
                     for(Dimension currentDimension: this.getDimensions()) {
-                        if(currentDimension.getName().equals(writebackAttribute.getDimension())) {
+                        if(currentDimension.getName().equals(writebackAttribute.getDimension().getName())) { //TODO
                             dimension = currentDimension;
                             break;
                         }
