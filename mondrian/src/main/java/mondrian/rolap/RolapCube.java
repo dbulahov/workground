@@ -395,7 +395,7 @@ public class RolapCube extends CubeBase {
         Member defaultMeasure = null;
         for (MeasureMapping measureMapping : measureMappings) {
             RolapBaseCubeMeasure measure =
-                createMeasure(cubeMapping, measuresLevel, ai.incrementAndGet(), measureMapping);
+                createMeasure(cubeMapping, measuresLevel, ai.getAndIncrement(), measureMapping);
             measureList.add(measure);
 
             // Is this the default measure?
