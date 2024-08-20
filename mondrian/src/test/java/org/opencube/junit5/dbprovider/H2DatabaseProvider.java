@@ -47,11 +47,11 @@ public class H2DatabaseProvider implements DatabaseProvider {
 
 //	private static Path getTempFile() {
 //		try {
-//			
+//
 //			Path temp = Files.createTempDirectory("daanse_test_"+UUID.randomUUID().toString()).toAbsolutePath();
-//			
-//	
-//			
+//
+//
+//
 //
 //			return temp;
 //		} catch (Exception e) {
@@ -73,11 +73,11 @@ public class H2DatabaseProvider implements DatabaseProvider {
 
 	@Override
 	public Entry<DataSource, Dialect> activate() {
-		
+
 		RolapSchemaPool.instance().clear();
 
 
-		String JDBC_SQLITE_MEMORY = "jdbc:h2:memFS:" + UUID.randomUUID().toString();
+		String JDBC_SQLITE_MEMORY = "jdbc:h2:memFS:" + UUID.randomUUID().toString() + ";DATABASE_TO_UPPER=false";
 		JdbcDataSource cpDataSource = new JdbcDataSource();
 		cpDataSource.setUrl(JDBC_SQLITE_MEMORY);
 		cpDataSource.setUser("sa");
