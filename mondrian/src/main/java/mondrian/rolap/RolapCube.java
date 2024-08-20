@@ -438,7 +438,7 @@ public class RolapCube extends CubeBase {
             mappingMeasure.setAnnotations(annotations);
             factCountMeasure =
                 createMeasure(
-                    cubeMapping, measuresLevel, ai.incrementAndGet(), mappingMeasure);
+                    cubeMapping, measuresLevel, measureList.size(), mappingMeasure);
             measureList.add(factCountMeasure);
         }
 
