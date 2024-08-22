@@ -84,6 +84,7 @@ import org.eclipse.daanse.rolap.mapping.api.model.DrillThroughActionMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.DrillThroughAttributeMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.JoinQueryMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.LevelMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.MeasureGroupMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.MeasureMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.NamedSetMapping;
@@ -564,7 +565,7 @@ public class RolapCube extends CubeBase {
             List<RolapWritebackColumn> columns = new ArrayList<>();
 
             for(WritebackAttributeMapping writebackAttribute: writebackTable.getWritebackAttribute()) {
-                
+
                     Dimension dimension = null;
                     for(Dimension currentDimension: this.getDimensions()) {
                         if(currentDimension.getName().equals(writebackAttribute.getDimension().getName())) { //TODO
@@ -783,22 +784,22 @@ public class RolapCube extends CubeBase {
         this.cubeUsages = new RolapCubeUsages(mappingVirtualCube.getCubeUsages());
 
         HashMap<String, MeasureMapping> measureHash = new HashMap<>();
-
-        for (MeasureGroupMapping measureGroup
-            : mappingVirtualCube.getMeasureGroups())
-        {
-            for (MeasureMapping mappingMeasure : measureGroup.getMeasures()) {
+        List<? extends MeasureMapping> ms = mappingVirtualCube.getMeasureGroups().stream().flatMap(mg -> mg.getMeasures().stream()).toList();
+        //for (MeasureGroupMapping measureGroup
+        //    : mappingVirtualCube.getMeasureGroups())
+        //{
+            for (MeasureMapping mappingMeasure : ms) {
         	measureHash.put(mappingMeasure.getName(), mappingMeasure);
 
             // Lookup a measure in an existing cube.
-        	Optional<CubeMapping> oCube = lookupCube(mappingVirtualCube.getCubeUsages(), mappingMeasure);
+        	Optional<CubeMapping> oCube = lookupCube(mappingSchema.getCubes(), mappingMeasure);
         	if (oCube.isPresent()) {
             RolapCube cube = schema.lookupCube(oCube.get());
             if (cube == null) {
                 throw Util.newError(
                     new StringBuilder("Cube '").append(oCube.get().getName()).append("' not found").toString());
             }
-        	
+
             List<Member> cubeMeasures = cube.getMeasures();
             boolean found = false;
             boolean isDefaultMeasureFound = false;
@@ -876,10 +877,10 @@ public class RolapCube extends CubeBase {
                     .append("' in cube '").append(oCube.get().getName()).append("'").toString());
             }
         } else {
-            throw Util.newInternal("measure not found in cube usages");	
-        }        	
+            throw Util.newInternal("measure not found in cube usages");
         }
         }
+        //}
 
         // Must init the dimensions before dealing with calculated members
         init(mappingVirtualCube.getDimensionConnectors());
@@ -1043,18 +1044,18 @@ public class RolapCube extends CubeBase {
         // Note: virtual cubes do not get aggregate
     }
 
-	private Optional<CubeMapping> lookupCube(List<? extends CubeConnectorMapping> cubeUsages,
+	private Optional<CubeMapping> lookupCube(List<? extends CubeMapping> cubeUsages,
 			MeasureMapping mappingMeasure) {
 		if (cubeUsages != null) {
-			for (CubeConnectorMapping cubeConnectorMapping : cubeUsages) {
-				if (cubeConnectorMapping.getCube().getMeasureGroups() != null) {
-					for (MeasureGroupMapping measureGroupMapping : cubeConnectorMapping.getCube().getMeasureGroups()) {
+			for (CubeMapping cube : cubeUsages) {
+				if (cube.getMeasureGroups() != null) {
+					for (MeasureGroupMapping measureGroupMapping : cube.getMeasureGroups()) {
 						if (measureGroupMapping.getMeasures() != null) {
 							Optional<? extends MeasureMapping> oMeasure = measureGroupMapping.getMeasures().stream().filter(m -> m.equals(mappingMeasure)).findAny();
 							if (oMeasure.isPresent()) {
-								return Optional.of(cubeConnectorMapping.getCube()); 
+								return Optional.of(cube);
 							}
-						}						
+						}
 					}
 				}
 			}
@@ -1139,13 +1140,13 @@ public class RolapCube extends CubeBase {
         List<RolapHierarchy> cubeHierarchyList)
     {
         RolapDimension dimension = null;
-        
+
         final RolapHierarchy sharedHierarchy = schema.getSharedHierarchy(mappingCubeDimension.getDimension().getName());
         if (sharedHierarchy != null) {
             dimension =
                 (RolapDimension) sharedHierarchy.getDimension();
         }
-        
+
 
         if (dimension == null) {
             DimensionMapping mappingDimension = mappingCubeDimension.getDimension();
@@ -1433,7 +1434,7 @@ public class RolapCube extends CubeBase {
 
         }
 //        if (mappingCalcMember.getHierarchy() != null && mappingCalcMember.getHierarchy().getName() !=null) {
-//            
+//
 //            dimName = mappingCalcMember.getHierarchy().getName();
 //            hierarchy = (Hierarchy)
 //                getSchemaReader().withLocus().lookupCompound(
@@ -3599,4 +3600,24 @@ public class RolapCube extends CubeBase {
     public Optional<RolapWritebackTable> getWritebackTable() {
         return writebackTable;
     }
+
+	public Hierarchy lookupHierarchy(HierarchyMapping hierarchy) {
+        return hierarchyList.stream(
+                ).filter(h -> hierarchy.equals(h.hierarchyMapping))
+                .findAny().orElse(null);
+	}
+	
+	public Level lookupLevel(LevelMapping level, Hierarchy h) {		
+		if (level != null && h != null && h.getLevels() != null) {
+			for (Level l : h.getLevels()) {
+				if (l instanceof RolapLevel rl) {
+					if (level.equals(rl.levelMapping)) {
+						return rl;
+					}
+				}				
+			}
+		}
+		return null;
+	}
+
 }

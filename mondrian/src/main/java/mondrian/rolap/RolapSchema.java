@@ -477,12 +477,14 @@ public class RolapSchema implements Schema {
                 RolapCube cube=null;
             	if (cubeMapping instanceof PhysicalCubeMapping physicalCubeMapping) {
             	  cube = new RolapCube(this, mappingSchema2, physicalCubeMapping, context);
-            		
+            	  addCube(cubeMapping, cube);
+
             	}
+            	//TODO Virtual Cube
             	if (cubeMapping instanceof VirtualCubeMapping virtualCubeMapping) {
-            		cube = new RolapCube(this, mappingSchema2, virtualCubeMapping, context);
+            		//cube = new RolapCube(this, mappingSchema2, virtualCubeMapping, context);
+            		//addCube(cubeMapping, cube);
             	}
-                addCube(cubeMapping, cube);
 //            }
         }
 
@@ -632,15 +634,15 @@ public class RolapSchema implements Schema {
         SchemaReader reader,
         AccessHierarchyGrantMapping hierarchyGrant)
     {
-        Hierarchy hierarchy =
-            lookup(cube, reader, DataType.HIERARCHY, hierarchyGrant.getHierarchy().getName());
+    	Hierarchy hierarchy = cube.lookupHierarchy(hierarchyGrant.getHierarchy());
         final Access hierarchyAccess =
             getAccess(hierarchyGrant.getAccess().name(), hierarchyAllowed);
-        Level topLevel = findLevelForHierarchyGrant(
-            cube, reader, hierarchyAccess, hierarchyGrant.getTopLevel(), "topLevel");
-        Level bottomLevel = findLevelForHierarchyGrant(
-            cube, reader, hierarchyAccess, hierarchyGrant.getBottomLevel(), "bottomLevel");
-
+        //Level topLevel = findLevelForHierarchyGrant(
+        //    cube, reader, hierarchyAccess, hierarchyGrant.getTopLevel(), "topLevel");
+        Level topLevel = cube.lookupLevel(hierarchyGrant.getTopLevel(),  hierarchy);
+        //Level bottomLevel = findLevelForHierarchyGrant(
+        //    cube, reader, hierarchyAccess, hierarchyGrant.getBottomLevel(), "bottomLevel");
+        Level bottomLevel = cube.lookupLevel(hierarchyGrant.getBottomLevel(),  hierarchy);
         RollupPolicy rollupPolicy;
         if (hierarchyGrant.getRollupPolicyType() != null) {
             try {
@@ -768,14 +770,14 @@ public class RolapSchema implements Schema {
         return mapMappingToRolapCube.get(cubeMapping);
     }
 
-    
+
     @Override
     public RolapCube lookupCube(String cubeName) {
         return mapMappingToRolapCube.entrySet().stream().filter(e -> e.getKey().getName().equals(cubeName)).findFirst()
                 .map(Entry::getValue).orElse(null);
 
     }
-    
+
     @Override
     public RolapCube lookupCube(String cubeName, boolean failIfNotFound) {
         RolapCube cube = lookupCube(cubeName);
@@ -784,8 +786,8 @@ public class RolapSchema implements Schema {
         }
         return cube;
     }
-    
-    
+
+
     /**
      * Returns an xmlCalculatedMember called 'calcMemberName' in the
      * cube called 'cubeName' or return null if no calculatedMember or
@@ -839,7 +841,7 @@ public class RolapSchema implements Schema {
 
     /**
      * Adds a cube to the cube name map.
-     * @param cubeMapping 
+     * @param cubeMapping
      * @see #lookupCube(String)
      */
     protected void addCube(CubeMapping cubeMapping, final RolapCube cube) {

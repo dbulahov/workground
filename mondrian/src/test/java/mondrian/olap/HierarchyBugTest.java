@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.opencube.junit5.TestUtil.withSchema;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -34,7 +35,17 @@ import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Position;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.DataType;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.LevelType;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.HierarchyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.LevelMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TimeDimensionMappingImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -306,11 +317,52 @@ TestUtil.flushSchemaCache(conn);
             + "    </Hierarchy>\n"
             + "  </Dimension>";
         */
-        class VerifyMemberLevelNamesIdentityOlap4jDateDimModifier extends org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier {
-
+        class VerifyMemberLevelNamesIdentityOlap4jDateDimModifier extends org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier {        		
            public VerifyMemberLevelNamesIdentityOlap4jDateDimModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+     
+           protected List<? extends DimensionConnectorMapping> cubeDimensionConnectors(CubeMapping cube) {
+        	   List<DimensionConnectorMapping> result = new ArrayList<>();
+        	   result.addAll(super.cubeDimensionConnectors(cube));
+        	   if ("Sales".equals(cube.getName())) {
+        		   result.add(DimensionConnectorMappingImpl.builder()
+        				   .withForeignKey("time_id")
+        				   .withOverrideDimensionName("Date")
+        				   .withDimension(TimeDimensionMappingImpl.builder()
+        						   .withName("Date")
+        						   .withHierarchies(List.of(HierarchyMappingImpl.builder()
+        	                                .withHasAll(false)
+        	                                .withPrimaryKey("time_id")
+        	                                .withQuery(TableQueryMappingImpl.builder().withName("time_by_day").build())
+        	                                .withLevels(List.of(
+        	                                    LevelMappingImpl.builder()
+        	                                        .withName("Year")
+        	                                        .withColumn("the_year")
+        	                                        .withType(DataType.NUMERIC)
+        	                                        .withUniqueMembers(true)
+        	                                        .withLevelType(LevelType.TIME_YEARS)
+        	                                        .build(),
+        	                                    LevelMappingImpl.builder()
+        	                                        .withName("Quarter")
+        	                                        .withColumn("quarter")
+        	                                        .withUniqueMembers(false)
+        	                                        .withLevelType(LevelType.TIME_QUARTERS)
+        	                                        .build(),
+        	                                    LevelMappingImpl.builder()
+        	                                        .withName("Month")
+        	                                        .withColumn("month_of_year")
+        	                                        .withUniqueMembers(false)
+        	                                        .withType(DataType.NUMERIC)
+        	                                        .withLevelType(LevelType.TIME_MONTHS)
+        	                                        .build()
+        	                                ))
+        								   .build()))
+        						   .build())
+        				   .build());
+        	   }
+               return result;
+           }
            /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {

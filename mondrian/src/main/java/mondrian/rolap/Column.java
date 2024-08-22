@@ -10,16 +10,11 @@ public class Column implements SQLExpressionMapping {
 
     private String table;
     private String name;
-    private List<? extends SQLMapping> sqls;
 
 
 	public Column(String table, String name) {
         this.table = table;
         this.name = name;
-		sqls = List.of(SQLMappingImpl.builder()
-				.withStatement( table == null ? name : new StringBuilder(table).append(".").append(name).toString())
-				.withDialects(List.of("generic"))
-				.build());
     }
 
     public String getTable() {
@@ -32,11 +27,14 @@ public class Column implements SQLExpressionMapping {
 
     @Override
 	public List<? extends SQLMapping> getSqls() {
-		return sqls;
+		return List.of(SQLMappingImpl.builder()
+				.withStatement( table == null ? name : new StringBuilder(table).append(".").append(name).toString())
+				.withDialects(List.of("generic"))
+				.build());
 	}
 
 	public void setTable(String table) {
-		 this.table =  table;		
+		 this.table =  table;
 	}
 
 }

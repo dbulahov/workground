@@ -326,7 +326,7 @@ public abstract class JdbcDialectImpl implements Dialect {
     public String quoteIdentifier(final String qual, final String name) {
         // We know if the qalifier is null, then only the name is going
         // to be quoted.
-        int size = name.length()
+        int size = name != null ? name.length() : 0
             + ((qual == null)
             ? SINGLE_QUOTE_SIZE
             : (qual.length() + DOUBLE_QUOTE_SIZE));

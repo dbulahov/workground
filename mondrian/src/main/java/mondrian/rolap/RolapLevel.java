@@ -113,6 +113,7 @@ public class RolapLevel extends LevelBase {
     private final Map<String, Object> metadata;
     private final BestFitColumnType internalType; // may be null
 
+    protected LevelMapping levelMapping;
     /**
      * Creates a level.
      *
@@ -392,6 +393,7 @@ public class RolapLevel extends LevelBase {
         memberFormatter =
             FormatterFactory.instance()
                 .createRolapMemberFormatter(memberFormatterContext);
+        levelMapping = mappingLevel;
     }
 
     private void setLevelInProperties() {
