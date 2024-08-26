@@ -36,7 +36,17 @@ import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.Locus;
 import org.eclipse.daanse.olap.api.Statement;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.MeasureAggregatorType;
+import org.eclipse.daanse.rolap.mapping.instance.complex.foodmart.FoodmartMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MeasureGroupMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MeasureMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.PhysicalCubeMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.SQLExpressionMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.SQLMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -996,111 +1006,90 @@ class FastBatchingCellReaderTest extends BatchTestCase{
           public TestLoadDistinctSqlMeasureModifier(CatalogMapping catalog) {
               super(catalog);
           }
-          /* TODO: DENIS MAPPING-MODIFIER
-          @Override
-          protected List<MappingCube> cubes(List<MappingCube> cubes) {
-              List<MappingCube> result = new ArrayList<>();
-              result.addAll(super.cubes(cubes));
 
-              result.add(CubeRBuilder.builder()
-                  .name("Warehouse2")
-                  .fact(new TableR("warehouse"))
-                  .dimensionUsageOrDimensions(List.of(
-                      DimensionUsageRBuilder.builder()
-                          .name("Store Type")
-                          .source("Store Type")
-                          .foreignKey("stores_id")
-                          .build()
-                  ))
-                  .measures(List.of(
-                      MeasureRBuilder.builder()
-                          .name("Count Distinct of Warehouses (Large Owned)")
-                          .aggregator("distinct count")
-                          .formatString("#,##0")
-                          .measureExpression(ExpressionViewRBuilder.builder()
-                              .sql(SqlSelectQueryRBuilder.builder()
-                              .sqls(List.of(
-                                  SQLRBuilder.builder()
-                                      .dialects(List.of("generic"))
-                                      .statement("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Owned')")
-                                      .build()
-                              )).build())
-                              .build())
-                          .build(),
-                      MeasureRBuilder.builder()
-                          .name("Count Distinct of Warehouses (Large Independent)")
-                          .aggregator("distinct count")
-                          .formatString("#,##0")
-                          .measureExpression(ExpressionViewRBuilder.builder()
-                              .sql(SqlSelectQueryRBuilder.builder()
-                              .sqls(List.of(
-                                  SQLRBuilder.builder()
-                                      .dialects(List.of("generic"))
-                                      .statement("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Independent')")
-                                      .build()
-                              )).build())
-                              .build())
-                          .build(),
-                      MeasureRBuilder.builder()
-                          .name("Count All of Warehouses (Large Independent)")
-                          .aggregator("count")
-                          .formatString("#,##0")
-                          .measureExpression(ExpressionViewRBuilder.builder()
-                              .sql(SqlSelectQueryRBuilder.builder()
-                              .sqls(List.of(
-                                  SQLRBuilder.builder()
-                                      .dialects(List.of("generic"))
-                                      .statement("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Independent')")
-                                      .build()
-                              )).build())
-                              .build())
-                          .build(),
-                      MeasureRBuilder.builder()
-                          .name("Count Distinct Store+Warehouse")
-                          .aggregator("distinct count")
-                          .formatString("#,##0")
-                          .measureExpression(ExpressionViewRBuilder.builder()
-                              .sql(SqlSelectQueryRBuilder.builder()
-                              .sqls(List.of(
-                                  SQLRBuilder.builder()
-                                      .dialects(List.of("generic"))
-                                      .statement("`store_id`+`warehouse_id`")
-                                      .build()
-                              )).build())
-                              .build())
-                          .build(),
-                      MeasureRBuilder.builder()
-                          .name("Count All Store+Warehouse")
-                          .aggregator("count")
-                          .formatString("#,##0")
-                          .measureExpression(ExpressionViewRBuilder.builder()
-                              .sql(SqlSelectQueryRBuilder.builder()
-                              .sqls(List.of(
-                                  SQLRBuilder.builder()
-                                      .dialects(List.of("generic"))
-                                      .statement("`store_id`+`warehouse_id`")
-                                      .build()
-                              )).build())
-                              .build())
-                          .build(),
-                      MeasureRBuilder.builder()
-                          .name("Store Count")
-                          .column("stores_id")
-                          .aggregator("count")
-                          .formatString("#,###")
-                          .build()
-                  ))
+          @Override
+          protected  List<CubeMapping> cubes(List<? extends CubeMapping> cubes) {
+              List<CubeMapping> result = new ArrayList<>();
+              result.addAll(super.cubes(cubes));
+              result.add(PhysicalCubeMappingImpl.builder()
+                  .withName("Warehouse2")
+                  .withQuery(TableQueryMappingImpl.builder().withName("warehouse").build())
+                  .withDimensionConnectors(List.of(
+                       DimensionConnectorMappingImpl.builder()
+                       	.withForeignKey("stores_id")
+                       	.withOverrideDimensionName("Store Type")
+                       	.withDimension(FoodmartMappingSupplier.DIMENSION_STORE_TYPE_WITH_QUERY_STORE)
+                       	.build()
+              		))
+                  .withMeasureGroups(List.of(MeasureGroupMappingImpl.builder()
+                  		.withMeasures(List.of(
+                                  MeasureMappingImpl.builder()
+                                  .withName("Count Distinct of Warehouses (Large Owned)")
+                                  .withAggregatorType(MeasureAggregatorType.DICTINCT_COUNT)
+                                  .withFormatString("#,##0")
+                                  .withMeasureExpression(SQLExpressionMappingImpl.builder()
+                                		  .withSqls(List.of(SQLMappingImpl.builder()
+                                				  .withDialects(List.of("generic"))
+                                				  .withStatement("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Owned')")
+                                				  .build()))
+                                		  .build())
+                                  .build(),
+                                  MeasureMappingImpl.builder()
+                                  .withName("Count Distinct of Warehouses (Large Independent)")
+                                  .withAggregatorType(MeasureAggregatorType.DICTINCT_COUNT)
+                                  .withFormatString("#,##0")
+                                  .withMeasureExpression(SQLExpressionMappingImpl.builder()
+                                		  .withSqls(List.of(SQLMappingImpl.builder()
+                                				  .withDialects(List.of("generic"))
+                                				  .withStatement("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Independent')")
+                                				  .build()))
+                                		  .build())
+                                  .build(),
+                                  MeasureMappingImpl.builder()
+                                  .withName("Count All of Warehouses (Large Independent)")
+                                  .withAggregatorType(MeasureAggregatorType.COUNT)
+                                  .withFormatString("#,##0")
+                                  .withMeasureExpression(SQLExpressionMappingImpl.builder()
+                                		  .withSqls(List.of(SQLMappingImpl.builder()
+                                				  .withDialects(List.of("generic"))
+                                				  .withStatement("(select `warehouse_class`.`warehouse_class_id` AS `warehouse_class_id` from `warehouse_class` AS `warehouse_class` where `warehouse_class`.`warehouse_class_id` = `warehouse`.`warehouse_class_id` and `warehouse_class`.`description` = 'Large Independent')")
+                                				  .build()))
+                                		  .build())
+                                  .build(),
+                                  MeasureMappingImpl.builder()
+                                  .withName("Count Distinct Store+Warehouse")
+                                  .withAggregatorType(MeasureAggregatorType.DICTINCT_COUNT)
+                                  .withFormatString("#,##0")
+                                  .withMeasureExpression(SQLExpressionMappingImpl.builder()
+                                		  .withSqls(List.of(SQLMappingImpl.builder()
+                                				  .withDialects(List.of("generic"))
+                                				  .withStatement("`store_id`+`warehouse_id`")
+                                				  .build()))
+                                		  .build())
+                                  .build(),
+                                  MeasureMappingImpl.builder()
+                                  .withName("Count All Store+Warehouse")
+                                  .withAggregatorType(MeasureAggregatorType.COUNT)
+                                  .withFormatString("#,##0")
+                                  .withMeasureExpression(SQLExpressionMappingImpl.builder()
+                                		  .withSqls(List.of(SQLMappingImpl.builder()
+                                				  .withDialects(List.of("generic"))
+                                				  .withStatement("`store_id`+`warehouse_id`")
+                                				  .build()))
+                                		  .build())
+                                  .build(),
+                                  MeasureMappingImpl.builder()
+                                  .withName("Store Count")
+                                  .withColumn("stores_id")
+                                  .withAggregatorType(MeasureAggregatorType.COUNT)
+                                  .withFormatString("#,###")
+                                  .build()
+                  				))
+                  		.build()))
                   .build());
               return result;
           }
-  */
       }
-    /*
-    String baseSchema = TestUtil.getRawSchema(context);
-    String schema = SchemaUtil.getSchema(baseSchema,
-            null, cube, null, null, null, null );
-    withSchema(context, schema);
-     */
       withSchema(context, TestLoadDistinctSqlMeasureModifier::new);
       String desiredResult =
         "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Measures].[Count Distinct of Warehouses (Large Owned)]}\n"
@@ -1540,72 +1529,63 @@ class FastBatchingCellReaderTest extends BatchTestCase{
     // in context (MONDRIAN-2128)
       class TestCountDistinctAggWithOtherCountDistinctInContextModifier extends PojoMappingModifier {
 
+      	private static MeasureMappingImpl m = MeasureMappingImpl.builder()
+                .withName("Store Count")
+                .withColumn("store_id")
+                .withAggregatorType(MeasureAggregatorType.DICTINCT_COUNT)
+                .build();
+
+
+
           public TestCountDistinctAggWithOtherCountDistinctInContextModifier(CatalogMapping catalog) {
               super(catalog);
           }
-          /* TODO: DENIS MAPPING-MODIFIER
-          @Override
-          protected List<MappingCube> cubes(List<MappingCube> cubes) {
-              List<MappingCube> result = new ArrayList<>();
-              result.addAll(super.cubes(cubes));
 
-              result.add(CubeRBuilder.builder()
-                  .name("2CountDistincts")
-                  .defaultMeasure("Store Count")
-                  .fact(new TableR("sales_fact_1997"))
-                  .dimensionUsageOrDimensions(List.of(
-                      DimensionUsageRBuilder.builder()
-                          .name("Time")
-                          .source("Time")
-                          .foreignKey("time_id")
-                          .build(),
-                      DimensionUsageRBuilder.builder()
-                          .name("Store")
-                          .source("Store")
-                          .foreignKey("store_id")
-                          .build(),
-                      DimensionUsageRBuilder.builder()
-                          .name("Product")
-                          .source("Product")
-                          .foreignKey("product_id")
-                          .build()
-                  ))
-                  .measures(List.of(
-                      MeasureRBuilder.builder()
-                          .name("Store Count")
-                          .column("store_id")
-                          .aggregator("distinct count")
-                          .build(),
-                      MeasureRBuilder.builder()
-                          .name("Customer Count")
-                          .column("customer_id")
-                          .aggregator("distinct-count")
-                          .build(),
-                      MeasureRBuilder.builder()
-                          .name("Unit Sales")
-                          .column("unit_sales")
-                          .aggregator("sum")
-                          .build()
-                  ))
+          @Override
+          protected  List<CubeMapping> cubes(List<? extends CubeMapping> cubes) {
+              List<CubeMapping> result = new ArrayList<>();
+              result.addAll(super.cubes(cubes));
+              result.add(PhysicalCubeMappingImpl.builder()
+                  .withName("2CountDistincts")
+                  .withDefaultMeasure(m)
+                  .withQuery(TableQueryMappingImpl.builder().withName("sales_fact_1997").build())
+                  .withDimensionConnectors(List.of(
+                  	DimensionConnectorMappingImpl.builder()
+                  		.withForeignKey("time_id")
+                  		.withOverrideDimensionName("Time")
+                  		.withDimension(FoodmartMappingSupplier.DIMENSION_TIME)
+                  		.build(),
+                      DimensionConnectorMappingImpl.builder()
+                  		.withForeignKey("store_id")
+                  		.withOverrideDimensionName("Store")
+                  		.withDimension(FoodmartMappingSupplier.DIMENSION_STORE_WITH_QUERY_STORE)
+                  		.build(),
+                       DimensionConnectorMappingImpl.builder()
+                       	.withForeignKey("product_id")
+                       	.withOverrideDimensionName("Product")
+                       	.withDimension(FoodmartMappingSupplier.DIMENSION_PRODUCT)
+                       	.build()
+              		))
+                  .withMeasureGroups(List.of(MeasureGroupMappingImpl.builder()
+                  		.withMeasures(List.of(
+                  				  m,
+                                  MeasureMappingImpl.builder()
+                                  .withName("Customer Count")
+                                  .withColumn("customer_id")
+                                  .withAggregatorType(MeasureAggregatorType.DICTINCT_COUNT)
+                                  .build(),
+                                  MeasureMappingImpl.builder()
+                                  .withName("Unit Sales")
+                                  .withColumn("unit_sales")
+                                  .withAggregatorType(MeasureAggregatorType.SUM)
+                                  .build()
+                  				))
+                  		.build()))
                   .build());
               return result;
           }
-     
-      */
+
       }
-    /*
-    String baseSchema = TestUtil.getRawSchema(context);
-    String schema = SchemaUtil.getSchema(baseSchema,
-            null, "<Cube name=\"2CountDistincts\" defaultMeasure=\"Store Count\">\n"
-            + "  <Table name=\"sales_fact_1997\"/>\n" + "    <DimensionUsage name=\"Time\" source=\"Time\" "
-            + "foreignKey=\"time_id\"/>" + "  <DimensionUsage name=\"Store\" source=\"Store\" "
-            + "foreignKey=\"store_id\"/>\n" + "    <DimensionUsage name=\"Product\" source=\"Product\" "
-            + "  foreignKey=\"product_id\"/>" + "  <Measure name=\"Store Count\" column=\"store_id\" "
-            + "aggregator=\"distinct-count\"/>\n" + "  <Measure name=\"Customer Count\" column=\"customer_id\" "
-            + "aggregator=\"distinct-count\"/>\n" + "  <Measure name=\"Unit Sales\" column=\"unit_sales\" "
-            + "aggregator=\"sum\"/>\n" + "</Cube>", null, null, null, null );
-    withSchema(context, schema);
-     */
       withSchema(context, TestCountDistinctAggWithOtherCountDistinctInContextModifier::new);
       // We should get the same answer whether the default [Store Count]
     // measure is in context or [Unit Sales]. The measure specified in the

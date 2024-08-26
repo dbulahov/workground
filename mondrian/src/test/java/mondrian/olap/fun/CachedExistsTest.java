@@ -10,9 +10,25 @@ package mondrian.olap.fun;
 
 import static org.opencube.junit5.TestUtil.withSchema;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.SchemaMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.DataType;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.LevelType;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.MeasureAggregatorType;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.HierarchyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.LevelMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MeasureGroupMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MeasureMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.PhysicalCubeMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TimeDimensionMappingImpl;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
 import org.opencube.junit5.TestUtil;
@@ -347,7 +363,81 @@ class CachedExistsTest{
             public TestMondrian2704Modifier(CatalogMapping catalog) {
                 super(catalog);
             }
-            
+
+            @Override
+            protected List<? extends CubeMapping> schemaCubes(SchemaMapping schema) {
+                List<CubeMapping> result = new ArrayList<>();
+                result.addAll(super.schemaCubes(schema));
+                result.add(PhysicalCubeMappingImpl.builder()
+                    .withName("Alternate Sales")
+                    .withQuery(TableQueryMappingImpl.builder().withName("sales_fact_1997").build())
+                    .withDimensionConnectors(List.of(DimensionConnectorMappingImpl.builder()
+                    		.withForeignKey("time_id")
+                    		.withOverrideDimensionName("Time")
+                    		.withDimension(TimeDimensionMappingImpl.builder()
+                    				.withName("Time")
+                    				.withHierarchies(List.of(
+                    					HierarchyMappingImpl.builder()
+                                            .withName("Time")
+                                            .withHasAll(true)
+                                            .withPrimaryKey("time_id")
+                                            .withQuery(TableQueryMappingImpl.builder().withName("time_by_day").build())
+                                            .withLevels(List.of(
+                                                LevelMappingImpl.builder()
+                                                    .withName("Year")
+                                                    .withColumn("the_year")
+                                                    .withType(DataType.NUMERIC)
+                                                    .withUniqueMembers(true)
+                                                    .withLevelType(LevelType.TIME_YEARS)
+                                                    .build()
+                                            ))
+                                            .build(),
+                    					HierarchyMappingImpl.builder()
+                                            .withName("Weekly")
+                                            .withHasAll(true)
+                                            .withPrimaryKey("time_id")
+                                            .withQuery(TableQueryMappingImpl.builder().withName("time_by_day").build())
+                                            .withLevels(List.of(
+                                                LevelMappingImpl.builder()
+                                                    .withName("Year")
+                                                    .withColumn("the_year")
+                                                    .withType(DataType.NUMERIC)
+                                                    .withUniqueMembers(true)
+                                                    .withLevelType(LevelType.TIME_YEARS)
+                                                    .build()
+                                            ))
+                                            .build(),
+                    					HierarchyMappingImpl.builder()
+                                            .withName("Weekly2")
+                                            .withHasAll(true)
+                                            .withPrimaryKey("time_id")
+                                            .withQuery(TableQueryMappingImpl.builder().withName("time_by_day").build())
+                                            .withLevels(List.of(
+                                                LevelMappingImpl.builder()
+                                                    .withName("Year")
+                                                    .withColumn("the_year")
+                                                    .withType(DataType.NUMERIC)
+                                                    .withUniqueMembers(true)
+                                                    .withLevelType(LevelType.TIME_YEARS)
+                                                    .build()
+                                            ))
+                                            .build()
+                                            )
+                    						)
+                    				.build())
+                    		.build()))
+                    .withMeasureGroups(List.of(MeasureGroupMappingImpl.builder().withMeasures(List.of(
+                            MeasureMappingImpl.builder()
+                            .withName("Unit Sales")
+                            .withColumn("unit_sales")
+                            .withAggregatorType(MeasureAggregatorType.SUM)
+                            .withFormatString("Standard")
+                            .build()
+                    		)).build()))
+                    .build());
+                return result;
+            }
+
             /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<CubeMapping> schemaCubes(SchemaMapping schema) {

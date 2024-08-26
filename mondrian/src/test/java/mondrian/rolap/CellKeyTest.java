@@ -17,9 +17,22 @@ import static org.opencube.junit5.TestUtil.assertQueryReturns;
 import static org.opencube.junit5.TestUtil.isDefaultNullMemberRepresentation;
 import static org.opencube.junit5.TestUtil.withSchema;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.MeasureAggregatorType;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.HierarchyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.LevelMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MeasureGroupMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MeasureMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.PhysicalCubeMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.StandardDimensionMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -375,96 +388,98 @@ class CellKeyTest  {
         ((TestConfig)context.getConfig()).setExpandNonNative(false);
         class TestCellLookupModifier extends PojoMappingModifier {
 
+        	private static MeasureMappingImpl m = MeasureMappingImpl.builder()
+            .withName("Unit Sales")
+            .withColumn("unit_sales")
+            .withAggregatorType(MeasureAggregatorType.SUM)
+            .withFormatString("Standard")
+            .build();
+
             public TestCellLookupModifier(CatalogMapping catalog) {
                 super(catalog);
             }
-            /* TODO: DENIS MAPPING-MODIFIER
+
             @Override
-            protected List<MappingCube> cubes(List<MappingCube> cubes) {
-                List<MappingCube> result = new ArrayList<>();
+            protected  List<CubeMapping> cubes(List<? extends CubeMapping> cubes) {
+                List<CubeMapping> result = new ArrayList<>();
                 result.addAll(super.cubes(cubes));
-                result.add(CubeRBuilder.builder()
-                    .name("SalesTest")
-                    .defaultMeasure("Unit Sales")
-                    .fact(new TableR("sales_fact_1997"))
-                    .dimensionUsageOrDimensions(List.of(
-                        PrivateDimensionRBuilder.builder()
-                            .name("City")
-                            .foreignKey("customer_id")
-                            .hierarchies(List.of(
-                                HierarchyRBuilder.builder()
-                                    .hasAll(true)
-                                    .primaryKey("customer_id")
-                                    .relation(new TableR("customer"))
-                                    .levels(List.of(
-                                        LevelRBuilder.builder()
-                                            .name("city")
-                                            .column("city")
-                                            .uniqueMembers(true)
-                                            .build()
-                                    )).build()
-                            )).build(),
-                        PrivateDimensionRBuilder.builder()
-                            .name("Gender")
-                            .foreignKey("customer_id")
-                            .hierarchies(List.of(
-                                HierarchyRBuilder.builder()
-                                     .hasAll(true)
-                                     .primaryKey("customer_id")
-                                     .relation(new TableR("customer"))
-                                     .levels(List.of(
-                                         LevelRBuilder.builder()
-                                             .name("gender")
-                                             .column("gender")
-                                             .uniqueMembers(true)
-                                             .build()
-                                     ))
-                                     .build()
-                            )).build(),
-                        PrivateDimensionRBuilder.builder()
-                            .name("Address2")
-                            .foreignKey("customer_id")
-                            .hierarchies(List.of(
-                                HierarchyRBuilder.builder()
-                                    .hasAll(true)
-                                    .primaryKey("customer_id")
-                                    .relation(new TableR("customer"))
-                                    .levels(List.of(
-                                        LevelRBuilder.builder()
-                                            .name("addr")
-                                            .column("address2")
-                                            .uniqueMembers(true)
-                                            .build()
-                                    ))
-                                    .build()
-                                ))
-                            .build()
-                            ))
-                    .measures(List.of(
-                        MeasureRBuilder.builder()
-                            .name("Unit Sales")
-                            .column("unit_sales")
-                            .aggregator("sum")
-                            .formatString("Standard")
-                            .build()
-                    ))
+                result.add(PhysicalCubeMappingImpl.builder()
+                    .withName("SalesTest")
+                    .withDefaultMeasure(m)
+                    .withQuery(TableQueryMappingImpl.builder().withName("sales_fact_1997").build())
+                    .withDimensionConnectors(List.of(
+                    	DimensionConnectorMappingImpl.builder()
+                    		.withForeignKey("customer_id")
+                    		.withOverrideDimensionName("City")
+                    		.withDimension(
+                    			StandardDimensionMappingImpl.builder()
+                    				.withName("City")
+                    				.withHierarchies(List.of(
+                                            HierarchyMappingImpl.builder()
+                                            .withHasAll(true)
+                                            .withPrimaryKey("customer_id")
+                                            .withQuery(TableQueryMappingImpl.builder().withName("customer").build())
+                                            .withLevels(List.of(
+                                                LevelMappingImpl.builder()
+                                                    .withName("city")
+                                                    .withColumn("city")
+                                                    .withUniqueMembers(true)
+                                                    .build()
+                                            )).build()
+                    						))
+                    				.build())
+                    		.build(),
+                        DimensionConnectorMappingImpl.builder()
+                    		.withForeignKey("customer_id")
+                    		.withOverrideDimensionName("Gender")
+                    		.withDimension(
+                    			StandardDimensionMappingImpl.builder()
+                    				.withName("Gender")
+                    				.withHierarchies(List.of(
+                                            HierarchyMappingImpl.builder()
+                                            .withHasAll(true)
+                                            .withPrimaryKey("customer_id")
+                                            .withQuery(TableQueryMappingImpl.builder().withName("customer").build())
+                                            .withLevels(List.of(
+                                                LevelMappingImpl.builder()
+                                                    .withName("gender")
+                                                    .withColumn("gender")
+                                                    .withUniqueMembers(true)
+                                                    .build()
+                                            )).build()
+                    						))
+                    				.build())
+                    		.build(),
+                         DimensionConnectorMappingImpl.builder()
+                         	.withForeignKey("customer_id")
+                         	.withOverrideDimensionName("Address2")
+                         	.withDimension(
+                         		StandardDimensionMappingImpl.builder()
+                         			.withName("Address2")
+                         			.withHierarchies(List.of(
+                         					HierarchyMappingImpl.builder()
+                         					.withHasAll(true)
+                         					.withPrimaryKey("customer_id")
+                         					.withQuery(TableQueryMappingImpl.builder().withName("customer").build())
+                         					.withLevels(List.of(
+                         						LevelMappingImpl.builder()
+                         							.withName("addr")
+                         							.withColumn("address2")
+                         							.withUniqueMembers(true)
+                         							.build()
+                                        )).build()
+                						))
+                				.build())
+                		.build()
+                		)
+                    	)
+                    .withMeasureGroups(List.of(MeasureGroupMappingImpl.builder()
+                    		.withMeasures(List.of(m))
+                    		.build()))
                     .build());
                 return result;
             }
-    */
-        
         }
-        /*
-        String baseSchema = TestUtil.getRawSchema(context);
-        String schema = SchemaUtil.getSchema(baseSchema,
-                null,
-                cubeDef,
-                null,
-                null,
-                null,
-                null);
-        withSchema(context, schema);
-         */
         withSchema(context, TestCellLookupModifier::new);
         assertQueryReturns(context.getConnection(), query, result);
     }

@@ -15,18 +15,23 @@ package mondrian.rolap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.daanse.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.access.RollupPolicy;
 import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.HierarchyMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.DataType;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
-import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.HierarchyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.LevelMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MemberPropertyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.StandardDimensionMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;
 
-import mondrian.test.BasicQueryTest;
-import mondrian.test.PerformanceTest;
 import mondrian.test.UdfTest;
 
 public class SchemaModifiers {
@@ -261,7 +266,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
-   
+
     */
     }
 
@@ -595,8 +600,8 @@ public class SchemaModifiers {
             result.addAll(super.schemaVirtualCubes(schema));
             return result;
         }
-  
-    
+
+
     */
     }
 
@@ -683,9 +688,9 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
-   
+
     */
-    
+
     }
 
 
@@ -806,7 +811,7 @@ public class SchemaModifiers {
         public SelectNotInGroupByTestModifier3(CatalogMapping catalog) {
             super(catalog);
         }
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingPrivateDimension> schemaDimensions(MappingSchema schema) {
@@ -884,7 +889,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
-  
+
     */
     }
 
@@ -895,7 +900,7 @@ public class SchemaModifiers {
         public SelectNotInGroupByTestModifier4(CatalogMapping catalog) {
             super(catalog);
         }
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingPrivateDimension> schemaDimensions(MappingSchema schema) {
@@ -974,9 +979,9 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
-   
-   */ 
-    
+
+   */
+
     }
 
 
@@ -1022,7 +1027,7 @@ public class SchemaModifiers {
             + "  </CalculatedMember>\n"
             + "</VirtualCube>",
          */
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingVirtualCube> schemaVirtualCubes(MappingSchema schema) {
@@ -1187,8 +1192,8 @@ public class SchemaModifiers {
                 + "</Cube>";
             */
         /* TODO: DENIS MAPPING-MODIFIER
-        
-        
+
+
         @Override
         protected List<MappingCube> schemaCubes(MappingSchema schema) {
             List<MappingCube> result = new ArrayList<>();
@@ -1263,10 +1268,10 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
-    
-        
+
+
         */
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingVirtualCube> schemaVirtualCubes(MappingSchema schema) {
@@ -1345,7 +1350,7 @@ public class SchemaModifiers {
             + "      </Hierarchy>\n"
             + "  </Dimension>"));
          */
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
@@ -1685,9 +1690,9 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
-  
+
     */
-    
+
     }
 
     public static class ParentChildHierarchyTestModifier4 extends PojoMappingModifier {
@@ -1902,7 +1907,7 @@ public class SchemaModifiers {
             + "    <Measure name='Count' column='employee_id' aggregator='count' formatString='#,#'/>\n"
             + "</Cube>",
          */
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingCube> schemaCubes(MappingSchema schema) {
@@ -2648,7 +2653,7 @@ public class SchemaModifiers {
     + "    </VirtualCubeMeasure>\n"
     + "  </VirtualCube>\n" + "</Schema>";
          */
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {
@@ -3051,82 +3056,82 @@ public class SchemaModifiers {
         public MemberCacheControlTestModifier(CatalogMapping catalog) {
             super(catalog);
         }
-        /* TODO: DENIS MAPPING-MODIFIER
 
         @Override
-        protected List<MappingCubeDimension> cubeDimensionUsageOrDimensions(MappingCube cube) {
-            List<MappingCubeDimension> result = new ArrayList<>();
-            result.addAll(super.cubeDimensionUsageOrDimensions(cube));
-            if ("Sales".equals(cube.name())) {
-                result.add(PrivateDimensionRBuilder.builder()
-                    .name("Retail")
-                    .foreignKey("store_id")
-                        .hierarchies(List.of(
-                        HierarchyRBuilder.builder()
-                            .hasAll(true)
-                            .primaryKey("store_id")
-                            .relation(new TableR("store"))
-                            .levels(List.of(
-                                LevelRBuilder.builder()
-                                    .name("State")
-                                    .column("store_state")
-                                    .uniqueMembers(true)
-                                    .properties(List.of(
-                                        PropertyRBuilder.builder()
-                                            .name("Country")
-                                            .column("store_country")
+        protected List<? extends DimensionConnectorMapping> cubeDimensionConnectors(CubeMapping cube) {
+            List<DimensionConnectorMapping> result = new ArrayList<>();
+            result.addAll(super.cubeDimensionConnectors(cube));
+            if ("Sales".equals(cube.getName())) {
+                result.add(DimensionConnectorMappingImpl.builder()
+                	.withForeignKey("store_id")
+                	.withOverrideDimensionName("Retail")
+                	.withDimension(StandardDimensionMappingImpl.builder()
+                		.withName("Retail")
+                		.withHierarchies(List.of(
+                			HierarchyMappingImpl.builder()
+                            .withHasAll(true)
+                            .withPrimaryKey("store_id")
+                            .withQuery(TableQueryMappingImpl.builder().withName("store").build())
+                            .withLevels(List.of(
+                                LevelMappingImpl.builder()
+                                    .withName("State")
+                                    .withColumn("store_state")
+                                    .withUniqueMembers(true)
+                                    .withMemberProperties(List.of(
+                                    	MemberPropertyMappingImpl.builder()
+                                            .withName("Country")
+                                            .withColumn("store_country")
                                             .build()
                                     ))
                                     .build(),
-                                LevelRBuilder.builder()
-                                    .name("City")
-                                    .column("store_city")
-                                    .uniqueMembers(true)
-                                    .properties(List.of(
-                                        PropertyRBuilder.builder()
-                                            .name("Population")
-                                            .column("store_postal_code")
+                               LevelMappingImpl.builder()
+                                    .withName("City")
+                                    .withColumn("store_city")
+                                    .withUniqueMembers(true)
+                                    .withMemberProperties(List.of(
+                                        MemberPropertyMappingImpl.builder()
+                                            .withName("Population")
+                                            .withColumn("store_postal_code")
                                             .build()
                                     ))
                                     .build(),
-                                LevelRBuilder.builder()
-                                    .name("Name")
-                                    .column("store_name")
-                                    .uniqueMembers(true)
-                                    .properties(List.of(
-                                        PropertyRBuilder.builder()
-                                            .name("Store Type")
-                                            .column("store_type")
+                                LevelMappingImpl.builder()
+                                    .withName("Name")
+                                    .withColumn("store_name")
+                                    .withUniqueMembers(true)
+                                    .withMemberProperties(List.of(
+                                        MemberPropertyMappingImpl.builder()
+                                            .withName("Store Type")
+                                            .withColumn("store_type")
                                             .build(),
-                                        PropertyRBuilder.builder()
-                                            .name("Store Manager")
-                                            .column("store_manager")
+                                        MemberPropertyMappingImpl.builder()
+                                            .withName("Store Manager")
+                                            .withColumn("store_manager")
                                             .build(),
-                                        PropertyRBuilder.builder()
-                                            .name("Store Sqft")
-                                            .column("store_sqft")
-                                            .type(PropertyTypeEnum.NUMERIC)
+                                        MemberPropertyMappingImpl.builder()
+                                            .withName("Store Sqft")
+                                            .withColumn("store_sqft")
+                                            .withDataType(DataType.NUMERIC)
                                             .build(),
-                                        PropertyRBuilder.builder()
-                                            .name("Has coffee bar")
-                                            .column("coffee_bar")
-                                            .type(PropertyTypeEnum.BOOLEAN)
+                                        MemberPropertyMappingImpl.builder()
+                                            .withName("Has coffee bar")
+                                            .withColumn("coffee_bar")
+                                            .withDataType(DataType.BOOLEAN)
                                             .build(),
-                                        PropertyRBuilder.builder()
-                                            .name("Street address")
-                                            .column("store_street_address")
-                                            .type(PropertyTypeEnum.STRING)
+                                        MemberPropertyMappingImpl.builder()
+                                            .withName("Street address")
+                                            .withColumn("store_street_address")
+                                            .withDataType(DataType.STRING)
                                             .build()
                                     ))
                                     .build()
                             ))
                             .build()
                     ))
-                    .build());
+                    .build()).build());
             }
             return result;
         }
-        */
     }
 
     public static class NonEmptyTestModifier extends PojoMappingModifier {
@@ -5758,7 +5763,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
- 
+
     */
     }
 
@@ -5811,7 +5816,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
-   
+
     */
     }
 
@@ -5894,8 +5899,8 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
- 
-  */  
+
+  */
     }
 
     public static class BasicQueryTestModifier27 extends PojoMappingModifier {
@@ -6020,7 +6025,7 @@ public class SchemaModifiers {
             return result;
         }
     */
-    
+
     }
 
     public static class BasicQueryTestModifier29 extends PojoMappingModifier {
@@ -6042,7 +6047,7 @@ public class SchemaModifiers {
                 .build());
             return result;
         }
-        
+
         */
     }
 
@@ -6097,9 +6102,9 @@ public class SchemaModifiers {
                         .build()))
                 .build();
         }
-   
+
     */
-    
+
     }
 
     public static class BasicQueryTestModifier31 extends PojoMappingModifier {
@@ -6215,8 +6220,8 @@ public class SchemaModifiers {
 
                 .build();
         }
-    
-    
+
+
     */
     }
 
@@ -6289,7 +6294,7 @@ public class SchemaModifiers {
                         .build()))
                 .build();
         }
-  
+
     */
     }
 
@@ -6327,8 +6332,8 @@ public class SchemaModifiers {
             }
             return result;
         }
-        
-        
+
+
         */
     }
 
@@ -6393,7 +6398,7 @@ public class SchemaModifiers {
             }
             return result;
         }
- 
+
     */
     }
 
@@ -6458,9 +6463,9 @@ public class SchemaModifiers {
             }
             return result;
         }
-  
+
 */
-    
+
     }
 
     public static class OrderByAliasTestModifier1ME extends PojoMappingModifier {
@@ -6516,9 +6521,9 @@ public class SchemaModifiers {
             }
             return result;
         }
-   
+
     */
-    
+
     }
 
     public static class OrderByAliasTestModifier1CE extends PojoMappingModifier {
@@ -6582,8 +6587,8 @@ public class SchemaModifiers {
             }
             return result;
         }
-  
-    
+
+
     */
     }
 
@@ -8904,7 +8909,7 @@ public class SchemaModifiers {
           + "  </SchemaGrant>\n"
           + "</Role>\n" );
          */
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
@@ -13103,7 +13108,7 @@ public class SchemaModifiers {
         public AccessControlTestModifier1(CatalogMapping catalog) {
             super(catalog);
         }
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
@@ -13324,7 +13329,7 @@ public class SchemaModifiers {
         public AccessControlTestModifier3(CatalogMapping catalog) {
             super(catalog);
         }
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingRole> schemaRoles(CatalogMapping catalogOriginal) {
@@ -13979,7 +13984,7 @@ public class SchemaModifiers {
             + "  </Dimension> ",
 
         */
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected List<MappingPrivateDimension> schemaDimensions(CatalogMapping catalogOriginal) {
@@ -15996,7 +16001,7 @@ public class SchemaModifiers {
           + "</Cube>";
 
          */
-        
+
         /*
         protected List<MappingCube> schemaCubes(CatalogMapping catalogOriginal) {
             List<MappingCube> result = new ArrayList<>();
@@ -18867,12 +18872,12 @@ public class SchemaModifiers {
         public SteelWheelsSchemaTestModifier2(CatalogMapping catalog) {
             super(catalog);
         }
-        
+
         @Override
         protected boolean hierarchyHasAll(HierarchyMapping hierarchy) {
             return false;
         }
-        
+
     }
 
     public static class SteelWheelsSchemaTestModifier3 extends PojoMappingModifier {
@@ -19017,7 +19022,7 @@ public class SchemaModifiers {
                 + "</Schema>\n");
 
          */
-        
+
         /* TODO: DENIS MAPPING-MODIFIER
         @Override
         protected MappingSchema modifyMappingSchema(CatalogMapping catalogOriginal) {

@@ -1,6 +1,7 @@
 package mondrian.rolap;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLMapping;
@@ -37,4 +38,17 @@ public class Column implements SQLExpressionMapping {
 		 this.table =  table;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+        if (!(obj instanceof Column that)) {
+            return false;
+        }
+        return getName().equals(that.getName()) &&
+            Objects.equals(getTable(), that.getTable());
+    }
+
+    @Override
+	public int hashCode() {
+        return getName().hashCode() ^ (getTable()==null ? 0 : getTable().hashCode());
+    }
 }
