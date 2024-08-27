@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import mondrian.olap.Util;
-import mondrian.rolap.Column;
+import mondrian.rolap.RolapColumn;
 import mondrian.rolap.RolapAggregator;
 import mondrian.rolap.RolapConnectionPropsR;
 import mondrian.rolap.RolapStar;
@@ -129,7 +129,7 @@ public class AggGen {
 
     protected String getRolapStarColumnName(RolapStar.Column rColumn) {
     	SQLExpressionMapping expr = rColumn.getExpression();
-        if (expr instanceof Column cx) {
+        if (expr instanceof RolapColumn cx) {
             return cx.getName();
         }
         return null;
@@ -231,7 +231,7 @@ public class AggGen {
 
 
                 SQLExpressionMapping expr = column.getExpression();
-                if (expr instanceof Column exprColumn) {
+                if (expr instanceof RolapColumn exprColumn) {
                     String name = exprColumn.getName();
                     JdbcSchema.Table.Column c = getColumn(factTable, name);
                     if (c == null) {
@@ -264,7 +264,7 @@ public class AggGen {
                     getLogger().debug("  RolapStar.Condition: cond={}", cond);
                 }
                 SQLExpressionMapping left = cond.getLeft();
-                if (left instanceof Column leftColumn) {
+                if (left instanceof RolapColumn leftColumn) {
                     String name = leftColumn.getName();
                     JdbcSchema.Table.Column c = getColumn(factTable, name);
                     if (c == null) {

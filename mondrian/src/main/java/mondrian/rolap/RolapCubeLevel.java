@@ -178,9 +178,9 @@ public class RolapCubeLevel extends RolapLevel {
             return exp;
         } else if (exp == null || rel == null) {
             return null;
-        } else if (exp instanceof mondrian.rolap.Column col) {
+        } else if (exp instanceof mondrian.rolap.RolapColumn col) {
             if (rel instanceof TableQueryMapping table) {
-                return new mondrian.rolap.Column(
+                return new mondrian.rolap.RolapColumn(
                     RelationUtil.getAlias(table),
                     col.getName());
             } else if (rel instanceof JoinQueryMapping
@@ -190,7 +190,7 @@ public class RolapCubeLevel extends RolapLevel {
                 // this may be defined in level
                 // col.table
                 String alias = getHierarchy().lookupAlias(ExpressionUtil.getTableAlias(col));
-                return new mondrian.rolap.Column(alias, col.getName());
+                return new mondrian.rolap.RolapColumn(alias, col.getName());
             }
         } else {
             // this is a limitation, in the future, we may need

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import mondrian.olap.MondrianException;
 import mondrian.recorder.MessageRecorder;
-import mondrian.rolap.Column;
+import mondrian.rolap.RolapColumn;
 import mondrian.rolap.HierarchyUsage;
 import mondrian.rolap.RolapAggregator;
 import mondrian.rolap.RolapCube;
@@ -692,7 +692,7 @@ public abstract class Recognizer {
                 aggUsage.setSymbolicName(symbolicName);
 
                 String tableAlias;
-                if (aggUsage.joinExp instanceof mondrian.rolap.Column mcolumn) {
+                if (aggUsage.joinExp instanceof mondrian.rolap.RolapColumn mcolumn) {
                     tableAlias = mcolumn.getTable();
                 } else {
                     tableAlias = getAlias(aggUsage.relation);
@@ -988,8 +988,8 @@ public abstract class Recognizer {
         String factCountColumnName = getFactCountColumnName(aggUsage);
 
         // we want the fact count expression
-        mondrian.rolap.Column column =
-            new mondrian.rolap.Column(tableName, factCountColumnName);
+        mondrian.rolap.RolapColumn column =
+            new mondrian.rolap.RolapColumn(tableName, factCountColumnName);
         SqlQuery sqlQuery = star.getSqlQuery();
         return getExpression(column, sqlQuery);
     }
@@ -1036,7 +1036,7 @@ public abstract class Recognizer {
         msgRecorder.pushContextName("Recognizer.getColumnName");
 
         try {
-            if (expr instanceof Column column) {
+            if (expr instanceof RolapColumn column) {
                 return column.getName();
             } 
             return null;

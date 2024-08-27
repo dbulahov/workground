@@ -154,7 +154,7 @@ public class RolapLevel extends LevelBase {
             "hideMemberCondition != null");
         Util.assertPrecondition(levelType != null, "levelType != null");
 
-        if (keyExp instanceof mondrian.rolap.Column column) {
+        if (keyExp instanceof mondrian.rolap.RolapColumn column) {
             checkColumn(column);
         }
         this.metadata = metadata;
@@ -182,7 +182,7 @@ public class RolapLevel extends LevelBase {
         } else {
             this.ordinalExp = this.keyExp;
         }
-        if (parentExp instanceof mondrian.rolap.Column) {
+        if (parentExp instanceof mondrian.rolap.RolapColumn) {
             //checkColumn((MappingColumn) parentExp);
         }
         this.parentExp = parentExp;
@@ -201,7 +201,7 @@ public class RolapLevel extends LevelBase {
             "parentExp != null || nullParentValue == null");
         this.xmlClosure = mappingClosure;
         for (RolapProperty property : properties) {
-            if (property.getExp() instanceof mondrian.rolap.Column column) {
+            if (property.getExp() instanceof mondrian.rolap.RolapColumn column) {
                 checkColumn(column);
             }
         }
@@ -473,7 +473,7 @@ public class RolapLevel extends LevelBase {
         }
     }
 
-    private void checkColumn(mondrian.rolap.Column nameColumn) {
+    private void checkColumn(mondrian.rolap.RolapColumn nameColumn) {
         final RolapHierarchy rolapHierarchy = (RolapHierarchy) hierarchy;
         if (nameColumn.getTable() == null) {
             final RelationalQueryMapping table = rolapHierarchy.getUniqueTable();

@@ -1417,7 +1417,7 @@ public TupleList readTuples(
         final SQLExpressionMapping propExp =
           targetExp.get( property.getExp() );
         final String propSql;
-        if ( propExp instanceof mondrian.rolap.Column column) {
+        if ( propExp instanceof mondrian.rolap.RolapColumn column) {
           // When dealing with a column, we must use the same table
           // alias as the one used by the level. We also assume that
           // the property lives in the same table as the level.

@@ -1411,8 +1411,8 @@ public class ExplicitRules {
                         columnsToObjects.put(aggFKName, baseFKName);
                     }
 
-                    mondrian.rolap.Column c =
-                        new mondrian.rolap.Column(tableName, baseFKName);
+                    mondrian.rolap.RolapColumn c =
+                        new mondrian.rolap.RolapColumn(tableName, baseFKName);
                     if (factTable.findTableWithLeftCondition(c) == null) {
                         msgRecorder.reportError(
                             MessageFormat.format(unknownLeftJoinCondition,
