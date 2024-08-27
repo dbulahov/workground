@@ -7,13 +7,13 @@ import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLMapping;
 import org.eclipse.daanse.rolap.mapping.pojo.SQLMappingImpl;
 
-public class Column implements SQLExpressionMapping {
+public class RolapColumn implements SQLExpressionMapping {
 
     private String table;
     private String name;
 
 
-	public Column(String table, String name) {
+	public RolapColumn(String table, String name) {
         this.table = table;
         this.name = name;
     }
@@ -40,7 +40,7 @@ public class Column implements SQLExpressionMapping {
 
 	@Override
 	public boolean equals(Object obj) {
-        if (!(obj instanceof Column that)) {
+        if (!(obj instanceof RolapColumn that)) {
             return false;
         }
         return getName().equals(that.getName()) &&

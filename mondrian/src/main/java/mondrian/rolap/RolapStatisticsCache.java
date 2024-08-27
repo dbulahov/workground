@@ -138,7 +138,7 @@ public class RolapStatisticsCache {
             return approxCardinality;
         }
         if (relation instanceof TableQueryMapping table
-            && expression instanceof mondrian.rolap.Column column)
+            && expression instanceof mondrian.rolap.RolapColumn column)
         {
             return getColumnCardinality(
                 null,

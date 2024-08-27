@@ -15,7 +15,7 @@ package mondrian.rolap.util;
 
 import java.util.Objects;
 
-import mondrian.rolap.Column;
+import mondrian.rolap.RolapColumn;
 import org.eclipse.daanse.rolap.mapping.api.model.SQLExpressionMapping;
 
 import mondrian.rolap.RolapRuntimeException;
@@ -24,7 +24,7 @@ import mondrian.rolap.sql.SqlQuery;
 public class ExpressionUtil {
 
     public static String getExpression1(SQLExpressionMapping expression, final SqlQuery query) {
-        if (expression instanceof Column c) {
+        if (expression instanceof RolapColumn c) {
             return query.getDialect().quoteIdentifier(c.getTable(), c.getName());
         }
         
@@ -34,7 +34,7 @@ public class ExpressionUtil {
     }
 
     public static int hashCode(SQLExpressionMapping expression) {
-        if (expression instanceof mondrian.rolap.Column column) {
+        if (expression instanceof mondrian.rolap.RolapColumn column) {
             return column.getName().hashCode() ^ (column.getTable()==null ? 0 : column.getTable().hashCode());
         }
         if (expression != null) {
@@ -48,8 +48,8 @@ public class ExpressionUtil {
     }
 
     public static boolean equals(SQLExpressionMapping expression, Object obj) {
-        if (expression instanceof mondrian.rolap.Column col) {
-            if (!(obj instanceof mondrian.rolap.Column that)) {
+        if (expression instanceof mondrian.rolap.RolapColumn col) {
+            if (!(obj instanceof mondrian.rolap.RolapColumn that)) {
                 return false;
             }
             return col.getName().equals(that.getName()) &&
@@ -93,7 +93,7 @@ public class ExpressionUtil {
     }
 
     public static String getTableAlias(SQLExpressionMapping expression) {
-        if (expression instanceof Column c) {
+        if (expression instanceof RolapColumn c) {
             return c.getTable();
         }        
         return null;

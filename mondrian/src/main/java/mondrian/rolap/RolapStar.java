@@ -244,7 +244,7 @@ public class RolapStar {
     }
 
     public static String generateExprString(SQLExpressionMapping expression, SqlQuery query) {
-        if(expression instanceof mondrian.rolap.Column col) {
+        if(expression instanceof mondrian.rolap.RolapColumn col) {
             return query.getDialect().quoteIdentifier(col.getTable(),
             		col.getName());
         }
@@ -719,7 +719,7 @@ public class RolapStar {
     public static void collectColumns(
         Collection<Column> columnList,
         Table table,
-        mondrian.rolap.Column joinColumn)
+        mondrian.rolap.RolapColumn joinColumn)
     {
         if (joinColumn == null) {
             columnList.addAll(table.columnList);
@@ -1327,7 +1327,7 @@ public class RolapStar {
         public Column[] lookupColumns(String columnName) {
             List<Column> l = new ArrayList<>();
             for (Column column : getColumns()) {
-                if (column.getExpression() instanceof mondrian.rolap.Column columnExpr) {
+                if (column.getExpression() instanceof mondrian.rolap.RolapColumn columnExpr) {
                     if (columnExpr.getName().equals(columnName)) {
                         l.add(column);
                     }
@@ -1341,7 +1341,7 @@ public class RolapStar {
 
         public Column lookupColumn(String columnName) {
             for (Column column : getColumns()) {
-                if (column.getExpression() instanceof mondrian.rolap.Column columnExpr) {
+                if (column.getExpression() instanceof mondrian.rolap.RolapColumn columnExpr) {
                     if (columnExpr.getName().equals(columnName)) {
                         return column;
                     }
@@ -1564,7 +1564,7 @@ public class RolapStar {
             String usagePrefix)
         {
             Table table = this;
-            if (expr instanceof mondrian.rolap.Column column) {
+            if (expr instanceof mondrian.rolap.RolapColumn column) {
                 String tableName = column.getTable();
                 table = findAncestor(tableName);
                 if (table == null) {
@@ -1627,7 +1627,7 @@ public class RolapStar {
             String usagePrefix)
         {
             Table table = this;
-            if (expr instanceof mondrian.rolap.Column column) {
+            if (expr instanceof mondrian.rolap.RolapColumn column) {
                 String tableName = column.getTable();
                 table = findAncestor(tableName);
                 if (table == null) {
@@ -1738,8 +1738,8 @@ public class RolapStar {
                     }
                 }
                 joinCondition = new RolapStar.Condition(
-                    new mondrian.rolap.Column(leftAlias, join.getLeft().getKey()),
-                    new mondrian.rolap.Column(rightAlias, join.getRight().getKey()));
+                    new mondrian.rolap.RolapColumn(leftAlias, join.getLeft().getKey()),
+                    new mondrian.rolap.RolapColumn(rightAlias, join.getRight().getKey()));
                 return leftTable.addJoin(
                     cube, right(join), joinCondition);
 
@@ -1858,7 +1858,7 @@ public class RolapStar {
         {
             for (Table child : getChildren()) {
                 Condition condition = child.joinCondition;
-                if (condition != null && condition.left instanceof mondrian.rolap.Column mcolumn && mcolumn.getName().equals(columnName)) {
+                if (condition != null && condition.left instanceof mondrian.rolap.RolapColumn mcolumn && mcolumn.getName().equals(columnName)) {
                     return child;
                 }
             }
@@ -1875,7 +1875,7 @@ public class RolapStar {
         {
             for (Table child : getChildren()) {
                 Condition condition = child.joinCondition;
-                if (condition != null && condition.left instanceof mondrian.rolap.Column mcolumn && mcolumn.equals(left)) {
+                if (condition != null && condition.left instanceof mondrian.rolap.RolapColumn mcolumn && mcolumn.equals(left)) {
                     return child;
                 }
             }
@@ -2002,7 +2002,7 @@ public class RolapStar {
             assert left != null;
             assert right != null;
 
-            if (!(left instanceof mondrian.rolap.Column)) {
+            if (!(left instanceof mondrian.rolap.RolapColumn)) {
                 // TODO: Will this ever print?? if not then left should be
                 // of type Column.
                 LOGGER.debug("Condition.left NOT Column: {}", left.getClass().getName());
@@ -2061,7 +2061,7 @@ public class RolapStar {
             pw.print(subprefix);
             pw.print("left=");
             // print the foreign key bit position if we can figure it out
-            if (left instanceof mondrian.rolap.Column c) {
+            if (left instanceof mondrian.rolap.RolapColumn c) {
                 Column col = table.star.getFactTable().lookupColumn(c.getName());
                 if (col != null) {
                     pw.print(" (");
@@ -2109,8 +2109,8 @@ public class RolapStar {
             if (newAlias.equals(oldAlias)) {
                 return expression;
             }
-            if (expression instanceof mondrian.rolap.Column column) {
-                return new mondrian.rolap.Column(visit(column.getTable()), column.getName());
+            if (expression instanceof mondrian.rolap.RolapColumn column) {
+                return new mondrian.rolap.RolapColumn(visit(column.getTable()), column.getName());
             } else {
                 throw Util.newInternal("need to implement " + expression);
             }

@@ -420,7 +420,7 @@ public class JdbcSchema {
                 	SQLExpressionMapping ordinalExp = null;
                     if (ordinalColumn != null) {
                         ordinalExp =
-                            new mondrian.rolap.Column(
+                            new mondrian.rolap.RolapColumn(
                                 getTable().getName(), ordinalColumn.getName());
                     }
                     return ordinalExp;
@@ -430,7 +430,7 @@ public class JdbcSchema {
                 	SQLExpressionMapping captionExp = null;
                     if (captionColumn != null) {
                         captionExp =
-                            new mondrian.rolap.Column(
+                            new mondrian.rolap.RolapColumn(
                                 getTable().getName(), captionColumn.getName());
                     }
                     return captionExp;
@@ -447,7 +447,7 @@ public class JdbcSchema {
                     {
                         map.put(
                             entry.getKey(),
-                            new mondrian.rolap.Column(
+                            new mondrian.rolap.RolapColumn(
                                 getTable().getName(),
                                 entry.getValue().getName()));
                     }
@@ -522,7 +522,7 @@ public class JdbcSchema {
              */
             private boolean isNullable;
 
-            public final mondrian.rolap.Column column;
+            public final mondrian.rolap.RolapColumn column;
 
             private final List<JdbcSchema.Table.Column.Usage> usages;
 
@@ -535,7 +535,7 @@ public class JdbcSchema {
             private Column(final String name) {
                 this.name = name;
                 this.column =
-                    new mondrian.rolap.Column(
+                    new mondrian.rolap.RolapColumn(
                         JdbcSchema.Table.this.getName(),
                         name);
                 this.usages = new ArrayList<>();

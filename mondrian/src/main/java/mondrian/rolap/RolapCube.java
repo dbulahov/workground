@@ -645,7 +645,7 @@ public class RolapCube extends CubeBase {
                 throw new BadMeasureSourceException(
                     cubeMapping.getName(), measureMapping.getName());
             }
-            measureExp = new mondrian.rolap.Column(
+            measureExp = new mondrian.rolap.RolapColumn(
                 getAlias(getFact()), measureMapping.getColumn());
         } else if (measureMapping.getMeasureExpression() != null) {
             measureExp = measureMapping.getMeasureExpression();
@@ -2159,8 +2159,8 @@ public class RolapCube extends CubeBase {
                     // parameters:
                     //   fact table,
                     //   fact table foreign key,
-                    mondrian.rolap.Column column =
-                        new mondrian.rolap.Column(
+                    mondrian.rolap.RolapColumn column =
+                        new mondrian.rolap.RolapColumn(
                             table.getAlias(),
                             hierarchyUsage.getForeignKey());
                     // parameters:

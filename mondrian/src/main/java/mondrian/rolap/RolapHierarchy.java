@@ -1241,7 +1241,7 @@ public class RolapHierarchy extends HierarchyBase {
         int index = peerHier.levels.length;
         int flags = src.getFlags() &~ RolapLevel.FLAG_UNIQUE;
         SQLExpressionMapping keyExp =
-            new Column(clos.getTable().getName(), clos.getParentColumn());
+            new RolapColumn(clos.getTable().getName(), clos.getParentColumn());
 
         RolapLevel level =
             new RolapLevel(
@@ -1265,7 +1265,7 @@ public class RolapHierarchy extends HierarchyBase {
         // indirect report of every employee (which is more than the number
         // of employees).
         flags = src.getFlags() | RolapLevel.FLAG_UNIQUE;
-        keyExp = new Column(clos.getTable().getName(), clos.getChildColumn());
+        keyExp = new RolapColumn(clos.getTable().getName(), clos.getChildColumn());
         RolapLevel sublevel = new RolapLevel(
             peerHier,
             "Item",
