@@ -310,7 +310,7 @@ public class RolapStar {
         String possibleName)
     {
         if (rel instanceof TableQueryMapping tbl) {
-        	return TableQueryMappingImpl.builder()        	
+        	return TableQueryMappingImpl.builder()
         	.withAlias(possibleName)
         	.withName(tbl.getName())
         	.withSchema(tbl.getSchema())
@@ -428,7 +428,7 @@ public class RolapStar {
                     		.withKey(join.getLeft().getKey())
                     		.withQuery(PojoUtil.copy(left))
                     		.build())
-                    
+
                     .withRight(JoinedQueryElementMappingImpl.builder()
                     		.withAlias(right instanceof RelationalQueryMapping relation ? RelationUtil.getAlias(relation) : null)
                     		.withKey(join.getRight().getKey())
@@ -1331,7 +1331,7 @@ public class RolapStar {
                     if (columnExpr.getName().equals(columnName)) {
                         l.add(column);
                     }
-                } else if (column.getExpression().toString().equals(columnName))
+                } else if (column.getExpression() != null && column.getExpression().toString().equals(columnName))
                 {
                     l.add(column);
                 }

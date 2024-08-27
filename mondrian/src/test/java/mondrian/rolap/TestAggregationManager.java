@@ -37,7 +37,25 @@ import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
+import org.eclipse.daanse.rolap.mapping.api.model.enums.MeasureAggregatorType;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationColumnNameMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationExcludeMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationLevelMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationMeasureMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.AggregationNameMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.CubeMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.HierarchyMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.JoinQueryMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.JoinedQueryElementMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.LevelMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MeasureGroupMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.MeasureMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.PhysicalCubeMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.StandardDimensionMappingImpl;
+import org.eclipse.daanse.rolap.mapping.pojo.TableQueryMappingImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -2406,9 +2424,160 @@ class TestAggregationManager extends BatchTestCase {
          */
         class TestNonCollapsedAggregateModifier extends PojoMappingModifier {
 
+        	private static final MeasureMappingImpl m = MeasureMappingImpl.builder()
+            .withName("Unit Sales")
+            .withColumn("unit_sales")
+            .withAggregatorType(MeasureAggregatorType.SUM)
+            .withFormatString("Standard")
+            .withVisible(false)
+            .build();
+
+            
             public TestNonCollapsedAggregateModifier(CatalogMapping catalog) {
                 super(catalog);
             }
+            
+            @Override
+            protected List<CubeMapping> cubes(List<? extends CubeMapping> cubes) {
+                List<CubeMapping> result = new ArrayList<>();
+                result.addAll(super.cubes(cubes));
+                result.add(PhysicalCubeMappingImpl.builder()
+                    .withName("Foo")
+                    .withDefaultMeasure(m)
+                    .withQuery(TableQueryMappingImpl.builder()
+                    		.withName("sales_fact_1997")
+                    		.withAggregationExcludes(List.of(
+                    			AggregationExcludeMappingImpl.builder()
+                                    .withName("agg_g_ms_pcat_sales_fact_1997")
+                                    .build(),
+                                AggregationExcludeMappingImpl.builder()
+                                    .withName("agg_c_14_sales_fact_1997")
+                                    .build(),
+                                AggregationExcludeMappingImpl.builder()
+                                    .withName("agg_pl_01_sales_fact_1997")
+                                    .build(),
+                                AggregationExcludeMappingImpl.builder()
+                                    .withName("agg_ll_01_sales_fact_1997")
+                                    .build()	
+                    		))
+                    		.withAggregationTables(List.of(
+                    				AggregationNameMappingImpl.builder()
+                                    .withName("agg_l_05_sales_fact_1997")
+                                    .withAggregationFactCount(AggregationColumnNameMappingImpl.builder().withColumn("fact_count").build())
+                                    .withAggregationIgnoreColumns(List.of(
+                                    	AggregationColumnNameMappingImpl.builder()
+                                           	.withColumn("customer_id")
+                                            .build(),
+                                        AggregationColumnNameMappingImpl.builder()
+                                            .withColumn("store_id")
+                                            .build(),
+                                        AggregationColumnNameMappingImpl.builder()
+                                            .withColumn("promotion_id")
+                                            .build(),
+                                        AggregationColumnNameMappingImpl.builder()
+                                    		.withColumn("store_sales")
+                                    		.build(),
+                                    	AggregationColumnNameMappingImpl.builder()
+                                            .withColumn("store_cost")
+                                            .build()
+                                    ))
+                                    .withAggregationMeasures(List.of(
+                                    		AggregationMeasureMappingImpl.builder()
+                                            .withName("[Measures].[Unit Sales]")
+                                            .withColumn("unit_sales")
+                                            .build()
+                                    ))
+                                    .withAggregationLevels(List.of(
+                                    	AggregationLevelMappingImpl.builder()
+                                            .withName("[Product].[Product Id]")
+                                            .withColumn("product_id")
+                                            .withCollapsed(false)
+                                            .build()
+                                    ))
+                                    .build()                    				
+                    				))
+                    		.build())
+                    .withDimensionConnectors(List.of(
+                    		DimensionConnectorMappingImpl
+                    		.builder()
+                    		.withForeignKey("product_id")
+                    		.withDimension(
+                    				StandardDimensionMappingImpl.builder()
+                                    .withName("Product")
+                                    .withHierarchies(List.of(
+                                        HierarchyMappingImpl.builder()
+                                            .withHasAll(true)
+                                            .withPrimaryKey("product_id")
+                                            .withPrimaryKeyTable("product")
+                                            .withQuery(
+                                                    JoinQueryMappingImpl.builder()
+                                                    .withLeft(
+                                                    	JoinedQueryElementMappingImpl.builder()
+                                                    		.withKey("product_class_id")
+                                                    		.withQuery(TableQueryMappingImpl.builder().withName("product").build())
+                                                    		.build())
+                                                    .withRight(
+                                                    	JoinedQueryElementMappingImpl.builder()
+                                                    		.withKey("product_class_id")
+                                                    		.withQuery(TableQueryMappingImpl.builder().withName("product_class").build())
+                                                    		.build())
+                                                    .build()
+                                                )
+                                            .withLevels(List.of(
+                                                LevelMappingImpl.builder()
+                                                    .withName("Product Family")
+                                                    .withTable("product_class")
+                                                    .withColumn("product_family")
+                                                    .withUniqueMembers(true)
+                                                    .build(),
+                                                LevelMappingImpl.builder()
+                                                    .withName("Product Department")
+                                                    .withTable("product_class")
+                                                    .withColumn("product_department")
+                                                    .withUniqueMembers(false)
+                                                    .build(),
+                                                LevelMappingImpl.builder()
+                                                    .withName("Product Category")
+                                                    .withTable("product_class")
+                                                    .withColumn("product_category")
+                                                    .withUniqueMembers(false)
+                                                    .build(),
+                                                LevelMappingImpl.builder()
+                                                    .withName("Product Subcategory")
+                                                    .withTable("product_class")
+                                                    .withColumn("product_subcategory")
+                                                    .withUniqueMembers(false)
+                                                    .build(),
+                                                LevelMappingImpl.builder()
+                                                    .withName("Brand Name")
+                                                    .withTable("product")
+                                                    .withColumn("brand_name")
+                                                    .withUniqueMembers(false)
+                                                    .build(),
+                                                LevelMappingImpl.builder()
+                                                    .withName("Product Name")
+                                                    .withTable("product")
+                                                    .withColumn("product_name")
+                                                    .withUniqueMembers(false)
+                                                    .build(),
+                                                LevelMappingImpl.builder()
+                                                    .withName("Product Id")
+                                                    .withTable("product")
+                                                    .withColumn("product_id")
+                                                    .withUniqueMembers(true)
+                                                    .build()
+                                            ))
+                                            .build()
+                                    ))
+                    				.build())
+                    		.build()))
+                    .withMeasureGroups(List.of(MeasureGroupMappingImpl.builder()
+                    		.withMeasures(List.of(m))
+                    		.build()))
+                    .build());
+                return result;
+            }
+            
             /* TODO: DENIS MAPPING-MODIFIER
             @Override
             protected List<MappingCube> cubes(List<MappingCube> cubes) {
