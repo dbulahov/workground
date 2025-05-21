@@ -15,4 +15,6 @@ package org.eclipse.daanse.olap.api.element;
 
 public interface VirtualCube extends Cube {
 
+    boolean shouldIgnoreUnrelatedDimensions(String name);
+
 }
