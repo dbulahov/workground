@@ -22,6 +22,7 @@ import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.common.SystemWideProperties;
 import org.eclipse.daanse.rolap.common.RolapAxis;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 import org.junit.jupiter.api.AfterEach;
@@ -316,8 +317,8 @@ class MultipleColsInTupleAggTest extends AggTableTestCase {
     }
 
     @Override
-    protected Function<CatalogMapping, PojoMappingModifier> getModifierFunction(){
-        return MultipleColsInTupleAggTestModifier::new;
+    protected Function<CatalogMapping, CatalogMappingSupplier> getModifierFunction(){
+        return MultipleColsInTupleAggTestModifierEmf::new;
     }
 
 }

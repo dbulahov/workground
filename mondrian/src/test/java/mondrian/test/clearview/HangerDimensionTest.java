@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.instance.rec.complex.foodmart.FoodmartMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
@@ -61,7 +62,7 @@ class HangerDimensionTest extends ClearViewBase {
         }
     }
 
-    protected Optional<Function<CatalogMapping, PojoMappingModifier>> getModifier(String currentTestCaseName) {
+    protected Optional<Function<CatalogMapping, CatalogMappingSupplier>> getModifier(String currentTestCaseName) {
         return Optional.of(HangerDimensionTestModifiers.HangerDimensionTestModifier1::new);
     }
 

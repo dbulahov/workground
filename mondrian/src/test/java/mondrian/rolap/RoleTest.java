@@ -61,7 +61,7 @@ public class RoleTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testDatabaseSchemaWithRole(Context<?> context) {
-        TestUtil.withSchema(context, RoleTestModifier::new);
+        TestUtil.withSchemaEmf(context, RoleTestModifier::new);
         Connection connection = context.getConnection(new ConnectionProps(List.of("Test")));
 
         try {

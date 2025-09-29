@@ -15,6 +15,7 @@ package org.eclipse.daanse.olap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import java.sql.SQLException;
 import java.time.Duration;
@@ -297,6 +298,7 @@ TestUtil.flushSchemaCache(conn);
             + "    </Hierarchy>\n"
             + "  </Dimension>";
         */
+        /*
         class VerifyMemberLevelNamesIdentityOlap4jDateDimModifier extends org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier {
            public VerifyMemberLevelNamesIdentityOlap4jDateDimModifier(CatalogMapping catalog) {
                 super(catalog);
@@ -344,10 +346,11 @@ TestUtil.flushSchemaCache(conn);
                return result;
            }
         }
+        */
        /*
        ((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube("Sales", dateDim));
         */
-        withSchema(context, VerifyMemberLevelNamesIdentityOlap4jDateDimModifier::new);
+        withSchemaEmf(context, VerifyMemberLevelNamesIdentityOlap4jDateDimModifier::new);
         verifyLevelMemberNamesIdentityOlap4j(mdx, context, expected);
     }
 	@ParameterizedTest
@@ -393,6 +396,7 @@ TestUtil.flushSchemaCache(conn);
 
 
         //((BaseTestContext)context).update(SchemaUpdater.createSubstitutingCube("Sales", dateDim));
+        /*
         class VerifyMemberLevelNamesIdentityOlap4jWeeklyModifier extends PojoMappingModifier {
 
             public VerifyMemberLevelNamesIdentityOlap4jWeeklyModifier(CatalogMapping catalog) {
@@ -450,7 +454,8 @@ TestUtil.flushSchemaCache(conn);
             }
 
         }
-        withSchema(context, VerifyMemberLevelNamesIdentityOlap4jWeeklyModifier::new);
+        */
+        withSchemaEmf(context, VerifyMemberLevelNamesIdentityOlap4jWeeklyModifier::new);
         verifyLevelMemberNamesIdentityOlap4j(mdx, context, expected);
     }
 

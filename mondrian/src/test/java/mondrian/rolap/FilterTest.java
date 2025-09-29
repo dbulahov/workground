@@ -13,14 +13,14 @@ import static org.opencube.junit5.TestUtil.assertQueryReturns;
 import static org.opencube.junit5.TestUtil.getDialect;
 import static org.opencube.junit5.TestUtil.hierarchyName;
 import static org.opencube.junit5.TestUtil.isDefaultNullMemberRepresentation;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.daanse.olap.api.ConfigConstants;
-import org.eclipse.daanse.olap.api.connection.Connection;
 import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.olap.api.connection.Connection;
 import org.eclipse.daanse.olap.common.SystemWideProperties;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
@@ -29,10 +29,8 @@ import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.DimensionMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.ExplicitHierarchyMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.HierarchyMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.LevelMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.MeasureGroupMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.MeasureMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.PhysicalCubeMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.StandardDimensionMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.SumMeasureMappingImpl;
@@ -657,6 +655,7 @@ class FilterTest extends BatchTestCase {
       new SqlPattern(
         DatabaseProduct.MYSQL, necjSqlMySql, necjSqlMySql )
     };
+    /*
       class TestNotInMultiLevelMemberConstraintMixedNullNonNullParentModifier extends PojoMappingModifier {
 
           public TestNotInMultiLevelMemberConstraintMixedNullNonNullParentModifier(CatalogMapping catalog) {
@@ -754,6 +753,7 @@ class FilterTest extends BatchTestCase {
               return result;
           }
       }
+      */
     /*
     String baseSchema = TestUtil.getRawSchema(context);
     String schema = SchemaUtil.getSchema(baseSchema,
@@ -765,7 +765,7 @@ class FilterTest extends BatchTestCase {
         null );
     withSchema(context, schema);
     */
-      withSchema(context, TestNotInMultiLevelMemberConstraintMixedNullNonNullParentModifier::new);
+      withSchemaEmf(context, TestNotInMultiLevelMemberConstraintMixedNullNonNullParentModifier::new);
       assertQuerySql(context.getConnectionWithDefaultRole(), query, patterns );
   }
 
@@ -862,6 +862,7 @@ class FilterTest extends BatchTestCase {
       new SqlPattern(
         DatabaseProduct.MYSQL, necjSqlMySql, necjSqlMySql )
     };
+      /*
       class TestNotInMultiLevelMemberConstraintSingleNullParentModifier extends PojoMappingModifier {
 
           public TestNotInMultiLevelMemberConstraintSingleNullParentModifier(CatalogMapping catalog) {
@@ -959,6 +960,7 @@ class FilterTest extends BatchTestCase {
               return result;
           }
       }
+      */
     /*
     String baseSchema = TestUtil.getRawSchema(context);
     String schema = SchemaUtil.getSchema(baseSchema,
@@ -970,7 +972,7 @@ class FilterTest extends BatchTestCase {
         null );
     withSchema(context, schema);
     */
-      withSchema(context, TestNotInMultiLevelMemberConstraintSingleNullParentModifier::new);
+      withSchemaEmf(context, TestNotInMultiLevelMemberConstraintSingleNullParentModifier::new);
       assertQuerySql(context.getConnectionWithDefaultRole(), query, patterns);
   }
 
@@ -1364,7 +1366,7 @@ class FilterTest extends BatchTestCase {
           + "    </Hierarchy>\n"
           + "  </Dimension>\n" ));
      */
-    withSchema(context, SchemaModifiers.FilterTestModifier::new);
+    withSchemaEmf(context, SchemaModifiersEmf.FilterTestModifier::new);
     Connection connection = context.getConnectionWithDefaultRole();
     assertQuerySqlOrNot(connection, mdx, badPatterns, true, true, true );
     TestUtil.flushSchemaCache(connection);

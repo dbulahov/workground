@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -56,7 +57,7 @@ public class MiscTest extends ClearViewBase {
     }
 
     @Override
-    protected Optional<Function<CatalogMapping, PojoMappingModifier>> getModifier(String currentTestCaseName) {
+    protected Optional<Function<CatalogMapping, CatalogMappingSupplier>> getModifier(String currentTestCaseName) {
         if (currentTestCaseName.equals("testSolveOrder")) {
             return Optional.of(MiscTestModifier::new);
         }

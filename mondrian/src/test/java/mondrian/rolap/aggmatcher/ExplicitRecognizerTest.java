@@ -11,31 +11,29 @@ package mondrian.rolap.aggmatcher;
 
 import static org.opencube.junit5.TestUtil.assertQueryReturns;
 import static org.opencube.junit5.TestUtil.getDialect;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.common.SystemWideProperties;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.ColumnMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.TableMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.enums.ColumnDataType;
-import org.eclipse.daanse.rolap.mapping.instance.rec.complex.foodmart.FoodmartMappingSupplier;
-import org.eclipse.daanse.rolap.mapping.pojo.AggregationColumnNameMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.AggregationExcludeMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.AggregationForeignKeyMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.AggregationLevelMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.AggregationLevelPropertyMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.AggregationMeasureMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.AggregationNameMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.AggregationTableMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.PhysicalColumnMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.MemberPropertyMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.PhysicalTableMappingImpl;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AggregationColumnName;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AggregationExclude;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AggregationForeignKey;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AggregationLevel;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AggregationLevelProperty;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AggregationMeasure;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AggregationName;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AggregationTable;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.MemberProperty;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.PhysicalColumn;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.PhysicalTable;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory;
+import org.eclipse.daanse.rolap.mapping.instance.emf.complex.foodmart.CatalogSupplier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,58 +51,62 @@ class ExplicitRecognizerTest extends AggTableTestCase {
     //## TableName: exp_agg_test
     //## ColumnNames:  testyear,testqtr,testmonthord,testmonthname,testmonthcap,testmonprop1,testmonprop2,gender,test_unit_sales,test_store_cost,fact_count
     //## ColumnTypes: INTEGER,VARCHAR(30),INTEGER,VARCHAR(30),VARCHAR(30),VARCHAR(30),VARCHAR(30),VARCHAR(30),INTEGER,DECIMAL(10,4),INTEGER
-    PhysicalColumnMappingImpl testyearExpAggTest = PhysicalColumnMappingImpl.builder().withName("testyear").withDataType(ColumnDataType.INTEGER).build();
-    PhysicalColumnMappingImpl testqtrExpAggTest = PhysicalColumnMappingImpl.builder().withName("testqtr").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl testmonthordExpAggTest = PhysicalColumnMappingImpl.builder().withName("testmonthord").withDataType(ColumnDataType.INTEGER).build();
-    PhysicalColumnMappingImpl testmonthnameExpAggTest = PhysicalColumnMappingImpl.builder().withName("testmonthname").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl testmonthcapExpAggTest = PhysicalColumnMappingImpl.builder().withName("testmonthcap").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl testmonprop1ExpAggTest = PhysicalColumnMappingImpl.builder().withName("testmonprop1").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl testmonprop2ExpAggTest = PhysicalColumnMappingImpl.builder().withName("testmonprop2").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl genderExpAggTest = PhysicalColumnMappingImpl.builder().withName("gender").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl testUnitSalesExpAggTest = PhysicalColumnMappingImpl.builder().withName("test_unit_sales").withDataType(ColumnDataType.INTEGER).build();
-    PhysicalColumnMappingImpl testStoreCostExpAggTest = PhysicalColumnMappingImpl.builder().withName("test_store_cost").withDataType(ColumnDataType.DECIMAL).withColumnSize(10).withDecimalDigits(4).build();
-    PhysicalColumnMappingImpl factCountExpAggTest = PhysicalColumnMappingImpl.builder().withName("fact_count").withDataType(ColumnDataType.INTEGER).build();
-    PhysicalTableMappingImpl expAggTest = ((PhysicalTableMappingImpl.Builder) PhysicalTableMappingImpl.builder().withName("exp_agg_test")
-            .withColumns(List.of(
-                    testyearExpAggTest,
-                    testqtrExpAggTest,
-                    testmonthordExpAggTest,
-                    testmonthnameExpAggTest,
-                    testmonthcapExpAggTest,
-                    testmonprop1ExpAggTest,
-                    testmonprop2ExpAggTest,
-                    genderExpAggTest,
-                    testUnitSalesExpAggTest,
-                    testStoreCostExpAggTest,
-                    factCountExpAggTest
-            ))).build();
+    private static PhysicalColumn testyearExpAggTest = createColumn("testyear", ColumnDataType.INTEGER, null, null, null);
+    private static PhysicalColumn testqtrExpAggTest = createColumn("testqtr", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn testmonthordExpAggTest = createColumn("testmonthord", ColumnDataType.INTEGER, null, null, null);
+    private static PhysicalColumn testmonthnameExpAggTest = createColumn("testmonthname", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn testmonthcapExpAggTest = createColumn("testmonthcap", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn testmonprop1ExpAggTest = createColumn("testmonprop1", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn testmonprop2ExpAggTest = createColumn("testmonprop2", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn genderExpAggTest = createColumn("gender", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn testUnitSalesExpAggTest = createColumn("test_unit_sales", ColumnDataType.INTEGER, null, null, null);
+    private static PhysicalColumn testStoreCostExpAggTest = createColumn("test_store_cost", ColumnDataType.DECIMAL, null, 10, 4);
+    private static PhysicalColumn factCountExpAggTest = createColumn("fact_count", ColumnDataType.INTEGER, null, null, null);
+
+    private static PhysicalTable expAggTest = RolapMappingFactory.eINSTANCE.createPhysicalTable();
+    static {
+    expAggTest.setName("exp_agg_test");
+    expAggTest.getColumns().add(testyearExpAggTest);
+    expAggTest.getColumns().add(testqtrExpAggTest);
+    expAggTest.getColumns().add(testmonthordExpAggTest);
+    expAggTest.getColumns().add(testmonthnameExpAggTest);
+    expAggTest.getColumns().add(testmonthcapExpAggTest);
+    expAggTest.getColumns().add(testmonprop1ExpAggTest);
+    expAggTest.getColumns().add(testmonprop2ExpAggTest);
+    expAggTest.getColumns().add(genderExpAggTest);
+    expAggTest.getColumns().add(testUnitSalesExpAggTest);
+    expAggTest.getColumns().add(testStoreCostExpAggTest);
+    expAggTest.getColumns().add(factCountExpAggTest);
+    }
 
     //## TableName:  exp_agg_test_distinct_count
     //## ColumnNames:  fact_count,testyear,gender,store_name,store_country,store_st,store_cty,store_add,unit_s,cust_cnt
     //## ColumnTypes: INTEGER,INTEGER,VARCHAR(30),VARCHAR(30),VARCHAR(30),VARCHAR(30),VARCHAR(30),VARCHAR(30),INTEGER,INTEGER
-    PhysicalColumnMappingImpl factCountExpAggTestDistinctCount = PhysicalColumnMappingImpl.builder().withName("fact_count").withDataType(ColumnDataType.INTEGER).build();
-    PhysicalColumnMappingImpl testyearExpAggTestDistinctCount = PhysicalColumnMappingImpl.builder().withName("testyear").withDataType(ColumnDataType.INTEGER).build();
-    PhysicalColumnMappingImpl genderExpAggTestDistinctCount = PhysicalColumnMappingImpl.builder().withName("gender").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl storeNameExpAggTestDistinctCount = PhysicalColumnMappingImpl.builder().withName("store_name").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl storeCountryExpAggTestDistinctCount = PhysicalColumnMappingImpl.builder().withName("store_country").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl storeStExpAggTestDistinctCount = PhysicalColumnMappingImpl.builder().withName("store_st").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl storeCtyExpAggTestDistinctCount = PhysicalColumnMappingImpl.builder().withName("store_cty").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl storeAddExpAggTestDistinctCount = PhysicalColumnMappingImpl.builder().withName("store_add").withDataType(ColumnDataType.VARCHAR).withCharOctetLength(30).build();
-    PhysicalColumnMappingImpl unitSExpAggTestDistinctCount = PhysicalColumnMappingImpl.builder().withName("unit_s").withDataType(ColumnDataType.INTEGER).build();
-    PhysicalColumnMappingImpl custCntExpAggTestDistinctCount = PhysicalColumnMappingImpl.builder().withName("cust_cnt").withDataType(ColumnDataType.INTEGER).build();
-    PhysicalTableMappingImpl expAggTestDistinctCount = ((PhysicalTableMappingImpl.Builder) PhysicalTableMappingImpl.builder().withName("exp_agg_test_distinct_count")
-            .withColumns(List.of(
-                factCountExpAggTestDistinctCount,
-                testyearExpAggTestDistinctCount,
-                genderExpAggTestDistinctCount,
-                storeNameExpAggTestDistinctCount,
-                storeCountryExpAggTestDistinctCount,
-                storeStExpAggTestDistinctCount,
-                storeCtyExpAggTestDistinctCount,
-                storeAddExpAggTestDistinctCount,
-                unitSExpAggTestDistinctCount,
-                custCntExpAggTestDistinctCount
-            ))).build();
+    private static PhysicalColumn factCountExpAggTestDistinctCount = createColumn("fact_count", ColumnDataType.INTEGER, null, null, null);
+    private static PhysicalColumn testyearExpAggTestDistinctCount = createColumn("testyear", ColumnDataType.INTEGER, null, null, null);
+    private static PhysicalColumn genderExpAggTestDistinctCount = createColumn("gender", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn storeNameExpAggTestDistinctCount = createColumn("store_name", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn storeCountryExpAggTestDistinctCount = createColumn("store_country", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn storeStExpAggTestDistinctCount = createColumn("store_st", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn storeCtyExpAggTestDistinctCount = createColumn("store_cty", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn storeAddExpAggTestDistinctCount = createColumn("store_add", ColumnDataType.VARCHAR, 30, null, null);
+    private static PhysicalColumn unitSExpAggTestDistinctCount = createColumn("unit_s", ColumnDataType.INTEGER, null, null, null);
+    private static PhysicalColumn custCntExpAggTestDistinctCount = createColumn("cust_cnt", ColumnDataType.INTEGER, null, null, null);
+
+    private static PhysicalTable expAggTestDistinctCount = RolapMappingFactory.eINSTANCE.createPhysicalTable();
+    static {
+        expAggTestDistinctCount.setName("exp_agg_test_distinct_count");
+        expAggTestDistinctCount.getColumns().add(factCountExpAggTestDistinctCount);
+        expAggTestDistinctCount.getColumns().add(testyearExpAggTestDistinctCount);
+        expAggTestDistinctCount.getColumns().add(genderExpAggTestDistinctCount);
+        expAggTestDistinctCount.getColumns().add(storeNameExpAggTestDistinctCount);
+        expAggTestDistinctCount.getColumns().add(storeCountryExpAggTestDistinctCount);
+        expAggTestDistinctCount.getColumns().add(storeStExpAggTestDistinctCount);
+        expAggTestDistinctCount.getColumns().add(storeCtyExpAggTestDistinctCount);
+        expAggTestDistinctCount.getColumns().add(storeAddExpAggTestDistinctCount);
+        expAggTestDistinctCount.getColumns().add(unitSExpAggTestDistinctCount);
+        expAggTestDistinctCount.getColumns().add(custCntExpAggTestDistinctCount);
+    }
 	@BeforeAll
 	public static void beforeAll() {
 	      ContextArgumentsProvider.dockerWasChanged = true;
@@ -136,41 +138,43 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestContextImpl)context).setDisableCaching(true);
         prepareContext(context);
 
+        AggregationName aggName = RolapMappingFactory.eINSTANCE.createAggregationName();
+        aggName.setName(CatalogSupplier.TABLE_AGG_G_MS_PCAT_SALES_FACT);
+
+        AggregationColumnName factCount = RolapMappingFactory.eINSTANCE.createAggregationColumnName();
+        factCount.setColumn(CatalogSupplier.COLUMN_FACT_COUNT_AGG_G_MS_PCAT_SALES_FACT_1997);
+        aggName.setAggregationFactCount(factCount);
+
+        AggregationMeasure unitSalesMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        unitSalesMeasure.setName("[Measures].[Unit Sales]");
+        unitSalesMeasure.setColumn(CatalogSupplier.COLUMN_UNIT_SALES_AGG_G_MS_PCAT_SALES_FACT_1997);
+        aggName.getAggregationMeasures().add(unitSalesMeasure);
+
+        AggregationLevel genderLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        genderLevel.setName("[Gender].[Gender].[Gender]");
+        genderLevel.setColumn(CatalogSupplier.COLUMN_GENDER_AGG_G_MS_PCAT_SALES_FACT_1997);
+        aggName.getAggregationLevels().add(genderLevel);
+
+        AggregationLevel yearLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        yearLevel.setName("[TimeExtra].[TimeExtra].[Year]");
+        yearLevel.setColumn(CatalogSupplier.COLUMN_THE_YEAR_AGG_G_MS_PCAT_SALES_FACT_1997);
+        aggName.getAggregationLevels().add(yearLevel);
+
+        AggregationLevel quarterLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        quarterLevel.setName("[TimeExtra].[TimeExtra].[Quarter]");
+        quarterLevel.setColumn(CatalogSupplier.COLUMN_QUARTER_AGG_G_MS_PCAT_SALES_FACT_1997);
+        aggName.getAggregationLevels().add(quarterLevel);
+
+        AggregationLevel monthLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        monthLevel.setName("[TimeExtra].[TimeExtra].[Month]");
+        monthLevel.setColumn(CatalogSupplier.COLUMN_MONTH_YEAR_AGG_G_MS_PCAT_SALES_FACT_1997);
+        aggName.getAggregationLevels().add(monthLevel);
+
         setupMultiColDimCube(context,
-                List.of(AggregationNameMappingImpl.builder()
-                        .withName(FoodmartMappingSupplier.AGG_G_MS_PCAT_SALES_FACT_1997)
-                        .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
-                        .withColumn(FoodmartMappingSupplier.FACT_COUNT_COLUMN_IN_AGG_G_MS_PCAT_SALES_FACT_1997)
-                        .build())
-                        .withAggregationMeasures(List.of(
-                        AggregationMeasureMappingImpl.builder()
-                            .withName("[Measures].[Unit Sales]")
-                            .withColumn(FoodmartMappingSupplier.UNIT_SALES_COLUMN_IN_AGG_G_MS_PCAT_SALES_FACT_1997)
-                            .build()
-                        ))
-                        .withAggregationLevels(List.of(
-                            AggregationLevelMappingImpl.builder()
-                                .withName("[Gender].[Gender].[Gender]")
-                                .withColumn(FoodmartMappingSupplier.GENDER_COLUMN_IN_AGG_G_MS_PCAT_SALES_FACT_1997)
-                                .build(),
-                            AggregationLevelMappingImpl.builder()
-                                .withName("[TimeExtra].[TimeExtra].[Year]")
-                                .withColumn(FoodmartMappingSupplier.THE_YEAR_COLUMN_IN_AGG_G_MS_PCAT_SALES_FACT_1997)
-                                .build(),
-                            AggregationLevelMappingImpl.builder()
-                                .withName("[TimeExtra].[TimeExtra].[Quarter]")
-                                .withColumn(FoodmartMappingSupplier.QUARTER_COLUMN_IN_AGG_G_MS_PCAT_SALES_FACT_1997)
-                                .build(),
-                            AggregationLevelMappingImpl.builder()
-                                .withName("[TimeExtra].[TimeExtra].[Month]")
-                                .withColumn(FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_AGG_G_MS_PCAT_SALES_FACT_1997)
-                                .build()
-                        ))
-                        .build()
-                    ),
-            FoodmartMappingSupplier.THE_YEAR_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.QUARTER_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY, FoodmartMappingSupplier.THE_MONTH_COLUMN_IN_TIME_BY_DAY, FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY, null,
+                List.of(aggName),
+                CatalogSupplier.COLUMN_THE_YEAR_TIME_BY_DAY,
+                CatalogSupplier.COLUMN_QUARTER_TIME_BY_DAY,
+                CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY, CatalogSupplier.COLUMN_THE_MONTH_TIME_BY_DAY, CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY, null,
             List.of(), List.of(expAggTest, expAggTestDistinctCount));
 
         String query =
@@ -242,51 +246,49 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestContextImpl)context).setReadAggregates(true);
         ((TestContextImpl)context).setDisableCaching(true);
         prepareContext(context);
+
+        AggregationName aggName = RolapMappingFactory.eINSTANCE.createAggregationName();
+        aggName.setName(CatalogSupplier.TABLE_AGG_C_14_SALES_FACT);
+
+        AggregationColumnName factCount = RolapMappingFactory.eINSTANCE.createAggregationColumnName();
+        factCount.setColumn(CatalogSupplier.COLUMN_FACT_COUNT_AGG_C_14_SALES_FACT_1997);
+        aggName.setAggregationFactCount(factCount);
+
+        AggregationForeignKey foreignKey = RolapMappingFactory.eINSTANCE.createAggregationForeignKey();
+        foreignKey.setFactColumn(CatalogSupplier.COLUMN_STORE_ID_SALESFACT);
+        foreignKey.setAggregationColumn(CatalogSupplier.COLUMN_STORE_ID_AGG_C_14_SALES_FACT_1997);
+        aggName.getAggregationForeignKeys().add(foreignKey);
+
+        AggregationMeasure unitSalesMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        unitSalesMeasure.setName("[Measures].[Unit Sales]");
+        unitSalesMeasure.setColumn(CatalogSupplier.COLUMN_UNIT_SALES_AGG_C_14_SALES_FACT_1997);
+        aggName.getAggregationMeasures().add(unitSalesMeasure);
+
+        AggregationMeasure storeCostMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        storeCostMeasure.setName("[Measures].[Store Cost]");
+        storeCostMeasure.setColumn(CatalogSupplier.COLUMN_STORE_COST_AGG_C_14_SALES_FACT_1997);
+        aggName.getAggregationMeasures().add(storeCostMeasure);
+
+        AggregationLevel yearLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        yearLevel.setName("[TimeExtra].[TimeExtra].[Year]");
+        yearLevel.setColumn(CatalogSupplier.COLUMN_THE_YEAR_AGG_C_14_SALES_FACT_1997);
+        aggName.getAggregationLevels().add(yearLevel);
+
+        AggregationLevel quarterLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        quarterLevel.setName("[TimeExtra].[TimeExtra].[Quarter]");
+        quarterLevel.setColumn(CatalogSupplier.COLUMN_QUARTER_AGG_C_14_SALES_FACT_1997);
+        aggName.getAggregationLevels().add(quarterLevel);
+
+        AggregationLevel monthLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        monthLevel.setName("[TimeExtra].[TimeExtra].[Month]");
+        monthLevel.setColumn(CatalogSupplier.COLUMN_MONTH_YEAR_AGG_C_14_SALES_FACT_1997);
+        aggName.getAggregationLevels().add(monthLevel);
+
         setupMultiColDimCube(context,
-            List.of(AggregationNameMappingImpl.builder()
-                .withName(FoodmartMappingSupplier.AGG_C_14_SALES_FACT_1997)
-                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
-                    .withColumn(FoodmartMappingSupplier.FACT_COUNT_COLUMN_IN_AGG_C_14_SALES_FACT_1997)
-                    .build())
-                .withAggregationForeignKeys(List.of(
-                    AggregationForeignKeyMappingImpl.builder()
-                        .withFactColumn(FoodmartMappingSupplier.STORE_ID_COLUMN_IN_SALES_FACT_1997 )
-                        .withAggregationColumn(FoodmartMappingSupplier.STORE_ID_COLUMN_IN_AGG_C_14_SALES_FACT_1997)
-                        .build()
-                ))
-                .withAggregationMeasures(List.of(
-                    AggregationMeasureMappingImpl.builder()
-                        .withName("[Measures].[Unit Sales]")
-                        .withColumn(FoodmartMappingSupplier.UNIT_SALES_COLUMN_IN_AGG_C_14_SALES_FACT_1997)
-                        .build(),
-                    AggregationMeasureMappingImpl.builder()
-                        .withName("[Measures].[Store Cost]")
-                        .withColumn(FoodmartMappingSupplier.STORE_COST_COLUMN_IN_AGG_C_14_SALES_FACT_1997)
-                        .build()
-                ))
-                .withAggregationLevels(List.of(
-                    //AggregationLevelMappingImpl.builder()
-                    //    .withName("[Gender].[Gender]")
-                    //    .withColumn("gender") //TODO gender is absent
-                    //    .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Year]")
-                        .withColumn(FoodmartMappingSupplier.THE_YEAR_COLUMN_IN_AGG_C_14_SALES_FACT_1997)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Quarter]")
-                        .withColumn(FoodmartMappingSupplier.QUARTER_COLUMN_IN_AGG_C_14_SALES_FACT_1997)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Month]")
-                        .withColumn(FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_AGG_C_14_SALES_FACT_1997)
-                        .build()
-                ))
-                .build()
-            ),
-            FoodmartMappingSupplier.THE_YEAR_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.QUARTER_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY, FoodmartMappingSupplier.THE_MONTH_COLUMN_IN_TIME_BY_DAY, FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY, null,
+            List.of(aggName),
+            CatalogSupplier.COLUMN_THE_YEAR_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_QUARTER_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY, CatalogSupplier.COLUMN_THE_MONTH_TIME_BY_DAY, CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY, null,
             List.of(), List.of(expAggTest, expAggTestDistinctCount));
 
 
@@ -377,42 +379,45 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestContextImpl)context).setReadAggregates(true);
         ((TestContextImpl)context).setDisableCaching(true);
         prepareContext(context);
+
+        AggregationName aggName = RolapMappingFactory.eINSTANCE.createAggregationName();
+        aggName.setName(expAggTest);
+
+        AggregationColumnName factCount = RolapMappingFactory.eINSTANCE.createAggregationColumnName();
+        factCount.setColumn((PhysicalColumn) factCountExpAggTest);
+        aggName.setAggregationFactCount(factCount);
+
+        AggregationMeasure unitSalesMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        unitSalesMeasure.setName("[Measures].[Unit Sales]");
+        unitSalesMeasure.setColumn((PhysicalColumn) testUnitSalesExpAggTest);
+        aggName.getAggregationMeasures().add(unitSalesMeasure);
+
+        AggregationLevel genderLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        genderLevel.setName("[Gender].[Gender].[Gender]");
+        genderLevel.setColumn((PhysicalColumn) genderExpAggTest);
+        aggName.getAggregationLevels().add(genderLevel);
+
+        AggregationLevel yearLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        yearLevel.setName("[TimeExtra].[TimeExtra].[Year]");
+        yearLevel.setColumn((PhysicalColumn) testyearExpAggTest);
+        aggName.getAggregationLevels().add(yearLevel);
+
+        AggregationLevel quarterLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        quarterLevel.setName("[TimeExtra].[TimeExtra].[Quarter]");
+        quarterLevel.setColumn((PhysicalColumn) testqtrExpAggTest);
+        aggName.getAggregationLevels().add(quarterLevel);
+
+        AggregationLevel monthLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        monthLevel.setName("[TimeExtra].[TimeExtra].[Month]");
+        monthLevel.setColumn((PhysicalColumn) testmonthnameExpAggTest);
+        monthLevel.setOrdinalColumn((PhysicalColumn) testmonthordExpAggTest);
+        aggName.getAggregationLevels().add(monthLevel);
+
         setupMultiColDimCube(context,
-            List.of(AggregationNameMappingImpl.builder()
-                .withName(expAggTest)
-                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
-                    .withColumn(factCountExpAggTest)
-                    .build())
-                .withAggregationMeasures(List.of(
-                    AggregationMeasureMappingImpl.builder()
-                        .withName("[Measures].[Unit Sales]")
-                        .withColumn(testUnitSalesExpAggTest)
-                        .build()
-                ))
-                .withAggregationLevels(List.of(
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Gender].[Gender].[Gender]")
-                        .withColumn(genderExpAggTest)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Year]")
-                        .withColumn(testyearExpAggTest)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Quarter]")
-                        .withColumn(testqtrExpAggTest)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Month]")
-                        .withColumn(testmonthnameExpAggTest)
-                        .withOrdinalColumn(testmonthordExpAggTest)
-                        .build()
-                ))
-                .build()
-            ),
-            FoodmartMappingSupplier.THE_YEAR_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.QUARTER_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.THE_MONTH_COLUMN_IN_TIME_BY_DAY, null,  FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY, null,
+            List.of(aggName),
+            CatalogSupplier.COLUMN_THE_YEAR_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_QUARTER_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_THE_MONTH_TIME_BY_DAY, null,  CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY, null,
             List.of(), List.of(expAggTest, expAggTestDistinctCount));
 
         String query =
@@ -460,42 +465,45 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestContextImpl)context).setReadAggregates(true);
         ((TestContextImpl)context).setDisableCaching(true);
         prepareContext(context);
+
+        AggregationName aggName = RolapMappingFactory.eINSTANCE.createAggregationName();
+        aggName.setName(expAggTest);
+
+        AggregationColumnName factCount = RolapMappingFactory.eINSTANCE.createAggregationColumnName();
+        factCount.setColumn((PhysicalColumn) factCountExpAggTest);
+        aggName.setAggregationFactCount(factCount);
+
+        AggregationMeasure unitSalesMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        unitSalesMeasure.setName("[Measures].[Unit Sales]");
+        unitSalesMeasure.setColumn((PhysicalColumn) testUnitSalesExpAggTest);
+        aggName.getAggregationMeasures().add(unitSalesMeasure);
+
+        AggregationLevel genderLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        genderLevel.setName("[Gender].[Gender].[Gender]");
+        genderLevel.setColumn((PhysicalColumn) genderExpAggTest);
+        aggName.getAggregationLevels().add(genderLevel);
+
+        AggregationLevel yearLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        yearLevel.setName("[TimeExtra].[TimeExtra].[Year]");
+        yearLevel.setColumn((PhysicalColumn) testyearExpAggTest);
+        aggName.getAggregationLevels().add(yearLevel);
+
+        AggregationLevel quarterLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        quarterLevel.setName("[TimeExtra].[TimeExtra].[Quarter]");
+        quarterLevel.setColumn((PhysicalColumn) testqtrExpAggTest);
+        aggName.getAggregationLevels().add(quarterLevel);
+
+        AggregationLevel monthLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        monthLevel.setName("[TimeExtra].[TimeExtra].[Month]");
+        monthLevel.setColumn((PhysicalColumn) testmonthnameExpAggTest);
+        monthLevel.setCaptionColumn((PhysicalColumn) testmonthcapExpAggTest);
+        aggName.getAggregationLevels().add(monthLevel);
+
         setupMultiColDimCube(context,
-            List.of(AggregationNameMappingImpl.builder()
-                .withName(expAggTest)
-                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
-                    .withColumn(factCountExpAggTest)
-                    .build())
-                .withAggregationMeasures(List.of(
-                    AggregationMeasureMappingImpl.builder()
-                        .withName("[Measures].[Unit Sales]")
-                        .withColumn(testUnitSalesExpAggTest)
-                        .build()
-                ))
-                .withAggregationLevels(List.of(
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Gender].[Gender].[Gender]")
-                        .withColumn(genderExpAggTest)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Year]")
-                        .withColumn(testyearExpAggTest)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Quarter]")
-                        .withColumn(testqtrExpAggTest)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Month]")
-                        .withColumn(testmonthnameExpAggTest)
-                        .withCaptionColumn(testmonthcapExpAggTest)
-                        .build()
-                ))
-                .build()
-            ),
-            FoodmartMappingSupplier.THE_YEAR_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.QUARTER_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.THE_MONTH_COLUMN_IN_TIME_BY_DAY,  FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY, null, null,
+            List.of(aggName),
+            CatalogSupplier.COLUMN_THE_YEAR_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_QUARTER_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_THE_MONTH_TIME_BY_DAY,  CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY, null, null,
             List.of(), List.of(expAggTest, expAggTestDistinctCount));
 
         String query =
@@ -544,52 +552,56 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestContextImpl)context).setReadAggregates(true);
         ((TestContextImpl)context).setDisableCaching(true);
         prepareContext(context);
+
+        AggregationName aggName = RolapMappingFactory.eINSTANCE.createAggregationName();
+        aggName.setName(expAggTest);
+
+        AggregationColumnName factCount = RolapMappingFactory.eINSTANCE.createAggregationColumnName();
+        factCount.setColumn((PhysicalColumn) factCountExpAggTest);
+        aggName.setAggregationFactCount(factCount);
+
+        AggregationMeasure unitSalesMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        unitSalesMeasure.setName("[Measures].[Unit Sales]");
+        unitSalesMeasure.setColumn((PhysicalColumn) testUnitSalesExpAggTest);
+        aggName.getAggregationMeasures().add(unitSalesMeasure);
+
+        AggregationLevel genderLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        genderLevel.setName("[Gender].[Gender]");
+        genderLevel.setColumn((PhysicalColumn) genderExpAggTest);
+        aggName.getAggregationLevels().add(genderLevel);
+
+        AggregationLevel yearLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        yearLevel.setName("[TimeExtra].[Year]");
+        yearLevel.setColumn((PhysicalColumn) testyearExpAggTest);
+        aggName.getAggregationLevels().add(yearLevel);
+
+        AggregationLevel quarterLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        quarterLevel.setName("[TimeExtra].[Quarter]");
+        quarterLevel.setColumn((PhysicalColumn) testqtrExpAggTest);
+        aggName.getAggregationLevels().add(quarterLevel);
+
+        AggregationLevel monthLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        monthLevel.setName("[TimeExtra].[Month]");
+        monthLevel.setColumn((PhysicalColumn) testmonthnameExpAggTest);
+        monthLevel.setNameColumn((PhysicalColumn) testmonthcapExpAggTest);
+
+        AggregationLevelProperty property = RolapMappingFactory.eINSTANCE.createAggregationLevelProperty();
+        property.setName("aProperty");
+        property.setColumn((PhysicalColumn) testmonprop1ExpAggTest);
+        monthLevel.getAggregationLevelProperties().add(property);
+
+        aggName.getAggregationLevels().add(monthLevel);
+
+        MemberProperty memberProperty = RolapMappingFactory.eINSTANCE.createMemberProperty();
+        memberProperty.setName("aProperty");
+        memberProperty.setColumn((PhysicalColumn) CatalogSupplier.COLUMN_FISCAL_PERIOD_TIME_BY_DAY);
+
         setupMultiColDimCube(context,
-            List.of(AggregationNameMappingImpl.builder()
-                .withName(expAggTest)
-                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
-                    .withColumn(factCountExpAggTest)
-                    .build())
-                .withAggregationMeasures(List.of(
-                    AggregationMeasureMappingImpl.builder()
-                        .withName("[Measures].[Unit Sales]")
-                        .withColumn(testUnitSalesExpAggTest)
-                        .build()
-                ))
-                .withAggregationLevels(List.of(
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Gender].[Gender]")
-                        .withColumn(genderExpAggTest)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[Year]")
-                        .withColumn(testyearExpAggTest)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[Quarter]")
-                        .withColumn(testqtrExpAggTest)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[Month]")
-                        .withColumn(testmonthnameExpAggTest)
-                        .withNameColumn(testmonthcapExpAggTest)
-                        .withAggregationLevelProperties(Stream.of(
-                            AggregationLevelPropertyMappingImpl.builder()
-                                .withName("aProperty")
-                                .withColumn(testmonprop1ExpAggTest)
-                                .build()
-                        ).collect(Collectors.toList()))
-                        .build()
-                ))
-                .build()
-            ),
-            FoodmartMappingSupplier.THE_YEAR_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.QUARTER_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.THE_MONTH_COLUMN_IN_TIME_BY_DAY, null, null,  FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY,
-            List.of(MemberPropertyMappingImpl.builder()
-                .withName("aProperty")
-                .withColumn(FoodmartMappingSupplier.FISCAL_PERIOD_COLUMN_IN_TIME_BY_DAY)
-                .build()), List.of(expAggTest, expAggTestDistinctCount));
+            List.of(aggName),
+            CatalogSupplier.COLUMN_THE_YEAR_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_QUARTER_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_THE_MONTH_TIME_BY_DAY, null, null,  CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY,
+            List.of(memberProperty), List.of(expAggTest, expAggTestDistinctCount));
 
         String query =
             "select {[Measures].[Unit Sales]} on columns, "
@@ -639,61 +651,66 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestContextImpl)context).setReadAggregates(true);
         ((TestContextImpl)context).setDisableCaching(true);
         prepareContext(context);
-        setupMultiColDimCube(context,
-            List.of(AggregationNameMappingImpl.builder()
-                .withName(expAggTestDistinctCount)
-                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
-                    .withColumn(factCountExpAggTestDistinctCount)
-                    .build())
-                .withAggregationMeasures(List.of(
-                    AggregationMeasureMappingImpl.builder()
-                        .withName("[Measures].[Unit Sales]")
-                        .withColumn(unitSExpAggTestDistinctCount)
-                        .build(),
-                    AggregationMeasureMappingImpl.builder()
-                        .withName("[Measures].[Customer Count]")
-                        .withColumn(custCntExpAggTestDistinctCount)
-                        .build()
-                    ))
-                .withAggregationLevels(List.of(
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Year]")
-                        .withColumn(testyearExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Gender].[Gender].[Gender]")
-                        .withColumn(genderExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store Country]")
-                        .withColumn(storeCountryExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store State]")
-                        .withColumn(storeStExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store City]")
-                        .withColumn(storeCtyExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store Name]")
-                        .withColumn(storeNameExpAggTestDistinctCount)
-                        .withAggregationLevelProperties(List.of(
-                            AggregationLevelPropertyMappingImpl.builder()
-                                .withName("Street address")
-                                .withColumn(storeAddExpAggTestDistinctCount)
-                                .build()
-                        ))
-                        .build()
 
-                        ))
-                        .build()
-                ),
-            FoodmartMappingSupplier.THE_YEAR_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.QUARTER_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY, FoodmartMappingSupplier.THE_MONTH_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY, null,
+        AggregationName aggName = RolapMappingFactory.eINSTANCE.createAggregationName();
+        aggName.setName(expAggTestDistinctCount);
+
+        AggregationColumnName factCount = RolapMappingFactory.eINSTANCE.createAggregationColumnName();
+        factCount.setColumn(factCountExpAggTestDistinctCount);
+        aggName.setAggregationFactCount(factCount);
+
+        AggregationMeasure unitSalesMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        unitSalesMeasure.setName("[Measures].[Unit Sales]");
+        unitSalesMeasure.setColumn(unitSExpAggTestDistinctCount);
+        aggName.getAggregationMeasures().add(unitSalesMeasure);
+
+        AggregationMeasure customerCountMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        customerCountMeasure.setName("[Measures].[Customer Count]");
+        customerCountMeasure.setColumn(custCntExpAggTestDistinctCount);
+        aggName.getAggregationMeasures().add(customerCountMeasure);
+
+        AggregationLevel yearLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        yearLevel.setName("[TimeExtra].[TimeExtra].[Year]");
+        yearLevel.setColumn(testyearExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(yearLevel);
+
+        AggregationLevel genderLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        genderLevel.setName("[Gender].[Gender].[Gender]");
+        genderLevel.setColumn(genderExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(genderLevel);
+
+        AggregationLevel storeCountryLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeCountryLevel.setName("[Store].[Store].[Store Country]");
+        storeCountryLevel.setColumn(storeCountryExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(storeCountryLevel);
+
+        AggregationLevel storeStateLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeStateLevel.setName("[Store].[Store].[Store State]");
+        storeStateLevel.setColumn(storeStExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(storeStateLevel);
+
+        AggregationLevel storeCityLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeCityLevel.setName("[Store].[Store].[Store City]");
+        storeCityLevel.setColumn(storeCtyExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(storeCityLevel);
+
+        AggregationLevel storeNameLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeNameLevel.setName("[Store].[Store].[Store Name]");
+        storeNameLevel.setColumn(storeNameExpAggTestDistinctCount);
+
+        AggregationLevelProperty streetAddressProperty = RolapMappingFactory.eINSTANCE.createAggregationLevelProperty();
+        streetAddressProperty.setName("Street address");
+        streetAddressProperty.setColumn(storeAddExpAggTestDistinctCount);
+        storeNameLevel.getAggregationLevelProperties().add(streetAddressProperty);
+
+        aggName.getAggregationLevels().add(storeNameLevel);
+
+        setupMultiColDimCube(context,
+            List.of(aggName),
+            CatalogSupplier.COLUMN_THE_YEAR_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_QUARTER_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY, CatalogSupplier.COLUMN_THE_MONTH_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY, null,
             List.of(), List.of(expAggTest, expAggTestDistinctCount));
 
         String query =
@@ -781,60 +798,66 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestContextImpl)context).setReadAggregates(true);
         ((TestContextImpl)context).setDisableCaching(true);
         prepareContext(context);
-        setupMultiColDimCube(context,
-            List.of(AggregationNameMappingImpl.builder()
-                .withName(expAggTestDistinctCount)
-                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
-                    .withColumn(factCountExpAggTestDistinctCount)
-                    .build())
-                .withAggregationMeasures(List.of(
-                    AggregationMeasureMappingImpl.builder()
-                        .withName("[Measures].[Unit Sales]")
-                        .withColumn(unitSExpAggTestDistinctCount)
-                        .build(),
-                    AggregationMeasureMappingImpl.builder()
-                        .withName("[Measures].[Customer Count]")
-                        .withColumn(custCntExpAggTestDistinctCount)
-                        .build()
-                ))
-                .withAggregationLevels(List.of(
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Year]")
-                        .withColumn(testyearExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Gender].[Gender].[Gender]")
-                        .withColumn(genderExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store Country]")
-                        .withColumn(storeCountryExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store State]")
-                        .withColumn(storeStExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store City]")
-                        .withColumn(storeCtyExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store Name]")
-                        .withColumn(storeNameExpAggTestDistinctCount)
-                        .withAggregationLevelProperties(List.of(
-                            AggregationLevelPropertyMappingImpl.builder()
-                                .withName("Street address")
-                                .withColumn(storeAddExpAggTestDistinctCount)
-                                .build()
-                        ))
-                        .build()
 
-                ))
-                .build()),
-            FoodmartMappingSupplier.THE_YEAR_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.QUARTER_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.THE_YEAR_COLUMN_IN_TIME_BY_DAY, FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY, null,
+        AggregationName aggName = RolapMappingFactory.eINSTANCE.createAggregationName();
+        aggName.setName(expAggTestDistinctCount);
+
+        AggregationColumnName factCount = RolapMappingFactory.eINSTANCE.createAggregationColumnName();
+        factCount.setColumn(factCountExpAggTestDistinctCount);
+        aggName.setAggregationFactCount(factCount);
+
+        AggregationMeasure unitSalesMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        unitSalesMeasure.setName("[Measures].[Unit Sales]");
+        unitSalesMeasure.setColumn(unitSExpAggTestDistinctCount);
+        aggName.getAggregationMeasures().add(unitSalesMeasure);
+
+        AggregationMeasure customerCountMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        customerCountMeasure.setName("[Measures].[Customer Count]");
+        customerCountMeasure.setColumn(custCntExpAggTestDistinctCount);
+        aggName.getAggregationMeasures().add(customerCountMeasure);
+
+        AggregationLevel yearLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        yearLevel.setName("[TimeExtra].[TimeExtra].[Year]");
+        yearLevel.setColumn(testyearExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(yearLevel);
+
+        AggregationLevel genderLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        genderLevel.setName("[Gender].[Gender].[Gender]");
+        genderLevel.setColumn(genderExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(genderLevel);
+
+        AggregationLevel storeCountryLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeCountryLevel.setName("[Store].[Store].[Store Country]");
+        storeCountryLevel.setColumn(storeCountryExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(storeCountryLevel);
+
+        AggregationLevel storeStateLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeStateLevel.setName("[Store].[Store].[Store State]");
+        storeStateLevel.setColumn(storeStExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(storeStateLevel);
+
+        AggregationLevel storeCityLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeCityLevel.setName("[Store].[Store].[Store City]");
+        storeCityLevel.setColumn(storeCtyExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(storeCityLevel);
+
+        AggregationLevel storeNameLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeNameLevel.setName("[Store].[Store].[Store Name]");
+        storeNameLevel.setColumn(storeNameExpAggTestDistinctCount);
+
+        AggregationLevelProperty streetAddressProperty = RolapMappingFactory.eINSTANCE.createAggregationLevelProperty();
+        streetAddressProperty.setName("Street address");
+        streetAddressProperty.setColumn(storeAddExpAggTestDistinctCount);
+        storeNameLevel.getAggregationLevelProperties().add(streetAddressProperty);
+
+        aggName.getAggregationLevels().add(storeNameLevel);
+
+        setupMultiColDimCube(context,
+            List.of(aggName),
+            CatalogSupplier.COLUMN_THE_YEAR_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_QUARTER_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_THE_YEAR_TIME_BY_DAY, CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY, null,
             List.of(), List.of(expAggTest, expAggTestDistinctCount), "Customer Count");
 
         // Query brings in Year and Store Name, omitting Gender.
@@ -908,62 +931,67 @@ class ExplicitRecognizerTest extends AggTableTestCase {
         ((TestContextImpl)context).setReadAggregates(true);
         ((TestContextImpl)context).setDisableCaching(true);
         prepareContext(context);
-        setupMultiColDimCube(context,
-            List.of(AggregationNameMappingImpl.builder()
-                .withName(expAggTestDistinctCount)
-                .withAggregationFactCount(AggregationColumnNameMappingImpl.builder()
-                    .withColumn(factCountExpAggTestDistinctCount)
-                    .build())
-                .withAggregationMeasures(List.of(
-                    AggregationMeasureMappingImpl.builder()
-                        .withName("[Measures].[Unit Sales]")
-                        .withColumn(unitSExpAggTestDistinctCount)
-                        .build(),
-                    AggregationMeasureMappingImpl.builder()
-                        .withName("[Measures].[Customer Count]")
-                        .withColumn(custCntExpAggTestDistinctCount)
-                        .build()
-                ))
-                .withAggregationLevels(List.of(
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[TimeExtra].[TimeExtra].[Year]")
-                        .withColumn(testyearExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Gender].[Gender].[Gender]")
-                        .withColumn(genderExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store Country]")
-                        .withColumn(storeCountryExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store State]")
-                        .withColumn(storeStExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store City]")
-                        .withColumn(storeCtyExpAggTestDistinctCount)
-                        .build(),
-                    AggregationLevelMappingImpl.builder()
-                        .withName("[Store].[Store].[Store Name]")
-                        .withColumn(storeNameExpAggTestDistinctCount)
-                        .withAggregationLevelProperties(List.of(
-                            AggregationLevelPropertyMappingImpl.builder()
-                                .withName("Street address")
-                                .withColumn(storeAddExpAggTestDistinctCount)
-                                .build()
-                        ))
-                        .build()
 
-                ))
-                .build()
-            ),
-            FoodmartMappingSupplier.THE_YEAR_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.QUARTER_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.THE_MONTH_COLUMN_IN_TIME_BY_DAY,
-            FoodmartMappingSupplier.MONTH_OF_YEAR_COLUMN_IN_TIME_BY_DAY, null,
+        AggregationName aggName = RolapMappingFactory.eINSTANCE.createAggregationName();
+        aggName.setName(expAggTestDistinctCount);
+
+        AggregationColumnName factCount = RolapMappingFactory.eINSTANCE.createAggregationColumnName();
+        factCount.setColumn(factCountExpAggTestDistinctCount);
+        aggName.setAggregationFactCount(factCount);
+
+        AggregationMeasure unitSalesMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        unitSalesMeasure.setName("[Measures].[Unit Sales]");
+        unitSalesMeasure.setColumn(unitSExpAggTestDistinctCount);
+        aggName.getAggregationMeasures().add(unitSalesMeasure);
+
+        AggregationMeasure customerCountMeasure = RolapMappingFactory.eINSTANCE.createAggregationMeasure();
+        customerCountMeasure.setName("[Measures].[Customer Count]");
+        customerCountMeasure.setColumn(custCntExpAggTestDistinctCount);
+        aggName.getAggregationMeasures().add(customerCountMeasure);
+
+        AggregationLevel yearLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        yearLevel.setName("[TimeExtra].[TimeExtra].[Year]");
+        yearLevel.setColumn(testyearExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(yearLevel);
+
+        AggregationLevel genderLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        genderLevel.setName("[Gender].[Gender].[Gender]");
+        genderLevel.setColumn(genderExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(genderLevel);
+
+        AggregationLevel storeCountryLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeCountryLevel.setName("[Store].[Store].[Store Country]");
+        storeCountryLevel.setColumn(storeCountryExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(storeCountryLevel);
+
+        AggregationLevel storeStateLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeStateLevel.setName("[Store].[Store].[Store State]");
+        storeStateLevel.setColumn(storeStExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(storeStateLevel);
+
+        AggregationLevel storeCityLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeCityLevel.setName("[Store].[Store].[Store City]");
+        storeCityLevel.setColumn(storeCtyExpAggTestDistinctCount);
+        aggName.getAggregationLevels().add(storeCityLevel);
+
+        AggregationLevel storeNameLevel = RolapMappingFactory.eINSTANCE.createAggregationLevel();
+        storeNameLevel.setName("[Store].[Store].[Store Name]");
+        storeNameLevel.setColumn(storeNameExpAggTestDistinctCount);
+
+        AggregationLevelProperty streetAddressProperty = RolapMappingFactory.eINSTANCE.createAggregationLevelProperty();
+        streetAddressProperty.setName("Street address");
+        streetAddressProperty.setColumn(storeAddExpAggTestDistinctCount);
+        storeNameLevel.getAggregationLevelProperties().add(streetAddressProperty);
+
+        aggName.getAggregationLevels().add(storeNameLevel);
+
+        setupMultiColDimCube(context,
+            List.of(aggName),
+            CatalogSupplier.COLUMN_THE_YEAR_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_QUARTER_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_THE_MONTH_TIME_BY_DAY,
+            CatalogSupplier.COLUMN_MONTH_OF_YEAR_TIME_BY_DAY, null,
             List.of(), List.of(expAggTest, expAggTestDistinctCount), "Customer Count");
 
         String query =
@@ -1001,26 +1029,26 @@ class ExplicitRecognizerTest extends AggTableTestCase {
     }
 
     public static void setupMultiColDimCube(
-        Context<?> context, List<AggregationTableMappingImpl> aggTables, ColumnMapping yearCols, ColumnMapping qtrCols, ColumnMapping monthCols,
-        ColumnMapping monthCaptionCol, ColumnMapping monthOrdinalCol, ColumnMapping monthNameCol, List<MemberPropertyMappingImpl> monthProp, List<TableMapping> tables)
+        Context<?> context, List<AggregationTable> aggTables, ColumnMapping yearCols, ColumnMapping qtrCols, ColumnMapping monthCols,
+        ColumnMapping monthCaptionCol, ColumnMapping monthOrdinalCol, ColumnMapping monthNameCol, List<MemberProperty> monthProp, List<PhysicalTable> tables)
     {
         setupMultiColDimCube(context,
             aggTables, yearCols, qtrCols, monthCols, monthCaptionCol, monthOrdinalCol, monthNameCol, monthProp, tables, "Unit Sales");
     }
 
     public static void setupMultiColDimCube(
-        Context<?> context, List<AggregationTableMappingImpl> aggTables, ColumnMapping yearCol, ColumnMapping qtrCol, ColumnMapping monthCol,
+        Context<?> context, List<AggregationTable> aggTables, ColumnMapping yearCol, ColumnMapping qtrCol, ColumnMapping monthCol,
         ColumnMapping monthCaptionCol, ColumnMapping monthOrdinalCol, ColumnMapping monthNameCol,
-        List<MemberPropertyMappingImpl> monthProp, List<TableMapping> tables, String defaultMeasure)
+        List<MemberProperty> monthProp, List<PhysicalTable> tables, String defaultMeasure)
     {
-        class ExplicitRecognizerTestModifierInner extends ExplicitRecognizerTestModifier {
+        class ExplicitRecognizerTestModifierInner extends ExplicitRecognizerTestModifierEmf {
 
             public ExplicitRecognizerTestModifierInner(CatalogMapping catalog) {
                 super(catalog);
             }
 
             @Override
-            protected List<MemberPropertyMappingImpl> getMonthProp() {
+            protected List<MemberProperty> getMonthProp() {
                 return monthProp;
             }
 
@@ -1041,12 +1069,12 @@ class ExplicitRecognizerTest extends AggTableTestCase {
 
 
             @Override
-            protected List<AggregationTableMappingImpl> getAggTables() {
+            protected List<AggregationTable> getAggTables() {
                 return aggTables;
             }
 
             @Override
-            protected List<AggregationExcludeMappingImpl> getAggExcludes() {
+            protected List<AggregationExclude> getAggExcludes() {
                 return List.of();
             }
 
@@ -1071,12 +1099,45 @@ class ExplicitRecognizerTest extends AggTableTestCase {
             }
 
             @Override
-            protected List<TableMapping> getDdatabaseSchemaTables() {
+            protected List<PhysicalTable> getDatabaseSchemaTables() {
                 return tables;
             }
         }
 
-        withSchema(context, ExplicitRecognizerTestModifierInner::new);
+        withSchemaEmf(context, ExplicitRecognizerTestModifierInner::new);
+    }
+
+    private static PhysicalColumn createColumn(String name, ColumnDataType dataType, Integer charOctetLength, Integer columnSize, Integer decimalDigits) {
+        PhysicalColumn column = RolapMappingFactory.eINSTANCE.createPhysicalColumn();
+        column.setName(name);
+
+        // Map ColumnDataType to ColumnType
+        if (dataType != null) {
+            switch (dataType) {
+                case INTEGER:
+                    column.setType(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.ColumnType.INTEGER);
+                    break;
+                case VARCHAR:
+                    column.setType(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.ColumnType.VARCHAR);
+                    break;
+                case DECIMAL:
+                    column.setType(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.ColumnType.DECIMAL);
+                    break;
+                default:
+                    column.setType(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.ColumnType.VARCHAR);
+            }
+        }
+
+        if (charOctetLength != null) {
+            column.setCharOctetLength(charOctetLength);
+        }
+        if (columnSize != null) {
+            column.setColumnSize(columnSize);
+        }
+        if (decimalDigits != null) {
+            column.setDecimalDigits(decimalDigits);
+        }
+        return column;
     }
 
 }

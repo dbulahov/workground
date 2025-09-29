@@ -20,25 +20,14 @@ import static org.opencube.junit5.TestUtil.executeQuery;
 import static org.opencube.junit5.TestUtil.flushSchemaCache;
 import static org.opencube.junit5.TestUtil.getDialect;
 import static org.opencube.junit5.TestUtil.verifySameNativeAndNot;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.daanse.olap.api.connection.Connection;
 import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.olap.api.connection.Connection;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.common.SystemWideProperties;
-import org.eclipse.daanse.rolap.mapping.api.model.CalculatedMemberMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.NamedSetMapping;
-import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
-import org.eclipse.daanse.rolap.mapping.pojo.CalculatedMemberMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.CalculatedMemberPropertyMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.NamedSetMappingImpl;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
@@ -758,8 +747,8 @@ class NamedSetTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testNamedSetAgainstCube(Context<?> context) {
 
-        withSchema(context,
-                NamedSetsInCubeModifier::new);
+        withSchemaEmf(context,
+                NamedSetsInCubeModifierEmf::new);
         // Set defined against cube, using 'formula' attribute.
         Connection connection = context.getConnectionWithDefaultRole();
         assertQueryReturns(connection,
@@ -835,8 +824,8 @@ class NamedSetTest {
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testNamedSetAgainstSchema(Context<?> context) {
     	Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-        withSchema(context,
-        		NamedSetTest.NamedSetsInCubeAndSchemaModifier::new);
+        withSchemaEmf(context,
+        		NamedSetTest.NamedSetsInCubeAndSchemaModifierEmf::new);
         Connection connection = context.getConnectionWithDefaultRole();
         assertQueryReturns(connection,
             "SELECT {[Measures].[Store Sales]} on columns,\n"
@@ -861,6 +850,35 @@ class NamedSetTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testBadNamedSet(Context<?> context) {
+        /**
+         * EMF version of TestBadNamedSetModifier
+         * Creates a named set with bad formula (extra closing brace)
+         */
+        class TestBadNamedSetModifierEmf implements org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier {
+
+            private org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl catalog;
+
+            public TestBadNamedSetModifierEmf(CatalogMapping cat) {
+                // Copy catalog using EcoreUtil
+                catalog = org.opencube.junit5.EmfUtil.copy((org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl) cat);
+
+                // Create named set "Bad" with invalid formula using RolapMappingFactory
+                org.eclipse.daanse.rolap.mapping.emf.rolapmapping.NamedSet namedSet =
+                    org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory.eINSTANCE.createNamedSet();
+                namedSet.setName("Bad");
+                namedSet.setFormula("{[Store].[USA].[WA].Children}}");
+
+                // Add named set to catalog
+                catalog.getNamedSets().add(namedSet);
+            }
+
+            @Override
+            public CatalogMapping get() {
+                return catalog;
+            }
+        }
+
+        /*
         class TestBadNamedSetModifier extends PojoMappingModifier {
 
             public TestBadNamedSetModifier(CatalogMapping catalog) {
@@ -878,6 +896,7 @@ class NamedSetTest {
                 return result;
             }
         }
+        */
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -889,7 +908,7 @@ class NamedSetTest {
             null);
         withSchema(context, schema);
          */
-        withSchema(context, TestBadNamedSetModifier::new);
+        withSchemaEmf(context, TestBadNamedSetModifierEmf::new);
         assertQueryThrows(context,
             "SELECT {[Measures].[Store Sales]} on columns,\n"
             + " {[Bad]} on rows\n"
@@ -968,8 +987,8 @@ class NamedSetTest {
     void testNamedSetsMixedWithCalcMembers(Context<?> context)
     {
 
-        withSchema(context,
-                MixedNamedSetSchemaModifier::new);
+        withSchemaEmf(context,
+                MixedNamedSetSchemaModifierEmf::new);
         assertQueryReturns(context.getConnectionWithDefaultRole(),
             "select {\n"
             + "    [Measures].[Unit Sales],\n"
@@ -1064,8 +1083,8 @@ class NamedSetTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testNamedSetDependencies(Context<?> context) {
-        withSchema(context,
-                NamedSetsInCubeModifier::new);
+        withSchemaEmf(context,
+                NamedSetsInCubeModifierEmf::new);
         assertSetExprDependsOn(context.getConnectionWithDefaultRole(), "[Top CA Cities]", "{}");
     }
 
@@ -1313,6 +1332,42 @@ class NamedSetTest {
      * Dynamic schema processor which adds two named sets to a the first cube
      * in a schema.
      */
+    /**
+     * EMF version of NamedSetsInCubeModifier
+     * Creates two named sets: "CA Cities" and "Top CA Cities"
+     */
+    public static class NamedSetsInCubeModifierEmf implements org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier {
+
+        private org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl catalog;
+
+        public NamedSetsInCubeModifierEmf(CatalogMapping cat) {
+            // Copy catalog using EcoreUtil
+            catalog = org.opencube.junit5.EmfUtil.copy((org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl) cat);
+
+            // Create named set "CA Cities" using RolapMappingFactory
+            org.eclipse.daanse.rolap.mapping.emf.rolapmapping.NamedSet namedSet1 =
+                org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory.eINSTANCE.createNamedSet();
+            namedSet1.setName("CA Cities");
+            namedSet1.setFormula("{[Store].[USA].[CA].Children}");
+
+            // Create named set "Top CA Cities" using RolapMappingFactory
+            org.eclipse.daanse.rolap.mapping.emf.rolapmapping.NamedSet namedSet2 =
+                org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory.eINSTANCE.createNamedSet();
+            namedSet2.setName("Top CA Cities");
+            namedSet2.setFormula("TopCount([CA Cities], 2, [Measures].[Unit Sales])");
+
+            // Add named sets to catalog
+            catalog.getNamedSets().add(namedSet1);
+            catalog.getNamedSets().add(namedSet2);
+        }
+
+        @Override
+        public CatalogMapping get() {
+            return catalog;
+        }
+    }
+
+    /*
     public static class NamedSetsInCubeModifier extends PojoMappingModifier {
 
         public NamedSetsInCubeModifier(CatalogMapping catalogMapping) {
@@ -1334,10 +1389,53 @@ class NamedSetTest {
                 return result;
         }
     }
+    */
 
 
 
+    /**
+     * EMF version of NamedSetsInCubeAndSchemaModifier
+     * Creates three named sets: "CA Cities", "Top CA Cities", and "Top USA Stores"
+     */
+    public static class NamedSetsInCubeAndSchemaModifierEmf implements org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier {
 
+        private org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl catalog;
+
+        public NamedSetsInCubeAndSchemaModifierEmf(CatalogMapping cat) {
+            // Copy catalog using EcoreUtil
+            catalog = org.opencube.junit5.EmfUtil.copy((org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl) cat);
+
+            // Create named set "CA Cities" using RolapMappingFactory
+            org.eclipse.daanse.rolap.mapping.emf.rolapmapping.NamedSet namedSet1 =
+                org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory.eINSTANCE.createNamedSet();
+            namedSet1.setName("CA Cities");
+            namedSet1.setFormula("{[Store].[USA].[CA].Children}");
+
+            // Create named set "Top CA Cities" using RolapMappingFactory
+            org.eclipse.daanse.rolap.mapping.emf.rolapmapping.NamedSet namedSet2 =
+                org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory.eINSTANCE.createNamedSet();
+            namedSet2.setName("Top CA Cities");
+            namedSet2.setFormula("TopCount([CA Cities], 2, [Measures].[Unit Sales])");
+
+            // Create named set "Top USA Stores" using RolapMappingFactory
+            org.eclipse.daanse.rolap.mapping.emf.rolapmapping.NamedSet namedSet3 =
+                org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory.eINSTANCE.createNamedSet();
+            namedSet3.setName("Top USA Stores");
+            namedSet3.setFormula("TopCount(Descendants([Store].[USA]), 7)");
+
+            // Add named sets to catalog
+            catalog.getNamedSets().add(namedSet1);
+            catalog.getNamedSets().add(namedSet2);
+            catalog.getNamedSets().add(namedSet3);
+        }
+
+        @Override
+        public CatalogMapping get() {
+            return catalog;
+        }
+    }
+
+    /*
     public static class NamedSetsInCubeAndSchemaModifier extends PojoMappingModifier {
 
         public NamedSetsInCubeAndSchemaModifier(CatalogMapping catalogMapping) {
@@ -1363,11 +1461,77 @@ class NamedSetTest {
                 return result;
         }
     }
+    */
 
 
 
 
+    /**
+     * EMF version of MixedNamedSetSchemaModifier
+     * Creates two named sets and one calculated member for Sales cube
+     */
+    public static class MixedNamedSetSchemaModifierEmf implements org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier {
 
+        private org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl catalog;
+
+        public MixedNamedSetSchemaModifierEmf(CatalogMapping cat) {
+            // Copy catalog using EcoreUtil
+            catalog = org.opencube.junit5.EmfUtil.copy((org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl) cat);
+
+            // Find Sales cube
+            org.eclipse.daanse.rolap.mapping.emf.rolapmapping.Cube salesCube = null;
+
+            for (org.eclipse.daanse.rolap.mapping.emf.rolapmapping.Cube cube : catalog.getCubes()) {
+                if ("Sales".equals(cube.getName())) {
+                    salesCube = cube;
+                    break;
+                }
+            }
+
+            if (salesCube != null) {
+                // Create named set "Top Products In CA" using RolapMappingFactory
+                org.eclipse.daanse.rolap.mapping.emf.rolapmapping.NamedSet namedSet1 =
+                    org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory.eINSTANCE.createNamedSet();
+                namedSet1.setName("Top Products In CA");
+                namedSet1.setFormula("TopCount([Product].[Product Department].MEMBERS, 3, ([Time].[1997].[Q3], [Measures].[CA City Sales]))");
+
+                // Create named set "CA Cities" using RolapMappingFactory
+                org.eclipse.daanse.rolap.mapping.emf.rolapmapping.NamedSet namedSet2 =
+                    org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory.eINSTANCE.createNamedSet();
+                namedSet2.setName("CA Cities");
+                namedSet2.setFormula("{[Store].[USA].[CA].Children}");
+
+                // Add named sets to Sales cube
+                salesCube.getNamedSets().add(namedSet1);
+                salesCube.getNamedSets().add(namedSet2);
+
+                // Create calculated member "CA City Sales" using RolapMappingFactory
+                org.eclipse.daanse.rolap.mapping.emf.rolapmapping.CalculatedMember calcMember =
+                    org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory.eINSTANCE.createCalculatedMember();
+                calcMember.setName("CA City Sales");
+                calcMember.setVisible(false);
+                calcMember.setFormula("Aggregate([CA Cities], [Measures].[Unit Sales])");
+
+                // Create calculated member property for FORMAT_STRING
+                org.eclipse.daanse.rolap.mapping.emf.rolapmapping.CalculatedMemberProperty property =
+                    org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory.eINSTANCE.createCalculatedMemberProperty();
+                property.setName("FORMAT_STRING");
+                property.setValue("$#,##0.0");
+
+                // Add property to calculated member
+                calcMember.getCalculatedMemberProperties().add(property);
+
+                // Add calculated member to Sales cube
+                salesCube.getCalculatedMembers().add(calcMember);
+            }
+        }
+
+        @Override
+        public CatalogMapping get() {
+            return catalog;
+        }
+    }
+    /*
     public static class MixedNamedSetSchemaModifier extends PojoMappingModifier {
 
         public MixedNamedSetSchemaModifier(CatalogMapping catalogMapping) {
@@ -1411,7 +1575,7 @@ class NamedSetTest {
             return result;
         }
     }
-
+    */
 
 
 }

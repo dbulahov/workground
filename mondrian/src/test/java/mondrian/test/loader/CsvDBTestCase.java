@@ -19,7 +19,9 @@ import java.util.function.Function;
 import org.eclipse.daanse.jdbc.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.connection.Connection;
 import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
+import org.eclipse.daanse.rolap.mapping.modifier.emf.EmfMappingModifier;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 import org.opencube.junit5.Constants;
 import org.opencube.junit5.TestUtil;
@@ -64,7 +66,7 @@ public abstract class CsvDBTestCase extends BatchTestCase {
                     getUdfDescription(), getRoleDescription());
             TestUtil.withSchema(context, schema);
              */
-            TestUtil.withSchema(context, getModifierFunction());
+            TestUtil.withSchemaEmf(context, getModifierFunction());
 
         }
         catch (Exception e) {
@@ -81,10 +83,10 @@ public abstract class CsvDBTestCase extends BatchTestCase {
 
     protected abstract String getFileName();
 
-    protected Function<CatalogMapping, PojoMappingModifier>  getModifierFunction(){
+    protected Function<CatalogMapping, CatalogMappingSupplier>  getModifierFunction(){
 
     	//constructor notz longer public.
-    	return PojoMappingModifier::new;
+    	return EmfMappingModifier::new;
     }
 
 }

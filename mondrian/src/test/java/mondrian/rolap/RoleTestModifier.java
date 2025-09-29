@@ -12,24 +12,20 @@
  */
 package mondrian.rolap;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.daanse.rolap.mapping.api.model.AccessRoleMapping;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessCatalog;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessColumn;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessDatabaseSchema;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.AccessTable;
-import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
-import org.eclipse.daanse.rolap.mapping.pojo.AccessCatalogGrantMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.AccessColumnGrantMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.AccessDatabaseSchemaGrantMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.AccessRoleMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.AccessTableGrantMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.DatabaseSchemaMappingImpl;
-import org.eclipse.daanse.rolap.mapping.instance.rec.complex.foodmart.FoodmartMappingSupplier;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AccessCatalogGrant;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AccessColumnGrant;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AccessDatabaseSchemaGrant;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AccessRole;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.AccessTableGrant;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.Catalog;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl;
+import org.eclipse.daanse.rolap.mapping.instance.emf.complex.foodmart.CatalogSupplier;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 
+/*
 public class RoleTestModifier  extends PojoMappingModifier {
 
     public RoleTestModifier(CatalogMapping catalog) {
@@ -51,7 +47,7 @@ public class RoleTestModifier  extends PojoMappingModifier {
 
         AccessDatabaseSchemaGrantMappingImpl schemaGrant = AccessDatabaseSchemaGrantMappingImpl.builder().withAccess(AccessDatabaseSchema.CUSTOM)
                 .withDatabaseSchema((DatabaseSchemaMappingImpl) look(FoodmartMappingSupplier.DATABASE_SCHEMA)).withTableGrants(List.of(tableGrant1, tableGrant2, tableGrant3)).build();
-        
+
         result.add(AccessRoleMappingImpl.builder()
             .withName("Test")
             .withAccessCatalogGrants(List.of(
@@ -64,3 +60,70 @@ public class RoleTestModifier  extends PojoMappingModifier {
         return result;
     }
 }
+*/
+public class RoleTestModifier implements CatalogMappingSupplier {
+
+    private final CatalogMapping originalCatalog;
+
+    public RoleTestModifier(CatalogMapping catalog) {
+        this.originalCatalog = catalog;
+    }
+
+    @Override
+    public CatalogMapping get() {
+        Catalog catalogCopy = org.opencube.junit5.EmfUtil.copy((CatalogImpl) originalCatalog);
+
+        // Create column grants using RolapMappingFactory
+        AccessColumnGrant columnGrant1 = RolapMappingFactory.eINSTANCE.createAccessColumnGrant();
+        columnGrant1.setColumn(CatalogSupplier.COLUMN_PAY_DATE_SALARY);
+        columnGrant1.setColumnAccess(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.ColumnAccess.ALL);
+
+        AccessColumnGrant columnGrant2 = RolapMappingFactory.eINSTANCE.createAccessColumnGrant();
+        columnGrant2.setColumn(CatalogSupplier.COLUMN_EMPLOYEE_ID_SALARY);
+        columnGrant2.setColumnAccess(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.ColumnAccess.ALL);
+
+        AccessColumnGrant columnGrant3 = RolapMappingFactory.eINSTANCE.createAccessColumnGrant();
+        columnGrant3.setColumn(CatalogSupplier.COLUMN_DEPARTMENT_ID_SALARY);
+        columnGrant3.setColumnAccess(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.ColumnAccess.NONE);
+
+        // Create table grants using RolapMappingFactory
+        AccessTableGrant tableGrant1 = RolapMappingFactory.eINSTANCE.createAccessTableGrant();
+        tableGrant1.setTableAccess(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.TableAccess.ALL);
+        tableGrant1.setTable(CatalogSupplier.TABLE_SALES_FACT);
+
+        AccessTableGrant tableGrant2 = RolapMappingFactory.eINSTANCE.createAccessTableGrant();
+        tableGrant2.setTableAccess(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.TableAccess.ALL);
+        tableGrant2.setTable(CatalogSupplier.TABLE_PRODUCT);
+
+        AccessTableGrant tableGrant3 = RolapMappingFactory.eINSTANCE.createAccessTableGrant();
+        tableGrant3.setTableAccess(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.TableAccess.CUSTOM);
+        tableGrant3.setTable(CatalogSupplier.TABLE_SALARY);
+        tableGrant3.getColumnGrants().add(columnGrant1);
+        tableGrant3.getColumnGrants().add(columnGrant2);
+        tableGrant3.getColumnGrants().add(columnGrant3);
+
+        // Create database schema grant using RolapMappingFactory
+        AccessDatabaseSchemaGrant schemaGrant = RolapMappingFactory.eINSTANCE.createAccessDatabaseSchemaGrant();
+        schemaGrant.setDatabaseSchemaAccess(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.DatabaseSchemaAccess.CUSTOM);
+        schemaGrant.setDatabaseSchema(CatalogSupplier.DATABASE_SCHEMA_FOODMART);
+        schemaGrant.getTableGrants().add(tableGrant1);
+        schemaGrant.getTableGrants().add(tableGrant2);
+        schemaGrant.getTableGrants().add(tableGrant3);
+
+        // Create catalog grant using RolapMappingFactory
+        AccessCatalogGrant catalogGrant = RolapMappingFactory.eINSTANCE.createAccessCatalogGrant();
+        catalogGrant.setCatalogAccess(org.eclipse.daanse.rolap.mapping.emf.rolapmapping.CatalogAccess.CUSTOM);
+        catalogGrant.getDatabaseSchemaGrants().add(schemaGrant);
+
+        // Create access role using RolapMappingFactory
+        AccessRole role = RolapMappingFactory.eINSTANCE.createAccessRole();
+        role.setName("Test");
+        role.getAccessCatalogGrants().add(catalogGrant);
+
+        // Add the role to the catalog copy
+        catalogCopy.getAccessRoles().add(role);
+
+        return catalogCopy;
+    }
+}
+

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencube.junit5.TestUtil.cubeByName;
 import static org.opencube.junit5.TestUtil.getDimensionWithName;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -346,7 +346,7 @@ class RolapCubeTest {
     }
 
     void createTestContextWithAdditionalMembersAndARole(Context<?> context) {
-    	withSchema(context, SchemaModifiers.RolapCubeTestModifier1::new);
+    	withSchemaEmf(context, SchemaModifiersEmf.RolapCubeTestModifier1::new);
     }
 
     private void assertCalculatedMemberExists(

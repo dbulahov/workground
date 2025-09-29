@@ -12,12 +12,13 @@ package mondrian.rolap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencube.junit5.TestUtil.assertQueryReturns;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import java.util.function.Function;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 import org.junit.jupiter.api.Disabled;
@@ -235,7 +236,7 @@ Axis #2:
             + "  </Hierarchy>\n"
             + "</Dimension>"));
          */
-        withSchema(context, SchemaModifiers.RolapResultTestModifier::new);
+        withSchemaEmf(context, SchemaModifiersEmf.RolapResultTestModifier::new);
         assertQueryReturns(context.getConnectionWithDefaultRole(),
             "select {[Promotion2 Name].[Price Winners], [Promotion2 Name].[Sale Winners]} * {Tail([Time].[Year].Members,3)} ON COLUMNS, "
             + "NON EMPTY Crossjoin({[Store].CurrentMember.Children},  {[Store Type].[All Store Types].Children}) ON ROWS "
@@ -265,8 +266,8 @@ Axis #2:
             + "Row #2: \n");
     }
 
-    protected Function<CatalogMapping, PojoMappingModifier> getModifierFunction(){
-        return RolapResultTestModifier::new;
+    protected Function<CatalogMapping, CatalogMappingSupplier> getModifierFunction(){
+        return RolapResultTestModifierEmf::new;
     }
 
 }

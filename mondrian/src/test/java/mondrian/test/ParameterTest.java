@@ -24,7 +24,7 @@ import static org.opencube.junit5.TestUtil.assertQueryReturns;
 import static org.opencube.junit5.TestUtil.assertQueryThrows;
 import static org.opencube.junit5.TestUtil.checkThrowable;
 import static org.opencube.junit5.TestUtil.executeExpr;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -1241,6 +1241,7 @@ class ParameterTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSchemaProp(Context<?> context) {
+        /*
         class TestSchemaPropModifier extends PojoMappingModifier {
 
             public TestSchemaPropModifier(CatalogMapping catalog) {
@@ -1259,6 +1260,7 @@ class ParameterTest {
                 return result;
             }
         }
+        */
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -1269,7 +1271,7 @@ class ParameterTest {
             null, null, null);
         withSchema(context, schema);
          */
-        withSchema(context, TestSchemaPropModifier::new);
+        withSchemaEmf(context, TestSchemaPropModifier::new);
         assertExprReturns(context.getConnectionWithDefaultRole(), "Sales", "ParamRef(\"prop\")", "foo bar");
     }
 
@@ -1279,6 +1281,7 @@ class ParameterTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSchemaPropDupFails(Context<?> context) {
+        /*
         class TestSchemaPropDupFailsModifier extends PojoMappingModifier {
 
             public TestSchemaPropDupFailsModifier(CatalogMapping catalog) {
@@ -1307,6 +1310,7 @@ class ParameterTest {
                 return result;
             }
         }
+        */
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -1320,7 +1324,7 @@ class ParameterTest {
             null);
         withSchema(context, schema);
          */
-        withSchema(context, TestSchemaPropDupFailsModifier::new);
+        withSchemaEmf(context, TestSchemaPropDupFailsModifier::new);
         assertExprThrows(context, "Sales",
             "ParamRef(\"foo\")",
             "Duplicate parameter 'foo' in schema");
@@ -1332,6 +1336,7 @@ class ParameterTest {
     @DisabledIfSystemProperty(named = "tempIgnoreStrageTests",matches = "true")
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSchemaPropIllegalTypeFails(Context<?> context) {
+        /*
         class TestSchemaPropIllegalTypeFailsModifier extends PojoMappingModifier {
 
             public TestSchemaPropIllegalTypeFailsModifier(CatalogMapping catalog) {
@@ -1350,6 +1355,7 @@ class ParameterTest {
                 return result;
             }
         }
+        */
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -1361,7 +1367,7 @@ class ParameterTest {
             null);
         withSchema(context, schema);
          */
-        withSchema(context, TestSchemaPropIllegalTypeFailsModifier::new);
+        withSchemaEmf(context, TestSchemaPropIllegalTypeFailsModifier::new);
         assertExprThrows(context, "Sales",
             "1",
             "In Schema: In Parameter: "
@@ -1372,6 +1378,7 @@ class ParameterTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSchemaPropInvalidDefaultExpFails(Context<?> context) {
+        /*
         class TestSchemaPropInvalidDefaultExpFailsModifier extends PojoMappingModifier {
 
             public TestSchemaPropInvalidDefaultExpFailsModifier(CatalogMapping catalog) {
@@ -1390,6 +1397,7 @@ class ParameterTest {
                 return result;
             }
         }
+        */
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -1401,7 +1409,7 @@ class ParameterTest {
             null);
         withSchema(context,schema);
          */
-        withSchema(context, TestSchemaPropInvalidDefaultExpFailsModifier::new);
+        withSchemaEmf(context, TestSchemaPropInvalidDefaultExpFailsModifier::new);
         assertExprThrows(context.getConnectionWithDefaultRole(), "Sales",
             "ParamRef(\"Product Current Member\")",
             "No function matches signature '<Member>.Children(<Numeric Expression>)'");
@@ -1414,6 +1422,7 @@ class ParameterTest {
     @ParameterizedTest
     @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
     void testSchemaPropContext(Context<?> context) {
+        /*
         class TestSchemaPropContextModifier extends PojoMappingModifier {
 
             public TestSchemaPropContextModifier(CatalogMapping catalog) {
@@ -1432,6 +1441,7 @@ class ParameterTest {
                 return result;
             }
         }
+        */
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -1443,7 +1453,7 @@ class ParameterTest {
             null);
         withSchema(context,schema);
          */
-        withSchema(context, TestSchemaPropContextModifier::new);
+        withSchemaEmf(context, TestSchemaPropContextModifier::new);
         assertQueryReturns(context.getConnectionWithDefaultRole(),
             "with member [Measures].[Foo] as ' ParamRef(\"Customer Current Member\").Name '\n"
             + "select {[Measures].[Foo]} on columns\n"

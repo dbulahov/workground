@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.opencube.junit5.TestUtil.assertEqualsVerbose;
 import static org.opencube.junit5.TestUtil.getDialect;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -72,6 +72,7 @@ import org.eclipse.daanse.rolap.common.agg.Segment;
 import org.eclipse.daanse.rolap.common.agg.SegmentWithData;
 import org.eclipse.daanse.rolap.common.agg.ValueColumnPredicate;
 import org.eclipse.daanse.rolap.common.cache.HardSmartCache;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 import org.opencube.junit5.TestUtil;
@@ -736,13 +737,13 @@ public class BatchTestCase{
     }
 
     protected void updateSchemaIfNeed(Context<?> context, String currentTestCaseName){
-        Optional<Function<CatalogMapping, PojoMappingModifier>> oModifier = getModifier(currentTestCaseName);
+        Optional<Function<CatalogMapping, CatalogMappingSupplier>> oModifier = getModifier(currentTestCaseName);
         if (oModifier.isPresent()) {
-            withSchema(context, oModifier.get());
+            withSchemaEmf(context, oModifier.get());
         }
     }
 
-    protected Optional<Function<CatalogMapping, PojoMappingModifier>> getModifier(String currentTestCaseName) {
+    protected Optional<Function<CatalogMapping, CatalogMappingSupplier>> getModifier(String currentTestCaseName) {
         return Optional.empty();
     }
 

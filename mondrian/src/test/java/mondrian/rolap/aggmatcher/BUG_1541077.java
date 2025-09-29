@@ -15,6 +15,7 @@ import java.util.function.Function;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.result.Result;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -145,7 +146,7 @@ public class BUG_1541077 extends AggTableTestCase {
         return BUG_1541077;
     }
 
-    protected Function<CatalogMapping, PojoMappingModifier> getModifierFunction(){
+    protected Function<CatalogMapping, CatalogMappingSupplier> getModifierFunction(){
         return BUG_1541077Modifier::new;
     }
 

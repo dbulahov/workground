@@ -19,7 +19,7 @@ import static org.opencube.junit5.TestUtil.assertAxisReturns;
 import static org.opencube.junit5.TestUtil.assertQueryReturns;
 import static org.opencube.junit5.TestUtil.executeAxis;
 import static org.opencube.junit5.TestUtil.executeQuery;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import java.util.List;
 
@@ -92,11 +92,13 @@ class FilterFunDefTest {
         ((TestContextImpl)context).setQueryTimeout(3);
         SystemWideProperties.instance().EnableNativeNonEmpty = false;
         try {
+            /*
             class TestFilterWillTimeoutModifier extends PojoMappingModifier {
 
                 public TestFilterWillTimeoutModifier(CatalogMapping catalog) {
                     super(catalog);
                 }
+            */
             /* TODO: UserDefinedFunction
             @Override
             protected List<MappingUserDefinedFunction> schemaUserDefinedFunctions(MappingSchema schema) {
@@ -108,6 +110,36 @@ class FilterFunDefTest {
                     .build());
                 return result;
             }*/
+            /*
+            }
+            */
+            /**
+             * EMF version of TestFilterWillTimeoutModifier
+             * Simple modifier for timeout testing - currently does not add UserDefinedFunction
+             */
+            class TestFilterWillTimeoutModifierEmf implements org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier {
+
+                private org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl catalog;
+
+                public TestFilterWillTimeoutModifierEmf(CatalogMapping cat) {
+                    // Copy catalog using EcoreUtil
+                    catalog = org.opencube.junit5.EmfUtil.copy((org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl) cat);
+
+                    /* TODO: UserDefinedFunction
+                     * When UserDefinedFunction support is added to EMF mapping, implement:
+                     *
+                     * org.eclipse.daanse.rolap.mapping.emf.rolapmapping.UserDefinedFunction udf =
+                     *     org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory.eINSTANCE.createUserDefinedFunction();
+                     * udf.setName("SleepUdf");
+                     * udf.setClassName(BasicQueryTest.SleepUdf.class.getName());
+                     * catalog.getUserDefinedFunctions().add(udf);
+                     */
+                }
+
+                @Override
+                public CatalogMapping get() {
+                    return catalog;
+                }
             }
       /*
       String baseSchema = TestUtil.getRawSchema(context);
@@ -118,7 +150,7 @@ class FilterFunDefTest {
           + "\"/>", null );
       TestUtil.withSchema(context, schema);
        */
-            withSchema(context, TestFilterWillTimeoutModifier::new);
+            withSchemaEmf(context, TestFilterWillTimeoutModifierEmf::new);
             executeAxis(context.getConnectionWithDefaultRole(), "Sales",
                 "Filter("
                     + "Filter(CrossJoin([Customers].[Name].members, [Product].[Product Name].members), SleepUdf([Measures]"

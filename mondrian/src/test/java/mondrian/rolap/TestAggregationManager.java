@@ -36,7 +36,7 @@ import static org.opencube.junit5.TestUtil.assertQueryReturns;
 import static org.opencube.junit5.TestUtil.assertQueryThrows;
 import static org.opencube.junit5.TestUtil.flushSchemaCache;
 import static org.opencube.junit5.TestUtil.getDialect;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -46,24 +46,26 @@ import java.util.Set;
 
 import org.eclipse.daanse.jdbc.db.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.ConfigConstants;
-import org.eclipse.daanse.olap.api.connection.Connection;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.Locus;
 import org.eclipse.daanse.olap.api.Statement;
+import org.eclipse.daanse.olap.api.connection.Connection;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.result.Result;
 import org.eclipse.daanse.olap.common.SystemWideProperties;
 import org.eclipse.daanse.olap.common.Util;
 import org.eclipse.daanse.olap.core.AbstractBasicContext;
+import  org.eclipse.daanse.olap.server.ExecutionImpl;
+import  org.eclipse.daanse.olap.server.LocusImpl;
 import org.eclipse.daanse.rolap.api.RolapContext;
 import org.eclipse.daanse.rolap.common.FastBatchingCellReader;
-import org.eclipse.daanse.rolap.element.RolapCatalog;
 import org.eclipse.daanse.rolap.common.RolapStar;
 import org.eclipse.daanse.rolap.common.agg.AggregationManager;
 import org.eclipse.daanse.rolap.common.agg.CellRequest;
 import org.eclipse.daanse.rolap.common.agg.ValueColumnPredicate;
 import org.eclipse.daanse.rolap.common.aggmatcher.AggStar;
+import org.eclipse.daanse.rolap.element.RolapCatalog;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
 import org.eclipse.daanse.rolap.mapping.api.model.enums.ColumnDataType;
@@ -74,7 +76,6 @@ import org.eclipse.daanse.rolap.mapping.pojo.AggregationExcludeMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AggregationLevelMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AggregationMeasureMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.AggregationNameMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.PhysicalColumnMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.ExplicitHierarchyMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.JoinQueryMappingImpl;
@@ -83,7 +84,6 @@ import org.eclipse.daanse.rolap.mapping.pojo.LevelMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.MeasureGroupMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.MeasureMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.PhysicalCubeMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.PhysicalTableMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.SQLExpressionMappingColumnImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.SqlStatementMappingImpl;
 import org.eclipse.daanse.rolap.mapping.pojo.StandardDimensionMappingImpl;
@@ -93,15 +93,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContextImpl;
 import org.opencube.junit5.context.TestContext;
+import org.opencube.junit5.context.TestContextImpl;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
 import mondrian.enums.DatabaseProduct;
-
-import  org.eclipse.daanse.olap.server.ExecutionImpl;
-import  org.eclipse.daanse.olap.server.LocusImpl;
 import mondrian.test.SqlPattern;
 
 /**
@@ -1132,7 +1129,7 @@ class TestAggregationManager extends BatchTestCase {
             + "  </Hierarchy>\n"
             + "</Dimension>"));
          */
-        withSchema(context, SchemaModifiers.TestAggregationManagerModifier1::new);
+        withSchemaEmf(context, SchemaModifiersEmf.TestAggregationManagerModifier1::new);
         assertQueryReturns(context.getConnectionWithDefaultRole(),
             "select {[Measures].[Unit Sales]} on columns, "
             + "Filter ({ "
@@ -1336,6 +1333,7 @@ class TestAggregationManager extends BatchTestCase {
                     cardinalitySqlMySql2,
                     cardinalitySqlMySql2)
             };
+        /*
         class TestKeyExpressionCardinalityCacheModifier extends PojoMappingModifier {
 
             public TestKeyExpressionCardinalityCacheModifier(CatalogMapping catalog) {
@@ -1489,6 +1487,7 @@ class TestAggregationManager extends BatchTestCase {
 
             }
         }
+        */
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -1500,7 +1499,7 @@ class TestAggregationManager extends BatchTestCase {
                 null);
         withSchema(context, schema);
          */
-        withSchema(context, TestKeyExpressionCardinalityCacheModifier::new);
+        withSchemaEmf(context, TestKeyExpressionCardinalityCacheModifier::new);
         // This query causes "store"."store_country" cardinality to be
         // retrieved.
         Connection connection = context.getConnectionWithDefaultRole();
@@ -1650,6 +1649,7 @@ class TestAggregationManager extends BatchTestCase {
         + "      formatString=\"#,###.00\"/>\n"
         + "</Cube>";
         */
+        /*
         class TestOrdinalExprAggTuplesAndChildrenModifier extends PojoMappingModifier {
 
             public TestOrdinalExprAggTuplesAndChildrenModifier(CatalogMapping catalog) {
@@ -1759,6 +1759,7 @@ class TestAggregationManager extends BatchTestCase {
                 return result;
             }
         }
+        */
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -1770,7 +1771,7 @@ class TestAggregationManager extends BatchTestCase {
                 null);
         withSchema(context, schema);
          */
-        withSchema(context, TestOrdinalExprAggTuplesAndChildrenModifier::new);
+        withSchemaEmf(context, TestOrdinalExprAggTuplesAndChildrenModifier::new);
         String query =
             "select {[Measures].[Unit Sales]} on columns, "
             + "non empty CrossJoin({[Product].[Food].[Deli].[Meat]},{[Gender].[M]}) on rows "
@@ -2064,7 +2065,7 @@ class TestAggregationManager extends BatchTestCase {
          */
         context.getCatalogCache().clear();
         CatalogMapping catalog = ((RolapContext) context).getCatalogMapping();
-        ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.TestAggregationManagerModifier2(catalog, colName));
+        ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiersEmf.TestAggregationManagerModifier2(catalog, colName));
         assertQueryThrows(context,
             mdxQuery,
             "ERROR_TEST_FUNCTION_NAME");
@@ -2084,7 +2085,7 @@ class TestAggregationManager extends BatchTestCase {
          */
         context.getCatalogCache().clear();
         catalog = ((RolapContext) context).getCatalogMapping();
-        ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.TestAggregationManagerModifier10(catalog, colName));
+        ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiersEmf.TestAggregationManagerModifier10(catalog, colName));
         assertQueryReturns(context.getConnectionWithDefaultRole(),
             "select non empty{[Promotions].[All Promotions].Children} ON rows, "
             + "non empty {[Store].[All Stores]} ON columns "
@@ -2360,7 +2361,7 @@ class TestAggregationManager extends BatchTestCase {
                 + "      aggregator=\"distinct-count\" formatString=\"#,###\"/>\n"
                 + "</Cube></Schema>\n");
          */
-        withSchema(context, SchemaModifiers.TestAggregationManagerModifier5::new);
+        withSchemaEmf(context, SchemaModifiersEmf.TestAggregationManagerModifier5::new);
         final String mdxQuery =
             "select {[Measures].[Unit Sales]} on columns, "
             + "non empty CrossJoin({[Time].[Weekly].[1997].[1].[15]},CrossJoin({[Customers].[USA].[CA].[Lincoln Acres].[William Smith]}, {[Product].[Drink].[Beverages].[Carbonated Beverages].[Soda].[Washington].[Washington Diet Cola]})) on rows "
@@ -2440,6 +2441,7 @@ class TestAggregationManager extends BatchTestCase {
             + "      formatString=\"Standard\"/>\n"
             + "</Cube>\n";
          */
+        /*
         class TestNonCollapsedAggregateModifier extends PojoMappingModifier {
 
         	private static final SumMeasureMappingImpl m = SumMeasureMappingImpl.builder()
@@ -2588,13 +2590,14 @@ class TestAggregationManager extends BatchTestCase {
                 return result;
             }
         }
+        */
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
                 null, cube, null, null, null, null);
         withSchema(context, schema);
          */
-        withSchema(context, TestNonCollapsedAggregateModifier::new);
+        withSchemaEmf(context, TestNonCollapsedAggregateModifier::new);
         final String mdx =
             "select {[Product].[Product].[Product Family].Members} on rows, {[Measures].[Unit Sales]} on columns from [Foo]";
         final String sqlOracle =
@@ -2671,7 +2674,7 @@ class TestAggregationManager extends BatchTestCase {
             + "</Cube></Schema>\n";
         withSchema(context, cube);
          */
-        withSchema(context, SchemaModifiers.TestAggregationManagerModifier::new);
+        withSchemaEmf(context, SchemaModifiersEmf.TestAggregationManagerModifier::new);
 
         final String mdx =
             "select \n"
@@ -2756,7 +2759,7 @@ class TestAggregationManager extends BatchTestCase {
             + "</Cube></Schema>\n";
         withSchema(context, cube);
          */
-        withSchema(context, SchemaModifiers.TestAggregationManagerModifier8::new);
+        withSchemaEmf(context, SchemaModifiersEmf.TestAggregationManagerModifier8::new);
         final String mdx =
             "select \n"
             + "{ "
@@ -2876,6 +2879,7 @@ class TestAggregationManager extends BatchTestCase {
             + "      formatString=\"Standard\"/>\n"
             + "</Cube>\n";
          */
+        /*
         class TestTwoNonCollapsedAggregateModifier extends PojoMappingModifier {
 
             public TestTwoNonCollapsedAggregateModifier(CatalogMapping catalog) {
@@ -3070,13 +3074,14 @@ class TestAggregationManager extends BatchTestCase {
                 return result;
             }
         }
+        */
         /*
         String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
                 null, cube, null, null, null, null);
         withSchema(context, schema);
          */
-        withSchema(context, TestTwoNonCollapsedAggregateModifier::new);
+        withSchemaEmf(context, TestTwoNonCollapsedAggregateModifier::new);
 
         final String mdx =
             "select {Crossjoin([Product].[Product].[Product Family].Members, [Store].[Store].[Store Id].Members)} on rows, {[Measures].[Unit Sales]} on columns from [Foo]";
@@ -3244,7 +3249,7 @@ class TestAggregationManager extends BatchTestCase {
             + "{[Measures].[Unit Sales]} on columns "
             + "from [SuperSales]";
 
-        withSchema(context, SchemaModifiers.TestAggregationManagerModifier9::new);
+        withSchemaEmf(context, SchemaModifiersEmf.TestAggregationManagerModifier9::new);
 
         if (context.getConfigValue(ConfigConstants.ENABLE_NATIVE_CROSS_JOIN, ConfigConstants.ENABLE_NATIVE_CROSS_JOIN_DEFAULT_VALUE, Boolean.class)) {
             final String sqlMysql =
@@ -3505,7 +3510,7 @@ class TestAggregationManager extends BatchTestCase {
             + "    `time_by_day`.`month_of_year`,\n"
             + "    `time_by_day`.`day_of_month`";
 
-        withSchema(context, SchemaModifiers.TestAggregationManagerModifier6::new);
+        withSchemaEmf(context, SchemaModifiersEmf.TestAggregationManagerModifier6::new);
 
         assertQuerySqlOrNot(
             context.getConnectionWithDefaultRole(),
@@ -3609,7 +3614,7 @@ class TestAggregationManager extends BatchTestCase {
                 + "</Cube>\n"
                 + "</Schema>");
          */
-        withSchema(context, SchemaModifiers.TestAggregationManagerModifier7::new);
+        withSchemaEmf(context, SchemaModifiersEmf.TestAggregationManagerModifier7::new);
         Connection connection = context.getConnectionWithDefaultRole();
 
 		RolapCatalog rolapCatalog = (RolapCatalog) connection.getCatalogReader().getCatalog();
@@ -3691,7 +3696,7 @@ class TestAggregationManager extends BatchTestCase {
                 + "</Cube>\n"
                 + "</Schema>");
         */
-        withSchema(context, SchemaModifiers.TestAggregationManagerModifier3::new);
+        withSchemaEmf(context, SchemaModifiersEmf.TestAggregationManagerModifier3::new);
 
         RolapCatalog rolapCatalog = (RolapCatalog) context.getConnectionWithDefaultRole().getCatalogReader()
                 .getCatalog();
@@ -3795,7 +3800,7 @@ class TestAggregationManager extends BatchTestCase {
                 + "</Cube>\n"
                 + "</Schema>");
          */
-        withSchema(context, SchemaModifiers.TestAggregationManagerModifier4::new);
+        withSchemaEmf(context, SchemaModifiersEmf.TestAggregationManagerModifier4::new);
 
         RolapCatalog rolapCatalog = (RolapCatalog) context.getConnectionWithDefaultRole().getCatalogReader()
                 .getCatalog();

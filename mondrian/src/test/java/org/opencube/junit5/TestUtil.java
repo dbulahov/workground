@@ -87,6 +87,7 @@ import org.eclipse.daanse.rolap.common.RolapUtil;
 import org.eclipse.daanse.rolap.common.SmartMemberReader;
 import org.eclipse.daanse.rolap.element.RolapCube;
 import org.eclipse.daanse.rolap.element.RolapHierarchy;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.eclipse.daanse.rolap.util.DelegatingInvocationHandler;
 import org.opencube.junit5.context.TestContext;
@@ -1213,6 +1214,12 @@ public class TestUtil {
           CatalogMapping catalogMapping = ((RolapContext) context).getCatalogMapping();
           ((TestContext)context).setCatalogMappingSupplier(f.apply(catalogMapping));
     }
+
+	public static void withSchemaEmf(Context<?> context, Function<CatalogMapping, CatalogMappingSupplier> f) {
+	       context.getCatalogCache().clear();
+	       CatalogMapping catalogMapping = ((RolapContext) context).getCatalogMapping();
+	       ((TestContext)context).setCatalogMappingSupplier(f.apply(catalogMapping));
+	}
 
 	public static void assertExprDependsOn(Connection connection, String expr, String hierList ) {
 		// Construct a query, and mine it for a parsed expression.

@@ -18,7 +18,7 @@ import static org.opencube.junit5.TestUtil.assertQueryReturns;
 import static org.opencube.junit5.TestUtil.assertQueryThrows;
 import static org.opencube.junit5.TestUtil.getDialect;
 import static org.opencube.junit5.TestUtil.verifySameNativeAndNot;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +72,7 @@ import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
 import mondrian.enums.DatabaseProduct;
 import mondrian.rolap.BatchTestCase;
-import mondrian.rolap.SchemaModifiers;
+import mondrian.rolap.SchemaModifiersEmf;
 
 /**
  * Test native evaluation of supported set operations.
@@ -1102,6 +1102,7 @@ protected void assertQuerySql(Connection connection,
         + "Mouthwash]}\n"
         + "Row #0: 51.60\n"
         + "Row #1: 28.96\n";
+      /*
       class TestMultipleAllWithInExprModifier extends PojoMappingModifier {
 
           public TestMultipleAllWithInExprModifier(CatalogMapping catalogMapping) {
@@ -1209,6 +1210,7 @@ protected void assertQuerySql(Connection connection,
               return result;
           }
       }
+      */
     /*
     String baseSchema = TestUtil.getRawSchema(context);
     String schema = SchemaUtil.getSchema(baseSchema,
@@ -1220,7 +1222,7 @@ protected void assertQuerySql(Connection connection,
         null );
     withSchema(context, schema);
      */
-      withSchema(context, TestMultipleAllWithInExprModifier::new);
+      withSchemaEmf(context, TestMultipleAllWithInExprModifier::new);
     assertQueryReturns(context.getConnectionWithDefaultRole(),
       mdx,
       result );
@@ -1582,6 +1584,7 @@ protected void assertQuerySql(Connection connection,
   @ParameterizedTest
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
   void testNativeVirtualRestrictedSet(Context<?> context) throws Exception {
+      /*
       class TestNativeVirtualRestrictedSetModifier extends PojoMappingModifier {
 
           public TestNativeVirtualRestrictedSetModifier(CatalogMapping catalogMapping) {
@@ -1626,6 +1629,7 @@ protected void assertQuerySql(Connection connection,
               return result;
           }
       }
+      */
     /*
     String baseSchema = TestUtil.getRawSchema(context);
     String schema = SchemaUtil.getSchema(baseSchema,
@@ -1652,7 +1656,7 @@ protected void assertQuerySql(Connection connection,
         + "  </Role>\n" );
     withSchema(context, schema);
     */
-    withSchema(context, TestNativeVirtualRestrictedSetModifier::new);
+    withSchemaEmf(context, TestNativeVirtualRestrictedSetModifier::new);
     Result result = executeQuery(
       "With\n"
         + "Set [*NATIVE_CJ_SET] as 'NonEmptyCrossJoin([*BASE_MEMBERS_Store],[*BASE_MEMBERS_Warehouse])'\n"
@@ -1713,6 +1717,7 @@ protected void assertQuerySql(Connection connection,
         + "  </Role>";
     // The following queries should not include [Denny C-Size Batteries] or
     // [Denny D-Size Batteries]
+      /*
       class TestNativeHonorsRoleRestrictionsModifier extends PojoMappingModifier {
 
           public TestNativeHonorsRoleRestrictionsModifier(CatalogMapping catalogMapping) {
@@ -1772,13 +1777,14 @@ protected void assertQuerySql(Connection connection,
               return result;
           }
       }
+      */
     /*
     String baseSchema = TestUtil.getRawSchema(context);
     String schema = SchemaUtil.getSchema(baseSchema,
       null, null, null, null, null, roleDef );
     withSchema(context, schema);
      */
-    withSchema(context, TestNativeHonorsRoleRestrictionsModifier::new);
+    withSchemaEmf(context, TestNativeHonorsRoleRestrictionsModifier::new);
 
       Connection connection = ((TestContext)context).getConnection(new ConnectionProps(List.of("Test")));
     verifySameNativeAndNot(connection,
@@ -2164,7 +2170,7 @@ protected void assertQuerySql(Connection connection,
         "Sales",
         "<DimensionUsage name=\"PurchaseDate\" source=\"Time\" foreignKey=\"time_id\"/>" ));
      */
-	  withSchema(context, SchemaModifiers.NativeSetEvaluationTestModifier::new);
+	  withSchemaEmf(context, SchemaModifiersEmf.NativeSetEvaluationTestModifier::new);
 
       String mdx = ""
       + "with member Measures.q1Sales as '([PurchaseDate].[PurchaseDate].[1997].[Q1], Measures.[Unit Sales])'\n"

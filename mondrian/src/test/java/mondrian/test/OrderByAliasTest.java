@@ -11,26 +11,25 @@ package mondrian.test;
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
 import static org.opencube.junit5.TestUtil.flushSchemaCache;
 import static org.opencube.junit5.TestUtil.getDialect;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.common.SystemWideProperties;
 import org.eclipse.daanse.rolap.api.RolapContext;
-import org.eclipse.daanse.rolap.common.RolapCatalogCache;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.opencube.junit5.ContextSource;
-import org.opencube.junit5.context.TestContextImpl;
 import org.opencube.junit5.context.TestContext;
+import org.opencube.junit5.context.TestContextImpl;
 import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
 import mondrian.enums.DatabaseProduct;
 import mondrian.rolap.BatchTestCase;
-import mondrian.rolap.SchemaModifiers;
+import mondrian.rolap.SchemaModifiersEmf;
 
 /**
  * Test cases to verify requiresOrderByAlias()=true for the MySQL 5.7+
@@ -84,7 +83,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
       context.getCatalogCache().clear();
       CatalogMapping catalog = ((RolapContext) context).getCatalogMapping();
-      ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier1KE(catalog, colName));
+      ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiersEmf.OrderByAliasTestModifier1KE(catalog, colName));
 
       assertQuerySql(context.getConnectionWithDefaultRole(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -132,7 +131,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
          context.getCatalogCache().clear();
          CatalogMapping catalog = ((RolapContext) context).getCatalogMapping();
-         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier1NE(catalog, colName));
+         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiersEmf.OrderByAliasTestModifier1NE(catalog, colName));
          assertQuerySql(
         context.getConnectionWithDefaultRole(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -182,7 +181,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
          context.getCatalogCache().clear();
          CatalogMapping catalog = ((RolapContext) context).getCatalogMapping();
-         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier1CE(catalog, colName));
+         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiersEmf.OrderByAliasTestModifier1CE(catalog, colName));
          assertQuerySql(
         context.getConnectionWithDefaultRole(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -232,7 +231,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
          context.getCatalogCache().clear();
          CatalogMapping catalog = ((RolapContext) context).getCatalogMapping();
-         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier1OE(catalog, colName));
+         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiersEmf.OrderByAliasTestModifier1OE(catalog, colName));
          assertQuerySql(
         context.getConnectionWithDefaultRole(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -294,7 +293,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
          context.getCatalogCache().clear();
          CatalogMapping catalog = ((RolapContext) context).getCatalogMapping();
-         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier2(catalog, colName));
+         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiersEmf.OrderByAliasTestModifier2(catalog, colName));
          assertQuerySql(
         context.getConnectionWithDefaultRole(),
         "select non empty{[Employees].[All Employees].Children} ON rows, "
@@ -356,7 +355,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
          context.getCatalogCache().clear();
          CatalogMapping catalog = ((RolapContext) context).getCatalogMapping();
-         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier3(catalog, colName));
+         ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiersEmf.OrderByAliasTestModifier3(catalog, colName));
          assertQuerySql(
         context.getConnectionWithDefaultRole(),
         "select non empty{[Promotions].[All Promotions].Children} ON rows, "
@@ -405,7 +404,7 @@ class OrderByAliasTest extends BatchTestCase {
      */
         context.getCatalogCache().clear();
         CatalogMapping catalog = ((RolapContext) context).getCatalogMapping();
-        ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiers.OrderByAliasTestModifier1ME(catalog, colName));
+        ((TestContext)context).setCatalogMappingSupplier(new SchemaModifiersEmf.OrderByAliasTestModifier1ME(catalog, colName));
 
         assertQuerySql(
         context.getConnectionWithDefaultRole(),
@@ -520,7 +519,7 @@ class OrderByAliasTest extends BatchTestCase {
     {
       return; // For MySQL 5.7+ only!
     }
-    withSchema(context, SchemaModifiers.OrderByAliasTestModifier4::new);
+    withSchemaEmf(context, SchemaModifiersEmf.OrderByAliasTestModifier4::new);
     assertQuerySql(
         context.getConnectionWithDefaultRole(),
         "select non empty crossjoin( product.[product family].members, time.quarter.members) on 0 "

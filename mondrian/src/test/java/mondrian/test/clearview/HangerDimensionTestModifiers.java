@@ -14,52 +14,54 @@
 
 package mondrian.test.clearview;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.CubeMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.DimensionConnectorMapping;
-import org.eclipse.daanse.rolap.mapping.api.model.enums.ColumnDataType;
-import org.eclipse.daanse.rolap.mapping.instance.rec.complex.foodmart.FoodmartMappingSupplier;
-import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
-import org.eclipse.daanse.rolap.mapping.pojo.PhysicalColumnMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.DimensionConnectorMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.ExplicitHierarchyMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.HierarchyMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.InlineTableMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.InlineTableQueryMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.LevelMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.RowMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.RowValueMappingImpl;
-import org.eclipse.daanse.rolap.mapping.pojo.StandardDimensionMappingImpl;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.ColumnType;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.DimensionConnector;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.ExplicitHierarchy;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.InlineTable;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.InlineTableQuery;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.Level;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.PhysicalColumn;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.PhysicalCube;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RolapMappingFactory;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.Row;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.RowValue;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.StandardDimension;
+import org.eclipse.daanse.rolap.mapping.emf.rolapmapping.impl.CatalogImpl;
+import org.eclipse.daanse.rolap.mapping.instance.emf.complex.foodmart.CatalogSupplier;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 
 public class HangerDimensionTestModifiers {
 
+    /*
+    <Dimension name="Le System-Trend Hanger" foreignKey="store_id">
+<Hierarchy hasAll="true" primaryKey="HANGER_KEY">
+<InlineTable alias="LE_SYSTEM_TREND_HANGER">
+  <ColumnDefs>
+    <ColumnDef name="HANGER_KEY" type="Numeric"/>
+  </ColumnDefs>
+  <Rows>
+    <Row>
+      <Value column="HANGER_KEY">1</Value>
+    </Row>
+  </Rows>
+</InlineTable>
+<Level name="Hanger Level" column="HANGER_KEY" uniqueMembers="true"/>
+</Hierarchy>
+</Dimension>
+
+     */
+/*
     public static class HangerDimensionTestModifier1 extends PojoMappingModifier {
 
         public HangerDimensionTestModifier1(CatalogMapping catalog) {
             super(catalog);
         }
 
-        /*
-        <Dimension name="Le System-Trend Hanger" foreignKey="store_id">
-  <Hierarchy hasAll="true" primaryKey="HANGER_KEY">
-    <InlineTable alias="LE_SYSTEM_TREND_HANGER">
-      <ColumnDefs>
-        <ColumnDef name="HANGER_KEY" type="Numeric"/>
-      </ColumnDefs>
-      <Rows>
-        <Row>
-          <Value column="HANGER_KEY">1</Value>
-        </Row>
-      </Rows>
-    </InlineTable>
-    <Level name="Hanger Level" column="HANGER_KEY" uniqueMembers="true"/>
-  </Hierarchy>
-</Dimension>
-
-         */
 
         protected List<? extends DimensionConnectorMapping> cubeDimensionConnectors(CubeMapping cube) {
             PhysicalColumnMappingImpl hangerKey = PhysicalColumnMappingImpl.builder().withName("HANGER_KEY").withDataType(ColumnDataType.NUMERIC).build();
@@ -104,4 +106,106 @@ public class HangerDimensionTestModifiers {
 
         }
     }
+    */
+    public static class HangerDimensionTestModifier1 implements CatalogMappingSupplier {
+
+        private final CatalogImpl originalCatalog;
+
+        public HangerDimensionTestModifier1(CatalogMapping catalog) {
+            this.originalCatalog = org.opencube.junit5.EmfUtil.copy((CatalogImpl) catalog);
+
+            // Create column for inline table using RolapMappingFactory
+            PhysicalColumn hangerKey = RolapMappingFactory.eINSTANCE.createPhysicalColumn();
+            hangerKey.setName("HANGER_KEY");
+            hangerKey.setType(ColumnType.NUMERIC);
+
+            // Create row value using RolapMappingFactory
+            RowValue rowValue = RolapMappingFactory.eINSTANCE.createRowValue();
+            rowValue.setColumn(hangerKey);
+            rowValue.setValue("1");
+
+            // Create row using RolapMappingFactory
+            Row row = RolapMappingFactory.eINSTANCE.createRow();
+            row.getRowValues().add(rowValue);
+
+            // Create inline table using RolapMappingFactory
+            InlineTable inlineTable = RolapMappingFactory.eINSTANCE.createInlineTable();
+            inlineTable.getColumns().add(hangerKey);
+            inlineTable.getRows().add(row);
+
+            // Create inline table query using RolapMappingFactory
+            InlineTableQuery inlineTableQuery = RolapMappingFactory.eINSTANCE.createInlineTableQuery();
+            inlineTableQuery.setAlias("LE_SYSTEM_TREND_HANGER");
+            inlineTableQuery.setTable(inlineTable);
+
+            // Create level using RolapMappingFactory
+            Level hangerLevel = RolapMappingFactory.eINSTANCE.createLevel();
+            hangerLevel.setName("Hanger Level");
+            hangerLevel.setColumn(hangerKey);
+            hangerLevel.setUniqueMembers(true);
+
+            // Create hierarchy using RolapMappingFactory
+            ExplicitHierarchy hierarchy = RolapMappingFactory.eINSTANCE.createExplicitHierarchy();
+            hierarchy.setHasAll(true);
+            hierarchy.setPrimaryKey(hangerKey);
+            hierarchy.setQuery(inlineTableQuery);
+            hierarchy.getLevels().add(hangerLevel);
+
+            // Create dimension using RolapMappingFactory
+            StandardDimension dimension = RolapMappingFactory.eINSTANCE.createStandardDimension();
+            dimension.setName("Le System-Trend Hanger");
+            dimension.getHierarchies().add(hierarchy);
+
+            // Create dimension connector using RolapMappingFactory
+            DimensionConnector dimensionConnector = RolapMappingFactory.eINSTANCE.createDimensionConnector();
+            dimensionConnector.setOverrideDimensionName("Le System-Trend Hanger");
+            dimensionConnector.setForeignKey(CatalogSupplier.COLUMN_STORE_ID_SALESFACT);
+            dimensionConnector.setDimension(dimension);
+
+            // Find the Sales cube and modify its dimension connectors
+            originalCatalog.getCubes().stream()
+                .filter(cube -> cube instanceof PhysicalCube)
+                .map(cube -> (PhysicalCube) cube)
+                .filter(cube -> "Sales".equals(cube.getName()))
+                .forEach(salesCube -> {
+                    // Remove existing "Le System-Trend Hanger" dimension if present
+                    List<DimensionConnector> filteredConnectors = salesCube.getDimensionConnectors().stream()
+                        .filter(dc -> !"Le System-Trend Hanger".equals(dc.getOverrideDimensionName()))
+                        .collect(Collectors.toList());
+
+                    salesCube.getDimensionConnectors().clear();
+                    salesCube.getDimensionConnectors().addAll(filteredConnectors);
+
+                    // Add the new dimension connector
+                    salesCube.getDimensionConnectors().add(dimensionConnector);
+                });
+
+        }
+
+        /*
+        <Dimension name="Le System-Trend Hanger" foreignKey="store_id">
+          <Hierarchy hasAll="true" primaryKey="HANGER_KEY">
+            <InlineTable alias="LE_SYSTEM_TREND_HANGER">
+              <ColumnDefs>
+                <ColumnDef name="HANGER_KEY" type="Numeric"/>
+              </ColumnDefs>
+              <Rows>
+                <Row>
+                  <Value column="HANGER_KEY">1</Value>
+                </Row>
+              </Rows>
+            </InlineTable>
+            <Level name="Hanger Level" column="HANGER_KEY" uniqueMembers="true"/>
+          </Hierarchy>
+        </Dimension>
+         */
+
+        @Override
+        public CatalogMapping get() {
+            // Copy the catalog using EcoreUtil.copy
+
+            return originalCatalog;
+        }
+    }
+
 }

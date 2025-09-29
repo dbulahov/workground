@@ -15,8 +15,8 @@ import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.connection.Connection;
 import org.eclipse.daanse.olap.api.connection.ConnectionProps;
 import org.eclipse.daanse.olap.common.SystemWideProperties;
+import org.eclipse.daanse.rolap.mapping.api.CatalogMappingSupplier;
 import org.eclipse.daanse.rolap.mapping.api.model.CatalogMapping;
-import org.eclipse.daanse.rolap.mapping.modifier.pojo.PojoMappingModifier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -146,8 +146,8 @@ class AggregationOnInvalidRoleTest extends CsvDBTestCase {
         TestUtil.assertQueryReturns(connection, queryFromAnalyzer, expected);
     }
 
-    protected Function<CatalogMapping, PojoMappingModifier> getModifierFunction(){
-        return AggregationOnInvalidRoleTestModifier::new;
+    protected Function<CatalogMapping, CatalogMappingSupplier> getModifierFunction(){
+        return AggregationOnInvalidRoleTestModifierEmf::new;
     }
 
 }

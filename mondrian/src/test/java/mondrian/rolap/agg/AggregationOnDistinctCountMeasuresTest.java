@@ -24,7 +24,7 @@ import static org.opencube.junit5.TestUtil.isDefaultNullMemberRepresentation;
 import static org.opencube.junit5.TestUtil.member;
 import static org.opencube.junit5.TestUtil.productMembersPotScrubbersPotsAndPans;
 import static org.opencube.junit5.TestUtil.upgradeActual;
-import static org.opencube.junit5.TestUtil.withSchema;
+import static org.opencube.junit5.TestUtil.withSchemaEmf;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,7 +101,8 @@ import org.opencube.junit5.dataloader.FastFoodmardDataLoader;
 import org.opencube.junit5.propupdator.AppandFoodMartCatalog;
 
 import mondrian.enums.DatabaseProduct;
-import mondrian.rolap.SchemaModifiers;
+import mondrian.rolap.SchemaModifiersEmf;
+
 import  org.eclipse.daanse.olap.server.ExecutionImpl;
 import  org.eclipse.daanse.olap.server.LocusImpl;
 import mondrian.test.SqlPattern;
@@ -154,7 +155,7 @@ class AggregationOnDistinctCountMeasuresTest {
             null);
         withSchema(context, schema);
          */
-        withSchema(context, SchemaModifiers.AggregationOnDistinctCountMeasuresTestModifier::new);
+        withSchemaEmf(context, SchemaModifiersEmf.AggregationOnDistinctCountMeasuresTestModifier::new);
         Connection connection = context.getConnectionWithDefaultRole();
 
         catalogReader =
@@ -720,7 +721,7 @@ class AggregationOnDistinctCountMeasuresTest {
             + "and (`warehouse`.`wa_address1`, `warehouse`.`warehouse_name`) "
             + "in (('5617 Saclan Terrace', 'Arnold and Sons'), "
             + "('3377 Coachman Place', 'Jones International'))))";
-
+      /*
       class TestMultiLevelMembersNullParentsModifier extends PojoMappingModifier {
 
           public TestMultiLevelMembersNullParentsModifier(CatalogMapping catalog) {
@@ -791,6 +792,7 @@ class AggregationOnDistinctCountMeasuresTest {
 
           }
       }
+      */
       /*
       String baseSchema = TestUtil.getRawSchema(context);
         String schema = SchemaUtil.getSchema(baseSchema,
@@ -802,7 +804,7 @@ class AggregationOnDistinctCountMeasuresTest {
                 null);
         withSchema(context, schema);
        */
-      withSchema(context, TestMultiLevelMembersNullParentsModifier::new);
+      withSchemaEmf(context, TestMultiLevelMembersNullParentsModifier::new);
       SqlPattern[] patterns = {
             new SqlPattern(
                 DatabaseProduct.DERBY, necjSqlDerby, necjSqlDerby),
@@ -850,7 +852,7 @@ class AggregationOnDistinctCountMeasuresTest {
 
         String necjSqlMySql2 =
             "select count(distinct `inventory_fact_1997`.`warehouse_cost`) as `m0` from `warehouse` as `warehouse`, `inventory_fact_1997` as `inventory_fact_1997` where `inventory_fact_1997`.`warehouse_id` = `warehouse`.`warehouse_id` and ((`warehouse`.`warehouse_name` = 'Freeman And Co' and `warehouse`.`wa_address1` = '234 West Covina Pkwy' and `warehouse`.`warehouse_fax` is null) or (`warehouse`.`warehouse_name` = 'Jones International' and `warehouse`.`wa_address1` = '3377 Coachman Place' and `warehouse`.`warehouse_fax` = '971-555-6213'))";
-
+      /*
       class TestMultiLevelMembersMixedNullNonNullParentModifier extends PojoMappingModifier {
 
           public TestMultiLevelMembersMixedNullNonNullParentModifier(CatalogMapping c) {
@@ -915,6 +917,7 @@ class AggregationOnDistinctCountMeasuresTest {
 
           }
       }
+      */
       /*
       String baseSchema = TestUtil.getRawSchema(context);
       String schema = SchemaUtil.getSchema(baseSchema,
@@ -926,7 +929,7 @@ class AggregationOnDistinctCountMeasuresTest {
                 null);
         withSchema(context, schema);
        */
-      withSchema(context, TestMultiLevelMembersMixedNullNonNullParentModifier::new);
+      withSchemaEmf(context, TestMultiLevelMembersMixedNullNonNullParentModifier::new);
       String result =
             "Axis #0:\n"
             + "{}\n"
@@ -977,7 +980,7 @@ class AggregationOnDistinctCountMeasuresTest {
         String necjSqlMySql2 =
             "select count(distinct `inventory_fact_1997`.`warehouse_cost`) as `m0` from `warehouse` as `warehouse`, `inventory_fact_1997` as `inventory_fact_1997` where `inventory_fact_1997`.`warehouse_id` = `warehouse`.`warehouse_id` and ((`warehouse`.`warehouse_fax` is null and `warehouse`.`wa_address2` is null and `warehouse`.`wa_address3` is null) or (`warehouse`.`warehouse_fax` = '971-555-6213' and `warehouse`.`wa_address2` is null and `warehouse`.`wa_address3` is null))";
 
-
+      /*
       class TestMultiLevelsMixedNullNonNullChildModifier extends PojoMappingModifier {
 
           public TestMultiLevelsMixedNullNonNullChildModifier(CatalogMapping c) {
@@ -1041,6 +1044,7 @@ class AggregationOnDistinctCountMeasuresTest {
           }
 
       }
+      */
       /*
       String baseSchema = TestUtil.getRawSchema(context);
       String schema = SchemaUtil.getSchema(baseSchema,
@@ -1060,7 +1064,7 @@ class AggregationOnDistinctCountMeasuresTest {
             + "Axis #2:\n"
             + "{[Warehouse2].[Warehouse2].[TwoMembers]}\n"
             + "Row #0: 220\n";
-      withSchema(context, TestMultiLevelsMixedNullNonNullChildModifier::new);
+      withSchemaEmf(context, TestMultiLevelsMixedNullNonNullChildModifier::new);
       assertQueryReturns(context.getConnectionWithDefaultRole(), query, result);
     }
 
@@ -1790,7 +1794,7 @@ class AggregationOnDistinctCountMeasuresTest {
   @ContextSource(propertyUpdater = AppandFoodMartCatalog.class, dataloader = FastFoodmardDataLoader.class)
   void testMondrian906(Context<?> context) {
       //prepareContext(context);
-
+      /*
       class TestMondrian906Modifier extends PojoMappingModifier {
 
           public TestMondrian906Modifier(CatalogMapping c) {
@@ -1900,7 +1904,7 @@ class AggregationOnDistinctCountMeasuresTest {
               return result;
           }
       }
-
+      */
 
       /*
       String baseSchema = TestUtil.getRawSchema(context);
@@ -1918,7 +1922,7 @@ class AggregationOnDistinctCountMeasuresTest {
                 + "</Role>\n");
       withSchema(context, schema);
        */
-      withSchema(context, TestMondrian906Modifier::new);
+      withSchemaEmf(context, TestMondrian906Modifier::new);
       Connection connection = context.getConnectionWithDefaultRole();
 
       catalogReader =
@@ -2118,6 +2122,7 @@ class AggregationOnDistinctCountMeasuresTest {
         // should skip aggregate table, cannot aggregate
         ((TestContextImpl)context).setUseAggregates(true);
       ((TestContextImpl)context).setReadAggregates(true);
+      /*
       class TestDistinctCountAggMeasureModifier extends PojoMappingModifier {
 
           public TestDistinctCountAggMeasureModifier(CatalogMapping c) {
@@ -2261,7 +2266,8 @@ class AggregationOnDistinctCountMeasuresTest {
 
           }
       }
-      withSchema(context, TestDistinctCountAggMeasureModifier::new);
+      */
+      withSchemaEmf(context, TestDistinctCountAggMeasureModifier::new);
         /*
         withSchema(context, simpleSchema);
         */
