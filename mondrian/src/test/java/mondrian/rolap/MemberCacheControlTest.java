@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.opencube.junit5.TestUtil.flushCache;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -77,6 +76,7 @@ import org.eclipse.daanse.rolap.element.RolapHierarchy;
 import org.eclipse.daanse.rolap.mapping.instance.emf.complex.foodmart.CatalogSupplier;
 import org.eclipse.daanse.rolap.mapping.instance.emf.complex.foodmart.FoodmartDatabaseSupplier;
 import org.eclipse.daanse.rolap.mapping.instance.emf.complex.foodmart.FoodmartTestInstance;
+import org.eclipse.daanse.rolap.testkit.assertions.FlushSchemaCacheModifier;
 import org.eclipse.daanse.rolap.testkit.assertions.MdxAssert;
 import org.eclipse.daanse.rolap.testkit.junit.api.RolapConfig;
 import org.eclipse.daanse.rolap.testkit.junit.api.RolapContextTest;
@@ -1060,7 +1060,7 @@ class MemberCacheControlTest {
     void testFlushHierarchy(Context<?> context) {
     	context.getCatalogCache().clear();
         prepareTestContext(context);
-        flushCache(context.getConnectionWithDefaultRole());
+        FlushSchemaCacheModifier.flushSchemaCache(context.getConnectionWithDefaultRole());
         final CacheControl cacheControl =
             context.getConnectionWithDefaultRole().getCacheControl(null);
         final Cube salesCube =

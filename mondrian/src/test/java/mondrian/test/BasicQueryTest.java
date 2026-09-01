@@ -21,14 +21,11 @@ import static org.eclipse.daanse.rolap.testkit.assertions.MdxAssert.assertThatEx
 import static org.eclipse.daanse.rolap.testkit.assertions.MdxAssert.assertThatQuery;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.opencube.junit5.TestUtil.assertEqualsVerbose;
 import static org.opencube.junit5.TestUtil.assertQueriesReturnSimilarResults;
 import static org.opencube.junit5.TestUtil.assertSimpleQuery;
 import static org.opencube.junit5.TestUtil.assertSize;
 import static org.opencube.junit5.TestUtil.checkThrowable;
 import static org.opencube.junit5.TestUtil.executeAxis;
-import static org.opencube.junit5.TestUtil.executeExpr;
-import static org.opencube.junit5.TestUtil.executeQueryTimeoutTest;
 import static org.eclipse.daanse.rolap.testkit.assertions.FlushSchemaCacheModifier.flushSchemaCache;
 import static org.opencube.junit5.TestUtil.isDefaultNullMemberRepresentation;
 
@@ -123,7 +120,7 @@ public class BasicQueryTest {
 
   static final String EmptyResult = "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "Axis #2:\n";
 
-  private static final String timeWeekly = TestUtil.hierarchyName( "Time", "Weekly" );
+  private static final String timeWeekly = "[Time].[Weekly]";
   public static final int MAX_EVAL_DEPTH_VALUE = 5000;
   private static final QueryAndResult[] sampleQueries = {
     // 0
@@ -1001,14 +998,12 @@ public class BasicQueryTest {
 
     @Test
   void testConstantString(Context<?> context) {
-    String s = executeExpr(context.getConnectionWithDefaultRole(), "Sales", " \"a string\" " );
-    assertEquals( "a string", s );
+    assertThatExpr(context.getConnectionWithDefaultRole(), "Sales", " \"a string\" " ).returns( "a string" );
   }
 
     @Test
   void testConstantNumber(Context<?> context) {
-    String s = executeExpr(context.getConnectionWithDefaultRole(), "Sales", " 1234 " );
-    assertEquals( "1,234", s );
+    assertThatExpr(context.getConnectionWithDefaultRole(), "Sales", " 1234 " ).returns( "1,234" );
   }
 
     @Test
@@ -1030,8 +1025,7 @@ public class BasicQueryTest {
       assertThatExpr(connection, "Sales", "[Time].[1997].[Q4]")
             .throwsMessage( "infinite loop" );
     } else {
-      String s = executeExpr(connection, "Sales", "[Time].[1997].[Q4]" );
-      assertEquals( "72,024", s );
+      assertThatExpr(connection, "Sales", "[Time].[1997].[Q4]" ).returns( "72,024" );
     }
   }
 
@@ -2345,7 +2339,7 @@ public class BasicQueryTest {
             + ": 35,257\n" + "Row #" + row++ + ": \n" + "Row #" + row++ + ": \n" + "Row #" + row++ + ": \n" + "Row #"
             + row++ + ": \n" + "Row #" + row++ + ": 24,576\n" + ( nullsSortHigh ? "Row #" + row++ + ": 39,329\n"
                 : "" );
-    assertEqualsVerbose(expected, resultString );
+    assertEquals(expected, resultString );
   }
 
   /**
@@ -2414,7 +2408,7 @@ public class BasicQueryTest {
     // Parentheses are added to reflect operator precedence, but that's ok.
     // Note that the doubled parentheses in line #2 of the query have been
     // reduced to a single level.
-    assertEqualsVerbose(
+    assertEquals(
         "with member [Measures].[Rendite] as '(([Measures].[Store Sales] - [Measures].[Store Cost]) / [Measures].[Store"
             + " Cost])', "
             + "format_string = IIf((((([Measures].[Store Sales] - [Measures].[Store Cost]) / [Measures].[Store Cost]) * "
@@ -2436,7 +2430,7 @@ public class BasicQueryTest {
     // double-quotes. This won't work in MSOLAP, but for Mondrian it's
     // consistent with the fact that property values are expressions,
     // not enclosed in single-quotes.
-    assertEqualsVerbose( "with member [Measures].[Foo] as '1', " + "format_string = \"##0.00\", "
+    assertEquals( "with member [Measures].[Foo] as '1', " + "format_string = \"##0.00\", "
         + "funny = IIf((1 = 1), \"x\"\"y\", \"foo\")\n" + "select {[Measures].[Foo]} ON COLUMNS\n" + "from [Sales]\n",
         s );
   }
@@ -4579,7 +4573,8 @@ public class BasicQueryTest {
             + "SELECT {[Measures].[Sleepy]} ON COLUMNS,\n" + "  {[Product].members} ON ROWS\n" + "FROM [Sales]";
     Throwable throwable = null;
     try {
-    	executeQueryTimeoutTest(context.getConnectionWithDefaultRole(), query);
+    	// Duration must match the @RolapConfig(QUERY_TIMEOUT) value above.
+    	executeQuery(context.getConnectionWithDefaultRole(), query, Duration.ofSeconds(2));
     } catch ( Throwable ex ) {
       throwable = ex;
     }

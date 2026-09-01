@@ -18,11 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.opencube.junit5.TestUtil.assertEqualsVerbose;
 import static org.opencube.junit5.TestUtil.assertParameterizedExprReturns;
-import static org.opencube.junit5.TestUtil.assertQueryThrows;
 import static org.opencube.junit5.TestUtil.checkThrowable;
-import static org.opencube.junit5.TestUtil.executeExpr;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -107,7 +104,7 @@ class ParameterTest {
         p.setValue(m);
         assertEquals(m, p.getValue());
         mdx = query.toString();
-        assertEqualsVerbose(
+        assertEquals(
             "select {Parameter(\"Foo\", [Time].[Time], [Time].[Time].[1997].[Q2].[5], \"Foo\")} ON COLUMNS\n"
             + "from [Sales]\n",
             mdx);
@@ -158,18 +155,16 @@ class ParameterTest {
 
     @Test
     void testNumericParameter(Context<?> context) {
-        String s =
-            executeExpr(context.getConnectionWithDefaultRole(), "Sales", "Parameter(\"N\",NUMERIC,2+3,\"A numeric parameter\")");
-        assertEquals("5", s);
+        assertThatExpr(context.getConnectionWithDefaultRole(), "Sales", "Parameter(\"N\",NUMERIC,2+3,\"A numeric parameter\")")
+            .returns("5");
     }
 
     @Test
     void testStringParameter(Context<?> context) {
-        String s =
-            executeExpr(context.getConnectionWithDefaultRole(), "Sales",
+        assertThatExpr(context.getConnectionWithDefaultRole(), "Sales",
                 "Parameter(\"S\",STRING,\"x\" || \"y\","
-                + "\"A string parameter\")");
-        assertEquals("xy", s);
+                + "\"A string parameter\")")
+            .returns("xy");
     }
 
     @Test
@@ -279,7 +274,7 @@ class ParameterTest {
             + "Axis #2:\n"
             + "{[Gender].[Gender].[F]}\n"
             + "Row #0: 131,558\n";
-        assertEqualsVerbose(expected, TestUtil.toString(result));
+        assertEquals(expected, TestUtil.toString(result));
 
         // Execute #2: Parameter set to null
         assertFalse(parameter0.isSet());
@@ -307,7 +302,7 @@ class ParameterTest {
         assertNull(parameter0.getValue());
         result = connection.execute(query);
         assertEquals("[Gender].[Gender].[F]", parameter0.getValue());
-        assertEqualsVerbose(expected, TestUtil.toString(result));
+        assertEquals(expected, TestUtil.toString(result));
         assertFalse(parameter0.isSet());
     }
 
@@ -347,26 +342,26 @@ class ParameterTest {
 
         // before parameter is set, should get len of default value, viz 6
         Result result = connection.execute(query);
-        assertEqualsVerbose(expect6, TestUtil.toString(result));
+        assertEquals(expect6, TestUtil.toString(result));
 
         // after parameter is set to null, should get len of null, viz 0
         parameter0.setValue(null);
         assertTrue(parameter0.isSet());
         result = connection.execute(query);
-        assertEqualsVerbose(expect0, TestUtil.toString(result));
+        assertEquals(expect0, TestUtil.toString(result));
         assertTrue(parameter0.isSet());
 
         // after parameter is set to "foo", should get len of foo, viz 3
         parameter0.setValue("foo");
         assertTrue(parameter0.isSet());
         result = connection.execute(query);
-        assertEqualsVerbose(expect3, TestUtil.toString(result));
+        assertEquals(expect3, TestUtil.toString(result));
         assertTrue(parameter0.isSet());
 
         // after unset, should get len of default value, viz 6
         parameter0.unsetValue();
         result = connection.execute(query);
-        assertEqualsVerbose(expect6, TestUtil.toString(result));
+        assertEquals(expect6, TestUtil.toString(result));
         assertFalse(parameter0.isSet());
     }
 
@@ -574,23 +569,22 @@ class ParameterTest {
      */
     @Test
     public void _testParameterDuplicateDimensionFails(Context<?> context) {
-        assertQueryThrows(context,
-            "select {[Measures].[Unit Sales]} on rows,\n"
+        assertThatQuery(context.getConnectionWithDefaultRole(), "select {[Measures].[Unit Sales]} on rows,\n"
             + " {[Gender].[F]} on columns\n"
-            + "from Sales where Parameter(\"GenderParam\",[Gender],[Gender].[M],\"Which gender?\")",
-            "Hierarchy '[Gender].[Gender]' appears in more than one independent axis.");
+            + "from Sales where Parameter(\"GenderParam\",[Gender],[Gender].[M],\"Which gender?\")")
+            .throwsMessage("Hierarchy '[Gender].[Gender]' appears in more than one independent axis.");
     }
 
     /** Mondrian can not handle forward references */
     @Test
     public void dontTestParamRef(Context<?> context) {
-        String s = executeExpr(context.getConnectionWithDefaultRole(), "Sales",
+        assertThatExpr(context.getConnectionWithDefaultRole(), "Sales",
             "Parameter(\"X\",STRING,\"x\",\"A string\") || "
             + "ParamRef(\"Y\") || "
             + "\".\" ||"
             + "ParamRef(\"X\") || "
-            + "Parameter(\"Y\",STRING,\"y\" || \"Y\",\"Other string\")");
-        assertEquals("xyY.xyY", s);
+            + "Parameter(\"Y\",STRING,\"y\" || \"Y\",\"Other string\")")
+            .returns("xyY.xyY");
     }
 
     @Test
@@ -601,11 +595,11 @@ class ParameterTest {
     @Test
     void testParamDefinedTwiceFails(Context<?> context) {
         Connection connection = context.getConnectionWithDefaultRole();
-        assertQueryThrows(connection,
-            "select {[Measures].[Unit Sales]} on rows,\n"
+        assertThatQuery(connection, "select {[Measures].[Unit Sales]} on rows,\n"
             + " {Parameter(\"P\",[Gender],[Gender].[M],\"Which gender?\"),\n"
             + "  Parameter(\"P\",[Gender],[Gender].[F],\"Which gender?\")} on columns\n"
-            + "from Sales", "Parameter 'P' is defined more than once");
+            + "from Sales")
+            .throwsMessage("Parameter 'P' is defined more than once");
     }
 
     @Test
@@ -655,7 +649,7 @@ class ParameterTest {
             query.getCatalogReader(true).getMemberByUniqueName(
             		IdImpl.toList("Gender", "M"), true);
         parameters[2].setValue(member);
-        assertEqualsVerbose(
+        assertEquals(
             "with member [Measures].[A string] as 'Parameter(\"S\", STRING, (\"x\" || \"y\"), \"A string parameter\")'\n"
             + "  member [Measures].[A number] as 'Parameter(\"N\", NUMERIC, (2 + 3), \"A numeric parameter\")'\n"
             + "select {Parameter(\"P\", [Gender].[Gender], [Gender].[Gender].[M], \"Which gender?\"), Parameter(\"Q\", [Gender].[Gender], [Gender].DefaultMember, \"Another gender?\")} ON COLUMNS,\n"
@@ -676,7 +670,7 @@ class ParameterTest {
         // Execute before setting parameters.
         Result result = connection.execute(query);
         String resultString = TestUtil.toString(result);
-        assertEqualsVerbose(
+        assertEquals(
             "Axis #0:\n"
             + "{[Time].[Time].[1997].[Q1]}\n"
             + "Axis #1:\n"
@@ -719,7 +713,7 @@ class ParameterTest {
             "ProductMember", "[Product].[All Products].[Food].[Eggs]");
         result = connection.execute(query);
         resultString = TestUtil.toString(result);
-        assertEqualsVerbose(
+        assertEquals(
             "Axis #0:\n"
             + "{[Time].[Time].[1997].[Q1]}\n"
             + "Axis #1:\n"
@@ -735,7 +729,7 @@ class ParameterTest {
         query.setParameter("Time", "[Time].[1997].[Q2].[4]");
         result = connection.execute(query);
         resultString = TestUtil.toString(result);
-        assertEqualsVerbose(
+        assertEquals(
             "Axis #0:\n"
             + "{[Time].[Time].[1997].[Q2].[4]}\n"
             + "Axis #1:\n"
@@ -1116,14 +1110,14 @@ class ParameterTest {
             p.setValue(list);
             assertEquals(list, p.getValue());
             String qmdx = query.toString();
-            assertEqualsVerbose(
+            assertEquals(
                 "select {[Measures].[Unit Sales]} ON COLUMNS,\n"
                 + "  Parameter(\"Foo\", [Time].[Time], {[Time].[Time].[1997].[Q2].[5], [Time].[Time].[1997].[Q3]}, \"Foo\") ON ROWS\n"
                 + "from [Sales]\n",
                 qmdx);
 
             final Result result = connection.execute(query);
-            assertEqualsVerbose(
+            assertEquals(
                 "Axis #0:\n"
                 + "{}\n"
                 + "Axis #1:\n"
@@ -1385,11 +1379,10 @@ class ParameterTest {
             + "{[Measures].[Foo]}\n"
             + "Row #0: USA\n");
 
-        assertQueryThrows(context.getConnectionWithDefaultRole(),
-            "with member [Measures].[Foo] as ' ParamRef(\"Customer Current Member\").Name '\n"
+        assertThatQuery(context.getConnectionWithDefaultRole(), "with member [Measures].[Foo] as ' ParamRef(\"Customer Current Member\").Name '\n"
             + "select {[Measures].[Foo]} on columns\n"
-            + "from [Warehouse]",
-            "MDX object '[Customers]' not found in cube 'Warehouse'");
+            + "from [Warehouse]")
+            .throwsMessage("MDX object '[Customers]' not found in cube 'Warehouse'");
     }
 }
 

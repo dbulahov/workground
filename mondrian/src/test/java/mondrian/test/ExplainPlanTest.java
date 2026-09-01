@@ -15,8 +15,8 @@ package mondrian.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.opencube.junit5.TestUtil.assertStubbedEqualsVerbose;
 import static org.opencube.junit5.TestUtil.checkThrowable;
+import static org.opencube.junit5.TestUtil.stubAnonymousClasses;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -97,7 +97,7 @@ mondrian.olap.fun.FilterFunDef$ImmutableIterCalc(type=SetType<MemberType<hierarc
         org.eclipse.daanse.olap.calc.base.constant.ConstantDoubleCalc(type=NUMERIC, resultStyle=VALUE_NOT_NULL, callCount=0, callMillis=0)
 
 		""";
-	assertStubbedEqualsVerbose( expected, s );
+	assertEquals(stubAnonymousClasses(expected), stubAnonymousClasses(s));
     //Util.setLevel( RolapUtil.PROFILE_LOGGER, originalLevel );
   }
 
@@ -157,7 +157,7 @@ mondrian.olap.fun.FilterFunDef$ImmutableIterCalc(type=SetType<MemberType<hierarc
 				        org.eclipse.daanse.olap.calc.base.constant.ConstantHierarchyCalc(type=HierarchyType<hierarchy=[Marital Status]>, resultStyle=VALUE_NOT_NULL, callCount=0, callMillis=0)
 
 				""";
-		assertStubbedEqualsVerbose(expected, s);
+		assertEquals(stubAnonymousClasses(expected), stubAnonymousClasses(s));
 
 		// Plan after execution, including profiling.
 		final ArrayList<String> strings = new ArrayList<>();
@@ -186,7 +186,7 @@ mondrian.olap.fun.FilterFunDef$MutableIterCalc(type=SetType<MemberType<member=[P
                 org.eclipse.daanse.olap.calc.base.constant.ConstantMemberCalc(type=MemberType<member=[Measures].[Unit Sales]>, resultStyle=VALUE_NOT_NULL, callCount=0, callMillis=nnn)
         org.eclipse.daanse.olap.calc.base.constant.ConstantDoubleCalc(type=NUMERIC, resultStyle=VALUE_NOT_NULL, callCount=0, callMillis=nnn)
         """;
-		assertStubbedEqualsVerbose(expected, actual);
+		assertEquals(stubAnonymousClasses(expected), stubAnonymousClasses(actual));
 
 		assertTrue(strings.get(1).contains("FilterFunDef invoked 6 times for total of"), strings.get(1));
 
@@ -201,7 +201,7 @@ mondrian.olap.fun.SetFunDef$SetListCalc(type=SetType<MemberType<member=[Measures
         org.eclipse.daanse.olap.calc.base.type.tuple.MemberCalcToTupleCalc(type=MemberType<member=[Measures].[Store Margin]>, resultStyle=VALUE, callCount=0, callMillis=nnn)
             org.eclipse.daanse.olap.calc.base.constant.ConstantMemberCalc(type=MemberType<member=[Measures].[Store Margin]>, resultStyle=VALUE_NOT_NULL, callCount=0, callMillis=nnn)
 				""";
-		assertStubbedEqualsVerbose(expected2, actual);
+		assertEquals(stubAnonymousClasses(expected2), stubAnonymousClasses(actual));
 
 		actual = strings.get(4).replaceAll("callMillis=[0-9]+", "callMillis=nnn").replaceAll("[0-9]+ms", "nnnms");
 		String expected3 = """
@@ -211,10 +211,10 @@ mondrian.olap.fun.CrossJoinFunDef$CrossJoinIterCalc(type=SetType<TupleType<Membe
     mondrian.olap.fun.BuiltinFunTable$22$1(type=SetType<MemberType<hierarchy=[Marital Status]>>, resultStyle=MUTABLE_LIST, callCount=0, callMillis=nnn)
         org.eclipse.daanse.olap.calc.base.constant.ConstantHierarchyCalc(type=HierarchyType<hierarchy=[Marital Status]>, resultStyle=VALUE_NOT_NULL, callCount=0, callMillis=nnn)
 				""";
-		assertStubbedEqualsVerbose(expected3, actual);
+		assertEquals(stubAnonymousClasses(expected3), stubAnonymousClasses(actual));
 
 		actual = strings.get(6).replaceAll("callMillis=[0-9]+", "callMillis=nnn").replaceAll("[0-9]+ms", "nnnms");
-		assertStubbedEqualsVerbose("QueryBody:\n", actual);
+		assertEquals(stubAnonymousClasses("QueryBody:\n"), stubAnonymousClasses(actual));
 
 		assertTrue(strings.get(3).contains("SqlStatement-SqlTupleReader.readTuples [[Product].[Product "
 				+ "Category]] invoked 1 times for total of "), strings.get(3));

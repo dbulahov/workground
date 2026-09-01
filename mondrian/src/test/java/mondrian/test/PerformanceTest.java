@@ -14,7 +14,6 @@ import static org.eclipse.daanse.rolap.testkit.assertions.MdxAssert.assertThatQu
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencube.junit5.TestUtil.executeAxis;
-import static org.opencube.junit5.TestUtil.hierarchyName;
 
 
 import java.util.ArrayList;
@@ -335,7 +334,7 @@ public class PerformanceTest {
     Result result = executeQuery(connection,
       "WITH SET [cjoin] AS "
         + "crossjoin(customers.members, "
-        + hierarchyName( "store type", "store type" )
+        + "[store type].[store type]"
         + ".[store type].members) "
         + "MEMBER [Measures].[total_available_count] "
         + "AS Format(COUNT([cjoin]), \"#####\") "

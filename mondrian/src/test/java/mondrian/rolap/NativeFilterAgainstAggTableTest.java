@@ -177,7 +177,6 @@ class NativeFilterAgainstAggTableTest extends BatchTestCase {
         // which has [unit sales] but not [store count], so should
         // not include the filter condition in the having.
         Connection connection = context.getConnectionWithDefaultRole();
-        TestUtil.flushCache(connection);
         FlushSchemaCacheModifier.flushSchemaCache(connection);
         SqlAssert.forQuery(context.getConnectionWithDefaultRole(),
             "select filter(Time.[1997].children,  "

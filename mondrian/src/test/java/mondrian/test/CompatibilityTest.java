@@ -121,11 +121,10 @@ class CompatibilityTest {
      */
     @Test
     void testReservedWord(Connection connection) {
-    	TestUtil.assertAxisThrows(
-    		connection,
+    	assertThatAxis(connection, "Sales",
             "with member [Measures].ordinal as '1'\n"
-            + " select {[Measures].ordinal} on columns from Sales",
-            "Encountered an error at (or somewhere around) input:1:9", "Sales");
+            + " select {[Measures].ordinal} on columns from Sales")
+            .throwsMessage("Encountered an error at (or somewhere around) input:1:9");
     	assertThatQuery(
     		connection,
             "with member [Measures].[ordinal] as '1'\n"

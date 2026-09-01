@@ -35,21 +35,17 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.AbstractList;
 import java.util.Arrays;
-import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import org.eclipse.daanse.sql.dialect.api.Dialect;
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.agg.Segment;
 import org.eclipse.daanse.olap.api.cache.CacheControl;
-import org.eclipse.daanse.olap.api.calc.Calc;
 import org.eclipse.daanse.olap.api.calc.tuple.TupleList;
 import org.eclipse.daanse.olap.api.catalog.CatalogReader;
 import org.eclipse.daanse.olap.api.connection.Connection;
-import org.eclipse.daanse.olap.api.connection.ConnectionProps;
 import org.eclipse.daanse.olap.api.element.Cube;
 import org.eclipse.daanse.olap.api.element.Dimension;
 import org.eclipse.daanse.olap.api.element.Hierarchy;
@@ -57,7 +53,6 @@ import org.eclipse.daanse.olap.api.element.Level;
 import org.eclipse.daanse.olap.api.element.Member;
 import org.eclipse.daanse.olap.api.execution.Statement;
 import org.eclipse.daanse.olap.api.query.Quoting;
-import org.eclipse.daanse.olap.api.query.component.Expression;
 import org.eclipse.daanse.olap.api.query.component.Query;
 import org.eclipse.daanse.olap.api.result.Axis;
 import org.eclipse.daanse.olap.api.result.Cell;
@@ -65,7 +60,6 @@ import org.eclipse.daanse.olap.api.result.CellSet;
 import org.eclipse.daanse.olap.api.result.CellSetAxis;
 import org.eclipse.daanse.olap.api.result.Position;
 import org.eclipse.daanse.olap.api.result.Result;
-import org.eclipse.daanse.olap.calc.base.profile.SimpleCalculationProfileWriter;
 import org.eclipse.daanse.olap.calc.base.type.tuplebase.UnaryTupleList;
 import org.eclipse.daanse.olap.common.ConfigConstants;
 import org.eclipse.daanse.olap.common.Util;
@@ -78,30 +72,14 @@ import org.eclipse.daanse.rolap.common.member.MemberCacheHelper;
 import org.eclipse.daanse.rolap.common.member.SmartMemberReader;
 import org.eclipse.daanse.rolap.element.RolapCube;
 import org.eclipse.daanse.rolap.element.RolapHierarchy;
-import org.eclipse.daanse.rolap.mapping.model.catalog.Catalog;
+import org.eclipse.daanse.sql.dialect.api.Dialect;
 
 import mondrian.enums.DatabaseProduct;
 import mondrian.test.SqlPattern;
 
-import org.eclipse.daanse.rolap.mapping.model.provider.util.CwmHelper;
-import org.eclipse.daanse.cwm.model.cwm.foundation.businessinformation.util.Descriptions;
-//import mondrian.spi.DialectManager;
-
 public class TestUtil {
 
     protected static final String nl = Util.NL;
-	  /**
-	   * Executes the expression in the context of the cube indicated by
-	   * <code>cubeName</code>, and returns the result as a Cell.
-	   *
-	   * @param expression The expression to evaluate
-	   * @return Cell which is the result of the expression
-	   */
-	  public static Cell executeExprRaw(Connection connection, String cubeName , String expression ) {
-	    final String queryString = generateExpression( cubeName,expression );
-	    Result result = executeQuery( connection,queryString );
-	    return result.getCell( new int[] { 0 } );
-	  }
 
 	  public static String generateExpression(String cubeName , String expression ) {
 	    if ( cubeName.indexOf( ' ' ) >= 0 ) {
@@ -164,118 +142,6 @@ public class TestUtil {
 	        {
 	            return salesCubeCatalogReader.getMemberByUniqueName(segmentList, true);
 	        }
-	    /**
-	     * Executes a query with a given expression on an axis, and asserts that it throws an error which matches a particular
-	     * pattern. The expression is evaulated against the default cube.
-	     */
-	    public static void assertAxisThrows(Connection connection,
-	      String expression,
-	      String pattern ,
-	      String cubeName) {
-	      Throwable throwable = null;
-	      try {
-	        final String queryString =
-	          "select {" + expression + "} on columns from " + cubeName;
-	        executeQuery(connection, queryString);
-	      } catch ( Throwable e ) {
-	        throwable = e;
-	      }
-	      checkThrowable( throwable, pattern );
-	    }
-
-		/**
-		 * Executes a query, and asserts that it throws an exception which contains the
-		 * given pattern.
-		 *
-		 * @param queryString Query string
-		 * @param pattern     Pattern which exception must match
-		 */
-		public static void assertQueryThrows(Connection connection, String queryString, String pattern) {
-			Throwable throwable;
-			try {
-				Result result = executeQuery(connection, queryString);
-//				discard(result);
-				throwable = null;
-			} catch (Throwable e) {
-				throwable = e;
-			}
-			checkThrowable(throwable, pattern);
-		}
-
-	/**
-	 * Executes a query, and asserts that it throws an exception which contains the
-	 * given pattern.
-	 *
-	 * @param queryString Query string
-	 * @param pattern     Pattern which exception must match
-	 */
-	public static void assertQueryThrows(Context<?> context, String queryString, String pattern) {
-		Throwable throwable;
-		try {
-			Result result = executeQuery(context.getConnectionWithDefaultRole(), queryString);
-//			discard(result);
-			throwable = null;
-		} catch (Throwable e) {
-			throwable = e;
-		}
-		checkThrowable(throwable, pattern);
-	}
-
-    public static void assertQueryThrows(Context<?> context, List<String> roles, String queryString, String pattern) {
-        Throwable throwable;
-        try {
-            Result result = executeQuery(context.getConnection(new ConnectionProps(roles)), queryString);
-//            discard(result);
-            throwable = null;
-        } catch (Throwable e) {
-            throwable = e;
-        }
-        checkThrowable(throwable, pattern);
-    }
-
-    /**
-     * Executes a query, and asserts that it throws an exception which contains the
-     * given pattern.
-     *
-     * @param queryString Query string
-     * @param pattern     Pattern which exception must match
-     */
-    public static void assertQueryThrows(Context<?> context, ConnectionProps props, String queryString, String pattern) {
-        Throwable throwable;
-        try {
-            Result result = executeQuery(context.getConnection(props), queryString);
-//            discard(result);
-            throwable = null;
-        } catch (Throwable e) {
-            throwable = e;
-        }
-        checkThrowable(throwable, pattern);
-    }
-
-    /**
-		 * Executes an expression, and asserts that it gives an error which contains a
-		 * particular pattern. The error might occur during parsing, or might be
-		 * contained within the cell value.
-		 */
-		public static void assertExprThrows(Connection connection, String cubeName, String expression, String pattern) {
-			Throwable throwable = null;
-			try {
-				if (cubeName.indexOf(' ') >= 0) {
-					cubeName = Util.quoteMdxIdentifier(cubeName);
-				}
-				expression = expression.replace("'", "''");
-				Result result = executeQuery(connection, "with member [Measures].[Foo] as '" + expression
-						+ "' select {[Measures].[Foo]} on columns from " + cubeName);
-				Cell cell = result.getCell(new int[] { 0 });
-				if (cell.isError()) {
-					throwable = (Throwable) cell.getValue();
-				}
-			} catch (Throwable e) {
-				throwable = e;
-			}
-			checkThrowable(throwable, pattern);
-		}
-
 	/**
 	 * Executes an expression, and asserts that it gives an error which contains a
 	 * particular pattern. The error might occur during parsing, or might be
@@ -328,24 +194,6 @@ public class TestUtil {
 		public static void assertEqualsVerbose(String expected, String actual, boolean java, String message) {
 			assertEqualsVerbose(fold(expected), actual, java, message);
 		}
-
-	/**
-	 * Returns count copies of a string. Format strings within string are substituted, per {@link
-	 * java.lang.String#format}.
-	 *
-	 * @param count  Number of copies
-	 * @param format String template
-	 * @return Multiple copies of a string
-	 */
-	public static String repeatString(
-			final int count,
-			String format ) {
-		final Formatter formatter = new Formatter();
-		for ( int i = 0; i < count; i++ ) {
-			formatter.format( format, i );
-		}
-		return formatter.toString();
-	}
 
 	public static void assertSqlEquals(Connection connection,
 			String expectedSql,
@@ -523,15 +371,6 @@ public class TestUtil {
 		return sql;
 	}
 
-	public static ResultSet executeStatement(Connection connection, String queryString ) throws SQLException {
-        org.eclipse.daanse.olap.api.execution.Statement stmt = connection.createStatement();
-		return stmt.executeQuery( queryString, Optional.empty(), null );
-	}
-
-
-
-
-
 	public static void assertParameterizedExprReturns(Connection connection, String cubeName,
 			String expr,
 			String expected,
@@ -551,24 +390,6 @@ public class TestUtil {
 			expected = ""; // null values are formatted as empty string
 		}
 		assertEqualsVerbose( expected, cell.getFormattedValue() );
-	}
-
-	/**
-	 * Reverses the effect of {@link #fold}; converts platform-specific line endings in a string info linefeeds.
-	 *
-	 * @param string String where all linefeeds have been converted to platform-specific (CR+LF on Windows, LF on
-	 *               Unix/Linux)
-	 * @return String where line endings are represented as linefeed "\n"
-	 */
-	public static String unfold( String string ) {
-		if ( !nl.equals( "\n" ) ) {
-			string = string.replace(nl, "\n" );
-		}
-		if ( string == null ) {
-			return null;
-		} else {
-			return string;
-		}
 	}
 
 	/**
@@ -745,14 +566,6 @@ public class TestUtil {
 		return executeQuery(connection, queryString, 300000l);
 	}
 
-	public static Result executeQueryTimeoutTest(Connection connection, String queryString ) {
-	    Query query = connection.parseQuery( queryString );
-	    Statement statement = query.getStatement();
-	    assertThat(statement).isNotNull();
-	    final Result result = statement.getDaanseConnection().execute(new ExecutionImpl(statement, Optional.of(Duration.ofMillis(statement.getQueryTimeoutMillis()))));
-	    return result;
-	  }
-
 	public static Result executeQuery(Connection connection, String queryString, long timeoutIntervalMillis) {
 		Query query = parseQuery(connection, queryString);
 		assertThat(query).isNotNull();
@@ -835,15 +648,6 @@ public class TestUtil {
 	}
 
 	/**
-	 * Executes a query with a given expression on an axis, and asserts that it
-	 * returns the expected string.
-	 */
-	public static void assertAxisReturns(Connection connection, String cubeName, String expression, String expected) {
-		Axis axis = executeAxis(connection, cubeName, expression);
-		assertEqualsVerbose(expected, upgradeActual(toString(axis.getPositions())));
-	}
-
-	/**
 	 * Massages the actual result of executing a query to handle differences in
 	 * unique names betweeen old and new behavior.
 	 *
@@ -871,18 +675,6 @@ public class TestUtil {
 
 	public static void assertQueryReturns(Connection connection, String queryString, String expectedResult) {
 		assertQueryReturns(connection, queryString, expectedResult, 600000l);
-	}
-
-	/**
-	 * Executes a query and checks that the result is a given string, displaying a
-	 * message if result does not match desiredResult.
-	 */
-	public static void assertQueryReturns(Connection connection, String message, String query, String desiredResult) {
-		Result result = executeQuery(connection, query);
-		String resultString = toString(result);
-		if (desiredResult != null) {
-			assertEqualsVerbose(desiredResult, upgradeActual(resultString), true, message);
-		}
 	}
 
     public static org.eclipse.daanse.olap.api.result.CellSet executeQueryWithCellSetResult(Connection connection, String queryString ) throws SQLException {
@@ -973,28 +765,6 @@ public class TestUtil {
     }
 
 	/**
-	 * Executes an expression which yields a boolean result, and asserts that
-	 * the result is the expected one.
-	 */
-	public static void assertBooleanExprReturns(Connection connection, String cubeName, String expression, boolean expected) {
-		final String iifExpression =
-				"Iif (" + expression + ",\"true\",\"false\")";
-		final String actual = executeExpr(connection, cubeName, iifExpression);
-		final String expectedString = expected ? "true" : "false";
-		assertEquals(expectedString, actual);
-	}
-
-
-	/**
-	 * Executes an expression against the Sales cube in the FoodMart database
-	 * to form a single cell result set, then returns that cell's formatted
-	 * value.
-	 */
-	public static String executeExpr(Connection connection, String cubeName, String expression) {
-		return executeExprRaw(connection, cubeName, expression).getFormattedValue();
-	}
-
-	/**
 	 * Whether null members render as the default {@code #null} representation
 	 * in {@code context}, i.e. whether {@code context} has left
 	 * {@link ConfigConstants#NULL_MEMBER_REPRESENTATION} at its default value -
@@ -1004,66 +774,6 @@ public class TestUtil {
 	    return context.getConfigValue(ConfigConstants.NULL_MEMBER_REPRESENTATION,
 	            ConfigConstants.NULL_MEMBER_REPRESENTATION_DEFAULT_VALUE, String.class)
 	            .equals(ConfigConstants.NULL_MEMBER_REPRESENTATION_DEFAULT_VALUE);
-	}
-
-	public static String compileExpression(Connection connection, String expression, final boolean scalar, String cubeName ) {
-		if ( cubeName.indexOf( ' ' ) >= 0 ) {
-			cubeName = Util.quoteMdxIdentifier( cubeName );
-		}
-		final String queryString;
-		if ( scalar ) {
-			queryString =
-					"with member [Measures].[Foo] as "
-							+ Util.singleQuoteString( expression )
-							+ " select {[Measures].[Foo]} on columns from " + cubeName;
-		} else {
-			queryString =
-					"SELECT {" + expression + "} ON COLUMNS FROM " + cubeName;
-		}
-		Query query = connection.parseQuery( queryString );
-		final Expression exp;
-		if ( scalar ) {
-			exp = query.getFormulas()[ 0 ].getExpression();
-		} else {
-			exp = query.getAxes()[ 0 ].getSet();
-		}
-		final Calc calc = query.compileExpression( exp, scalar, null );
-		final StringWriter sw = new StringWriter();
-		final PrintWriter pw = new PrintWriter( sw );
-
-		SimpleCalculationProfileWriter w=new SimpleCalculationProfileWriter(pw);
-
-		w.write(calc.getCalculationProfile());
-		pw.flush();
-		return sw.toString();
-	}
-
-	/**
-	 * Executes the expression in the context of the cube indicated by
-	 * <code>cubeName</code>, and returns the result as a Cell.
-	 *
-	 * @param expression The expression to evaluate
-	 * @return Cell which is the result of the expression
-	 */
-	//public static Cell executeExprRaw(Connection connection, String expression ) {
-	//	final String queryString = generateExpression( expression, "Sales" );
-	//	Result result = executeQuery(connection, queryString);
-	//	return result.getCell( new int[] { 0 } );
-	//}
-
-	/**
-	 * Checks that an actual string matches an expected string. Ignores the difference of anonymous class names in
-	 * "mondrian...." package.
-	 *
-	 * <p>If they do not, throws a {@link junit.framework.ComparisonFailure} and
-	 * prints the difference, including the actual string as an easily pasted Java string literal.
-	 */
-	public static void assertStubbedEqualsVerbose(
-			String expected,
-			String actual ) {
-		assertEqualsVerbose(
-				stubAnonymousClasses( expected ),
-				stubAnonymousClasses( actual ) );
 	}
 
 	/**
@@ -1092,10 +802,6 @@ public class TestUtil {
 			str1 = p.matcher( str ).replaceAll( replacement );
 		}
 		return str1;
-	}
-
-	public static String hierarchyName( String dimension, String hierarchy ) {
-		return "[" + dimension + "].[" + hierarchy + "]";
 	}
 
 	/**
@@ -1167,33 +873,6 @@ public class TestUtil {
 		}
 	}
 
-
-	/**
-	 * Flushes the entire contents of the cache. Utility method used to ensure
-	 * that cache control tests are starting with a blank page.
-	 *
-	 * @param connection Connection
-	 */
-	public static void flushCache(Connection connection) {
-		final CacheControl cacheControl = connection.getCacheControl(null);
-
-		// Flush the entire cache.
-		CacheControl.CellRegion measuresRegion = null;
-		for (Cube cube
-				: connection.getCatalog().getCubes())
-		{
-			measuresRegion =
-					cacheControl.createMeasuresRegion(cube);
-			cacheControl.flush(measuresRegion);
-		}
-
-		// Check the cache is empty.
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		cacheControl.printCacheState(pw, measuresRegion);
-		pw.flush();
-		assertEquals("", sw.toString());
-	}
 
 	public static void clearCache(Connection connection, RolapCube cube) {
 		// Clear the cache for the Sales cube, so the query runs as if

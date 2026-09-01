@@ -9,7 +9,7 @@
 
 package mondrian.test;
 
-import static org.opencube.junit5.TestUtil.assertEqualsVerbose;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Duration;
 import java.util.List;
@@ -77,7 +77,7 @@ class I18nTest {
             + "FROM [Sales]");
         Result result = connection.execute(query);
         String actual = TestUtil.toString(result);
-        assertEqualsVerbose(
+        assertEquals(
             "Axis #0:\n"
             + "{}\n"
             + "Axis #1:\n"

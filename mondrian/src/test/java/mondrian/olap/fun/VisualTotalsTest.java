@@ -138,7 +138,7 @@ class VisualTotalsTest {
             	+ " FROM [Sales]");
         //fail("Not yet implemented");
         String s = TestUtil.toString(cellSet);
-        TestUtil.assertEqualsVerbose(
+        assertEquals(
         	     "Axis #0:\n"
         	     + "{}\n"
         	     + "Axis #1:\n"

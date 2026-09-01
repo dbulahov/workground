@@ -15,7 +15,6 @@ import static org.eclipse.daanse.rolap.testkit.assertions.MdxAssert.assertThatQu
 import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.opencube.junit5.TestUtil.assertQueriesReturnSimilarResults;
-import static org.opencube.junit5.TestUtil.assertQueryThrows;
 
 import java.net.URL;
 import java.util.List;
@@ -220,9 +219,8 @@ class VirtualCubeTest extends BatchTestCase {
             }
         }
         */
-        assertQueryThrows(context,
-            "select from [Sales vs Warehouse]",
-            "Cube 'Bad cube' not found");
+        assertThatQuery(context.getConnectionWithDefaultRole(), "select from [Sales vs Warehouse]")
+            .throwsMessage("Cube 'Bad cube' not found");
     }
 
     @Test

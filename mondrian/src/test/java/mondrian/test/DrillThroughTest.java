@@ -39,7 +39,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.opencube.junit5.TestUtil.assertSqlEquals;
 import static org.opencube.junit5.TestUtil.assertSqlEqualsIgnoreFormatting;
 import static org.opencube.junit5.TestUtil.checkThrowable;
-import static org.opencube.junit5.TestUtil.executeStatement;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -1504,7 +1503,7 @@ class DrillThroughTest {
     private void assertMaxRows(Connection connection, String firstMaxRow, int expectedCount)
         throws SQLException
     {
-        final ResultSet resultSet = executeStatement(connection,
+        final ResultSet resultSet = connection.createStatement().executeQuery(
             "drillthrough\n"
             + firstMaxRow
             + " select\n"
@@ -1512,7 +1511,7 @@ class DrillThroughTest {
             + "non empty {[Product].[Drink].[Beverages].[Pure Juice Beverages].[Juice]} on 1\n"
             + "from\n"
             + "[Sales]\n"
-            + "where([Measures].[Sales Count], [Time].[1997].[Q3].[8])");
+            + "where([Measures].[Sales Count], [Time].[1997].[Q3].[8])", Optional.empty(), null);
         int actualCount = 0;
         while (resultSet.next()) {
             ++actualCount;
@@ -1526,11 +1525,11 @@ class DrillThroughTest {
     void  testDrillthroughNegativeMaxRowsFails(Context<?> context) throws SQLException {
         Connection connection = context.getConnectionWithDefaultRole();
         try {
-            final ResultSet resultSet = executeStatement(connection,
+            final ResultSet resultSet = connection.createStatement().executeQuery(
                 "DRILLTHROUGH MAXROWS -3\n"
                 + "SELECT {[Customers].[USA].[CA].[Berkeley]} ON 0,\n"
                 + "{[Time].[1997]} ON 1\n"
-                + "FROM Sales");
+                + "FROM Sales", Optional.empty(), null);
             fail("expected error, got " + resultSet);
         } catch (Exception e) {
             checkThrowable(
@@ -1542,12 +1541,12 @@ class DrillThroughTest {
     void  testDrillThroughCalculatedMemberMeasure(Context<?> context) throws SQLException {
         Connection connection = context.getConnectionWithDefaultRole();
         try {
-            final ResultSet resultSet = executeStatement(connection,
+            final ResultSet resultSet = connection.createStatement().executeQuery(
                 "DRILLTHROUGH\n"
                 + "SELECT {[Customers].[USA].[CA].[Berkeley]} ON 0,\n"
                 + "{[Time].[1997]} ON 1\n"
                 + "FROM Sales\n"
-                + "RETURN  [Measures].[Profit]");
+                + "RETURN  [Measures].[Profit]", Optional.empty(), null);
             fail("expected error, got " + resultSet);
         } catch (Exception e) {
             checkThrowable(
@@ -1560,7 +1559,7 @@ class DrillThroughTest {
     void testDrillThroughNotDrillableFails(Context<?> context) throws SQLException {
         Connection connection = context.getConnectionWithDefaultRole();
         try {
-            final ResultSet resultSet = executeStatement(connection,
+            final ResultSet resultSet = connection.createStatement().executeQuery(
                 "DRILLTHROUGH\n"
                 + "WITH MEMBER [Measures].[Foo] "
                 + " AS [Measures].[Unit Sales]\n"
@@ -1568,7 +1567,7 @@ class DrillThroughTest {
                 + "SELECT {[Customers].[USA].[CA].[Berkeley]} ON 0,\n"
                 + "{[Time].[1997]} ON 1\n"
                 + "FROM Sales\n"
-                + "WHERE [Measures].[Foo]");
+                + "WHERE [Measures].[Foo]", Optional.empty(), null);
             fail("expected error, got " + resultSet);
         } catch (Exception e) {
             checkThrowable(
@@ -2080,7 +2079,7 @@ class DrillThroughTest {
         // columns.
         ResultSet rs = null;
         try {
-            rs = executeStatement(context.getConnectionWithDefaultRole(),
+            rs = context.getConnectionWithDefaultRole().createStatement().executeQuery(
                 "DRILLTHROUGH \n"
                 + "// Request ID: d73ea21c-2a29-11e5-ba1d-d4bed923da37 - RUN_REPORT\n"
                 + "WITH\n"
@@ -2092,7 +2091,8 @@ class DrillThroughTest {
                 + "SELECT\n"
                 + "FILTER([*BASE_MEMBERS__Measures_],([Measures].CurrentMember Is [Measures].[*FORMATTED_MEASURE_0])) ON COLUMNS\n"
                 + "FROM [Warehouse and Sales]\n"
-                + "WHERE ([*CJ_SLICER_AXIS]) RETURN [Gender].[Gender], [Measures].[Unit Sales], [Measures].[Warehouse Sales], [Time].[Year], [Warehouse].[Country]");
+                + "WHERE ([*CJ_SLICER_AXIS]) RETURN [Gender].[Gender], [Measures].[Unit Sales], [Measures].[Warehouse Sales], [Time].[Year], [Warehouse].[Country]",
+                Optional.empty(), null);
             assertEquals(
                 5, rs.getMetaData().getColumnCount());
             Object expectedYear;
@@ -2144,8 +2144,8 @@ class DrillThroughTest {
         ResultSet rs = null;
         int rowCount = 0;
         try {
-            rs = executeStatement(context.getConnectionWithDefaultRole(),
-                DRILLTHROUGH_QUERY_WITH_CUSTOMER_FULL_NAME);
+            rs = context.getConnectionWithDefaultRole().createStatement().executeQuery(
+                DRILLTHROUGH_QUERY_WITH_CUSTOMER_FULL_NAME, Optional.empty(), null);
             assertEquals(
                 5, rs.getMetaData().getColumnCount());
             assertEquals(
@@ -2200,8 +2200,8 @@ class DrillThroughTest {
         ResultSet rs = null;
         int rowCount = 0;
         try {
-            rs = executeStatement(context.getConnectionWithDefaultRole(),
-                DRILLTHROUGH_QUERY_WITH_CUSTOMER_ID);
+            rs = context.getConnectionWithDefaultRole().createStatement().executeQuery(
+                DRILLTHROUGH_QUERY_WITH_CUSTOMER_ID, Optional.empty(), null);
             assertEquals(
                 3, rs.getMetaData().getColumnCount());
             assertEquals(
@@ -2245,7 +2245,7 @@ class DrillThroughTest {
         int rowCount = 0;
         ResultSet rs = null;
         try {
-            rs = executeStatement(context.getConnectionWithDefaultRole(),
+            rs = context.getConnectionWithDefaultRole().createStatement().executeQuery(
                 "DRILLTHROUGH \n"
                 + "WITH\n"
                 + "SET [*NATIVE_CJ_SET_WITH_SLICER] AS 'FILTER({[Store Type].[All Store Types].[Gourmet Supermarket],[Store Type].[All Store Types].[Small Grocery]}, NOT ISEMPTY ([Measures].[Store Sales]))'\n"
@@ -2257,7 +2257,7 @@ class DrillThroughTest {
                 + "SELECT\n"
                 + "FILTER([*BASE_MEMBERS__Measures_],([Measures].CurrentMember Is [Measures].[*FORMATTED_MEASURE_0])) ON COLUMNS\n"
                 + "FROM [Sales]\n"
-                + "WHERE ([*CJ_SLICER_AXIS]) RETURN [Store Type].[Store Type]");
+                + "WHERE ([*CJ_SLICER_AXIS]) RETURN [Store Type].[Store Type]", Optional.empty(), null);
             assertEquals(
                 1, rs.getMetaData().getColumnCount(),
                     "This DRILLTHROUGH Result should contain only one column - ");

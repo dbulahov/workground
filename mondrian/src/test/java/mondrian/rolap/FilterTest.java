@@ -10,7 +10,6 @@
 package mondrian.rolap;
 
 import static org.eclipse.daanse.rolap.testkit.assertions.Dialect.getDialect;
-import static org.opencube.junit5.TestUtil.hierarchyName;
 import static org.opencube.junit5.TestUtil.isDefaultNullMemberRepresentation;
 
 import org.eclipse.daanse.olap.api.Context;
@@ -1174,7 +1173,7 @@ class FilterTest extends BatchTestCase {
       20,
       "select Filter(CrossJoin([Store].[Store Name].members, "
         + "                        "
-        + hierarchyName( "Store Type", "Store Type" )
+        + "[Store Type].[Store Type]"
         + ".[Store Type].members), "
         + "                        Not IsEmpty([Measures].[Store Sqft])) on rows, "
         + "{[Measures].[Store Sqft]} on columns "

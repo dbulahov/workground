@@ -12,29 +12,33 @@
 package mondrian.olap.fun;
 
 import static org.eclipse.daanse.olap.common.Util.assertTrue;
+import static org.eclipse.daanse.rolap.testkit.assertions.Mdx.executeQuery;
 import static org.eclipse.daanse.rolap.testkit.assertions.MdxAssert.assertThatAxis;
 import static org.eclipse.daanse.rolap.testkit.assertions.MdxAssert.assertThatExpr;
 import static org.eclipse.daanse.rolap.testkit.assertions.MdxAssert.assertThatQuery;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.opencube.junit5.TestUtil.assertStubbedEqualsVerbose;
-import static org.opencube.junit5.TestUtil.compileExpression;
 import static org.opencube.junit5.TestUtil.executeExpr;
-import static org.opencube.junit5.TestUtil.executeExprRaw;
 import static org.opencube.junit5.TestUtil.isDefaultNullMemberRepresentation;
+import static org.opencube.junit5.TestUtil.stubAnonymousClasses;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.daanse.olap.api.Context;
+import org.eclipse.daanse.olap.api.calc.Calc;
 import org.eclipse.daanse.olap.api.connection.Connection;
 import org.eclipse.daanse.olap.api.function.FunctionService;
+import org.eclipse.daanse.olap.api.query.component.Query;
 import org.eclipse.daanse.olap.api.result.Cell;
 import org.eclipse.daanse.olap.api.result.Result;
+import org.eclipse.daanse.olap.calc.base.profile.SimpleCalculationProfileWriter;
 import org.eclipse.daanse.olap.common.ConfigConstants;
+import org.eclipse.daanse.olap.common.Util;
 import  org.eclipse.daanse.olap.util.Bug;
 import org.eclipse.daanse.rolap.mapping.instance.emf.complex.foodmart.CatalogSupplier;
 import org.eclipse.daanse.rolap.mapping.instance.emf.complex.foodmart.FoodmartDatabaseSupplier;
@@ -961,8 +965,15 @@ org.eclipse.daanse.olap.calc.base.type.tuplebase.MemberArrayValueCalc(type=SCALA
   void assertExprCompilesTo(Connection connection,
     String expr,
     String expectedCalc ) {
-    final String actualCalc =
-      compileExpression(connection, expr, true, "Sales");
+    Query query = connection.parseQuery(
+        "with member [Measures].[Foo] as " + Util.singleQuoteString(expr)
+            + " select {[Measures].[Foo]} on columns from Sales");
+    Calc calc = query.compileExpression(query.getFormulas()[0].getExpression(), true, null);
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    new SimpleCalculationProfileWriter(pw).write(calc.getCalculationProfile());
+    pw.flush();
+    final String actualCalc = sw.toString();
     final int expDeps =
       connection.getContext().getConfigValue(ConfigConstants.TEST_EXP_DEPENDENCIES, ConfigConstants.TEST_EXP_DEPENDENCIES_DEFAULT_VALUE, Integer.class);
     if ( expDeps > 0 ) {
@@ -971,7 +982,7 @@ org.eclipse.daanse.olap.calc.base.type.tuplebase.MemberArrayValueCalc(type=SCALA
       // 'DependencyTestingCalc' instances embedded in it.
       return;
     }
-    assertStubbedEqualsVerbose( expectedCalc, actualCalc );
+    assertEquals(stubAnonymousClasses(expectedCalc), stubAnonymousClasses(actualCalc));
   }
 
   /**
@@ -980,8 +991,13 @@ org.eclipse.daanse.olap.calc.base.type.tuplebase.MemberArrayValueCalc(type=SCALA
   public static void assertAxisCompilesTo(Connection connection,
     String expr,
     String expectedCalc ) {
-    final String actualCalc =
-      compileExpression(connection, expr, false, "Sales");
+    Query query = connection.parseQuery("SELECT {" + expr + "} ON COLUMNS FROM Sales");
+    Calc calc = query.compileExpression(query.getAxes()[0].getSet(), false, null);
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    new SimpleCalculationProfileWriter(pw).write(calc.getCalculationProfile());
+    pw.flush();
+    final String actualCalc = sw.toString();
     final int expDeps =
       connection.getContext().getConfigValue(ConfigConstants.TEST_EXP_DEPENDENCIES, ConfigConstants.TEST_EXP_DEPENDENCIES_DEFAULT_VALUE, Integer.class);
     if ( expDeps > 0 ) {
@@ -990,7 +1006,7 @@ org.eclipse.daanse.olap.calc.base.type.tuplebase.MemberArrayValueCalc(type=SCALA
       // 'DependencyTestingCalc' instances embedded in it.
       return;
     }
-    assertStubbedEqualsVerbose( expectedCalc, actualCalc );
+    assertEquals(stubAnonymousClasses(expectedCalc), stubAnonymousClasses(actualCalc));
   }
 
 
@@ -1001,7 +1017,10 @@ org.eclipse.daanse.olap.calc.base.type.tuplebase.MemberArrayValueCalc(type=SCALA
     // -- jhyde, 2006/9/3
 
     // From double to integer.  MONDRIAN-1631
-    Cell cell = executeExprRaw(context.getConnectionWithDefaultRole(), "Sales", "Cast(1.4 As Integer)" );
+    Cell cell = executeQuery(context.getConnectionWithDefaultRole(),
+        "with member [Measures].[Foo] as " + Util.singleQuoteString("Cast(1.4 As Integer)")
+        + " select {[Measures].[Foo]} on columns from Sales")
+        .getCell(new int[] { 0 });
     assertEquals(Integer.class, cell.getValue().getClass(),
             "Cast to Integer resulted in wrong datatype\n"
                     + cell.getValue().getClass().toString());

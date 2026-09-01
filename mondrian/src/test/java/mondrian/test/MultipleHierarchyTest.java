@@ -9,8 +9,7 @@
 
 package mondrian.test;
 
-import static org.opencube.junit5.TestUtil.assertQueryThrows;
-import static org.opencube.junit5.TestUtil.hierarchyName;
+import static org.eclipse.daanse.rolap.testkit.assertions.MdxAssert.assertThatQuery;
 
 import org.eclipse.daanse.olap.api.Context;
 import org.eclipse.daanse.olap.api.connection.Connection;
@@ -43,10 +42,8 @@ class MultipleHierarchyTest {
         }
     }
 
-    private static final String timeWeekly =
-        hierarchyName("Time", "Weekly");
-    private static final String timeTime =
-        hierarchyName("Time", "Time");
+    private static final String timeWeekly = "[Time].[Weekly]";
+    private static final String timeTime = "[Time].[Time]";
 
     @Test
     void testWeekly(Context<?> context) {
@@ -102,12 +99,11 @@ class MultipleHierarchyTest {
 
     @Test
     void testMultipleMembersOfSameDimensionInSlicerFails(Context<?> context) {
-        assertQueryThrows(context.getConnectionWithDefaultRole(),
-            "select {[Measures].[Unit Sales]} on columns,\n"
+        assertThatQuery(context.getConnectionWithDefaultRole(), "select {[Measures].[Unit Sales]} on columns,\n"
             + " {[Store].children} on rows\n"
             + "from [Sales]\n"
-            + "where ([Gender].[Gender].[M], [Time].[Time].[1997], [Time].[Time].[1997].[Q1])",
-            "Tuple contains more than one member of hierarchy '[Time].[Time]'.");
+            + "where ([Gender].[Gender].[M], [Time].[Time].[1997], [Time].[Time].[1997].[Q1])")
+            .throwsMessage("Tuple contains more than one member of hierarchy '[Time].[Time]'.");
     }
 
     @Test
@@ -117,7 +113,7 @@ class MultipleHierarchyTest {
             + " {[Store].children} on rows\n"
             + "from [Sales]\n"
             + "where ([Gender].[M], "
-            + hierarchyName("Time", "Weekly")
+            + "[Time].[Weekly]"
             + ".[1997], [Time].[1997].[Q1])").returnsGrid(
 "Axis #0:\n"
             + "{[Gender].[Gender].[M], [Time].[Weekly].[1997], [Time].[Time].[1997].[Q1]}\n"
@@ -219,7 +215,7 @@ class MultipleHierarchyTest {
             + "</Dimension>"));
          */
 
-        final String nuStore = hierarchyName("NuStore", "NuStore");
+        final String nuStore = "[NuStore].[NuStore]";
         MdxAssert.assertThatQuery(context.getConnectionWithDefaultRole(),
 "with member [Measures].[Store level] as '" + nuStore
             + ".CurrentMember.Level.Name'\n"
@@ -332,9 +328,8 @@ class MultipleHierarchyTest {
         Connection connection = context.getConnectionWithDefaultRole();
         //if (SystemWideProperties.instance().SsasCompatibleNaming) {
         if (true) {
-            assertQueryThrows(connection,
-                query,
-                "Could not Calculate the default hierarchy of the given dimension 'Time'. It may contains more than one hierarchy. Specify the hierarchy explicitly.");
+            assertThatQuery(connection, query)
+                .throwsMessage("Could not Calculate the default hierarchy of the given dimension 'Time'. It may contains more than one hierarchy. Specify the hierarchy explicitly.");
         } else {
             MdxAssert.assertThatQuery(connection,
 query).returnsGrid(
@@ -373,7 +368,7 @@ query).returnsGrid(
             + "</Hierarchy>\n"
             + "</Dimension>"));
          */
-        final String nuStore = hierarchyName("NuStore", "NuStore");
+        final String nuStore = "[NuStore].[NuStore]";
 
         MdxAssert.assertThatQuery(context.getConnectionWithDefaultRole(),
 "with set [*NATIVE_CJ_SET] as '[*BASE_MEMBERS_NuStore]' "

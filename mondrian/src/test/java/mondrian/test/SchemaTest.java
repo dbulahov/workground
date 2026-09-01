@@ -20,10 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.opencube.junit5.TestUtil.assertEqualsVerbose;
 import static org.eclipse.daanse.rolap.testkit.assertions.MdxAssert.assertThatAxis;
 import static org.eclipse.daanse.rolap.testkit.assertions.MdxAssert.assertThatQuery;
-import static org.opencube.junit5.TestUtil.assertQueryThrows;
 import static org.opencube.junit5.TestUtil.assertSimpleQuery;
 import static org.opencube.junit5.TestUtil.checkThrowable;
 
@@ -797,9 +795,8 @@ class SchemaTest {
             + "    </Hierarchy>\n"
             + "  </Dimension>"));
         */
-        assertQueryThrows(context,
-            "select {[Gender no levels]} on columns from [Sales]",
-            "Hierarchy '[Gender no levels].[Gender no levels]' must have at least one level.");
+        assertThatQuery(context, "select {[Gender no levels]} on columns from [Sales]")
+            .throwsMessage("Hierarchy '[Gender no levels].[Gender no levels]' must have at least one level.");
     }
 
     public static class TestHierarchyNoLevelsFailsModifierEmf implements CatalogMappingSupplier {
@@ -906,9 +903,8 @@ class SchemaTest {
             + "    </Hierarchy>\n"
             + "  </Dimension>"));
         */
-        assertQueryThrows(context,
-            "select {[Gender dup levels]} on columns from [Sales]",
-            "Level names within hierarchy '[Gender dup levels].[Gender dup levels]' are not unique; there is more than one level with name 'Gender'.");
+        assertThatQuery(context, "select {[Gender dup levels]} on columns from [Sales]")
+            .throwsMessage("Level names within hierarchy '[Gender dup levels].[Gender dup levels]' are not unique; there is more than one level with name 'Gender'.");
     }
 
     public static class TestHierarchyNonUniqueLevelsFailsModifierEmf implements CatalogMappingSupplier {
@@ -1120,9 +1116,8 @@ class SchemaTest {
         // FIXME: This should validate the schema, and fail.
         assertSimpleQuery(context.getConnectionWithDefaultRole());
         // FIXME: Should give better error.
-        assertQueryThrows(context,
-            "select [Yearly Income3].Children on 0 from [Sales]",
-            "Internal error: while building member cache");
+        assertThatQuery(context.getConnectionWithDefaultRole(), "select [Yearly Income3].Children on 0 from [Sales]")
+            .throwsMessage("Internal error: while building member cache");
     }
 
     public static class TestHierarchyTableNotFoundModifierEmf implements CatalogMappingSupplier {
@@ -1248,9 +1243,8 @@ class SchemaTest {
             + "  </Hierarchy>\n"
             + "</Dimension>"));
         */
-        assertQueryThrows(context,
-            "select from [Sales]",
-            "no table 'customer_not_found' found in hierarchy [Yearly Income4]");
+        assertThatQuery(context, "select from [Sales]")
+            .throwsMessage("no table 'customer_not_found' found in hierarchy [Yearly Income4]");
     }
 
     public static class TestPrimaryKeyTableNotFoundModifierEmf implements CatalogMappingSupplier {
@@ -1371,9 +1365,8 @@ class SchemaTest {
             + "</Dimension>"));
 
          */
-        assertQueryThrows(context,
-            "select from [Sales]",
-            "Table 'customer_not_found' not found");
+        assertThatQuery(context, "select from [Sales]")
+            .throwsMessage("Table 'customer_not_found' not found");
     }
 
     public static class TestLevelTableNotFoundModifierEmf implements CatalogMappingSupplier {
@@ -1491,9 +1484,8 @@ class SchemaTest {
             + "    </Hierarchy>\n"
             + "  </Dimension>"));
          */
-        assertQueryThrows(context,
-            "select {[Gender with default]} on columns from [Sales]",
-            "Can not find Default Member with name \"[Gender with default].[Non].[Existent]\" in Hierarchy \"Gender with default\"");
+        assertThatQuery(context, "select {[Gender with default]} on columns from [Sales]")
+            .throwsMessage("Can not find Default Member with name \"[Gender with default].[Non].[Existent]\" in Hierarchy \"Gender with default\"");
     }
 
     public static class TestHierarchyBadDefaultMemberModifierEmf implements CatalogMappingSupplier {
@@ -6798,7 +6790,7 @@ class SchemaTest {
 
         // Note that 'product_id' is NOT one of the columns with unknown usage.
         // It is used as a level in the degenerate dimension [Time Degenerate].
-        assertEqualsVerbose(
+        assertEquals(
             "WARN - Recognizer.checkUnusedColumns: Candidate aggregate table 'agg_c_10_sales_fact_1997' for fact table 'sales_fact_1997' has a column 'customer_count' with unknown usage.\n"
             + "WARN - Recognizer.checkUnusedColumns: Candidate aggregate table 'agg_c_10_sales_fact_1997' for fact table 'sales_fact_1997' has a column 'month_of_year' with unknown usage.\n"
             + "WARN - Recognizer.checkUnusedColumns: Candidate aggregate table 'agg_c_10_sales_fact_1997' for fact table 'sales_fact_1997' has a column 'quarter' with unknown usage.\n"
@@ -7231,7 +7223,7 @@ class SchemaTest {
             //loggerConfig.removeAppender( appender.getName() );
             //ctx.updateLoggers();
         }
-        assertEqualsVerbose(
+        assertEquals(
             "WARN - Recognizer.checkUnusedColumns: Candidate aggregate table 'agg_l_03_sales_fact_1997' for fact table 'sales_fact_1997' has a column 'time_id' with unknown usage.\n",
             sw.toString());
     }
@@ -9775,7 +9767,7 @@ class SchemaTest {
         Result result = executeQuery(context.getConnectionWithDefaultRole(),
             "select {[Gender2].members} on columns from [GenderCube]");
 
-        assertEqualsVerbose(
+        assertEquals(
             "[Gender2].[Gender2].[All Gender]\n"
             + "[Gender2].[Gender2].[F]\n"
             + "[Gender2].[Gender2].[M]",
@@ -9807,9 +9799,8 @@ class SchemaTest {
          * EMF version of TestInvalidSchemaAccess
          * Creates access role 'Role1' with catalog grant that has null access (invalid)
          */
-        assertQueryThrows(context, List.of("Role1"),
-            "select from [Sales]",
-            "MDX cube 'Sales' not found");
+        assertThatQuery(context, List.of("Role1"), "select from [Sales]")
+            .throwsMessage("MDX cube 'Sales' not found");
     }
 
     public static class TestInvalidSchemaAccessEmf implements CatalogMappingSupplier {
@@ -10198,8 +10189,8 @@ class SchemaTest {
             }
         }
         */
-        assertQueryThrows(context, List.of("Role1Plus2"),
-            "select from [Sales]", "Union role must not contain grants");
+        assertThatQuery(context, List.of("Role1Plus2"), "select from [Sales]")
+            .throwsMessage("Union role must not contain grants");
     }
 
     public static class TestUnionRoleIllegalForwardRefModifierEmf implements CatalogMappingSupplier {
@@ -10286,8 +10277,8 @@ class SchemaTest {
             }
         }
         */
-        assertQueryThrows(context, List.of("Role1Plus2"),
-            "select from [Sales]", "Unknown role 'Role2'");
+        assertThatQuery(context, List.of("Role1Plus2"), "select from [Sales]")
+            .throwsMessage("Unknown role 'Role2'");
     }
 
     public static class TestVirtualCubeNamedSetSupportInSchemaModifierEmf implements CatalogMappingSupplier {
@@ -11419,9 +11410,8 @@ class SchemaTest {
             + "    </Hierarchy>\n"
             + "  </Dimension>\n"));
          */
-        assertQueryThrows(context,
-            "select {[Big numbers].members} on 0 from [Sales]",
-        		"Illegal value 'char'.  Legal values: {int, long, Object, String}");
+        assertThatQuery(context, "select {[Big numbers].members} on 0 from [Sales]")
+            .throwsMessage("Illegal value 'char'.  Legal values: {int, long, Object, String}");
             //"In Schema: In Cube: In Dimension: In Hierarchy: In Level: Value 'char' of attribute 'internalType' has illegal value 'char'.  Legal values: {int, long, Object, String}");
     }
 
@@ -17804,9 +17794,8 @@ class SchemaTest {
             }
         }
         */
-        assertQueryThrows(context,
-            "select {[Product].[Product Family].Members} on rows, {[Measures].[Unit Sales]} on columns from [Foo]",
-            "mondrian.olap.MondrianException: Mondrian Error:Too many errors, '1', while loading/reloading aggregates.");
+        assertThatQuery(context.getConnectionWithDefaultRole(), "select {[Product].[Product Family].Members} on rows, {[Measures].[Unit Sales]} on columns from [Foo]")
+            .throwsMessage("mondrian.olap.MondrianException: Mondrian Error:Too many errors, '1', while loading/reloading aggregates.");
     }
 
     @Test
@@ -18284,9 +18273,8 @@ class SchemaTest {
             }
         }
         */
-        assertQueryThrows(context,
-            "select {[Product].[Product Family].Members} on rows, {[Measures].[Unit Sales]} on columns from [Foo]",
-            "Too many errors, '1', while loading/reloading aggregates.");
+        assertThatQuery(context.getConnectionWithDefaultRole(), "select {[Product].[Product Family].Members} on rows, {[Measures].[Unit Sales]} on columns from [Foo]")
+            .throwsMessage("Too many errors, '1', while loading/reloading aggregates.");
     }
 
     /**

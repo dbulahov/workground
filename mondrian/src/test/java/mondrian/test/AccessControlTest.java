@@ -1180,14 +1180,8 @@ class AccessControlTest {
 //                + "  </SchemaGrant>\n"
 //                + "</Role>");
         ConnectionProps props =new ConnectionProps(List.of("Role1"), true, Locale.getDefault(), Duration.ofSeconds(-1), Optional.empty(), Optional.empty(), Optional.empty());
-        // Not assertThatQuery: unverified whether the bad rollupPolicy is caught while
-        // resolving the connection itself (schema/role validation) rather than during query
-        // execution -- keep it in the same try/catch as the connection lookup until confirmed.
-    	TestUtil.assertQueryThrows(
-    			foodMartContext,
-                props,
-    			"select from [Sales]",
-    			"Illegal rollupPolicy value 'bad'");
+        assertThatQuery(foodMartContext, props, "select from [Sales]")
+            .throwsMessage("Illegal rollupPolicy value 'bad'");
     }
 
     /**

@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.opencube.junit5.TestUtil.assertEqualsVerbose;
 import static org.opencube.junit5.TestUtil.checkThrowable;
 
 
@@ -457,7 +456,7 @@ class ScenarioTest {
                 + "from [Sales]\n"
                 + "where ([Customers].[All Customers].[USA].[CA].[San Francisco],\n"
                 + " [Time].[1997], " + scenarioUniqueName + ")");
-        assertEqualsVerbose(
+        assertEquals(
             "Axis #0:\n"
             + "{[Customers].[Customers].[USA].[CA].[San Francisco], [Time].[Time].[1997], "
             + scenarioUniqueName
@@ -486,7 +485,7 @@ class ScenarioTest {
             + "from [Sales]\n"
             + "where ([Customers].[All Customers].[USA].[CA].[San Francisco],\n"
             + " [Time].[1997], " + scenarioUniqueName + ")");
-        assertEqualsVerbose(
+        assertEquals(
             "Axis #0:\n"
             + "{[Customers].[Customers].[USA].[CA].[San Francisco], [Time].[Time].[1997], "
             + scenarioUniqueName

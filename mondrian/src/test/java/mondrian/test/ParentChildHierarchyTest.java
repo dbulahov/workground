@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencube.junit5.TestUtil.assertSqlEquals;
-import static org.opencube.junit5.TestUtil.unfold;
 
 import java.time.Duration;
 import java.util.List;
@@ -3372,7 +3371,7 @@ expected);
                         + "from [HR4C]";
         expected =
                 TestUtil.toString(executeQuery(context.getConnectionWithDefaultRole(), mdx));
-        assertTrue(unfold(expected).contains("Row #0: 21,252\n"), expected);
+        assertTrue(expected.contains("Row #0: 21,252\n"), expected);
 
         // 2. Run a small query with known results on both contexts.
         // Note in particular the total for [All] is 21,252, same as for
@@ -3453,12 +3452,6 @@ expected);
                         + "Row #6: 60\n"
                         + "Row #7: 168\n"
                         + "Row #8: 60\n";
-
-        // Need to unfold because 'expect' has platform-specific line-endings,
-        // yet MdxAssert assumes that it contains linefeeds.
-        MdxAssert.assertThatQuery(context.getConnectionWithDefaultRole(),
-mdx).returnsGrid(
-unfold(expected));
 
         MdxAssert.assertThatQuery(context.getConnectionWithDefaultRole(),
 mdx).returnsGrid(

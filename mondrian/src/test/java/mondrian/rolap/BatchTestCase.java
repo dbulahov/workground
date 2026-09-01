@@ -14,7 +14,6 @@ import static mondrian.enums.DatabaseProduct.getDatabaseProduct;
 import static org.eclipse.daanse.rolap.testkit.assertions.Dialect.getDialect;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.opencube.junit5.TestUtil.assertEqualsVerbose;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -539,10 +538,9 @@ public class BatchTestCase{
         if (expectedResult != null) {
             String nonNativeResult = TestUtil.toString(result);
             if (!nonNativeResult.equals(expectedResult)) {
-                assertEqualsVerbose(
+                assertEquals(
                     expectedResult,
                     nonNativeResult,
-                    false,
                     "Non Native implementation returned different result than "
                     + "expected; MDX=" + mdx);
             }
@@ -663,25 +661,22 @@ public class BatchTestCase{
             }
 
             if (expectedResult != null) {
-                assertEqualsVerbose(
+                assertEquals(
                     expectedResult,
                     nativeResult,
-                    false,
                     "Native implementation returned different result than "
                     + "expected; MDX=" + mdx);
-                assertEqualsVerbose(
+                assertEquals(
                     expectedResult,
                     interpretedResult,
-                    false,
                     "Interpreter implementation returned different result than "
                     + "expected; MDX=" + mdx);
             }
 
             if (!nativeResult.equals(interpretedResult)) {
-                assertEqualsVerbose(
+                assertEquals(
                     interpretedResult,
                     nativeResult,
-                    false,
                     "Native implementation returned different result than "
                     + "interpreter; MDX=" + mdx);
             }

@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencube.junit5.TestUtil.allMember;
-import static org.opencube.junit5.TestUtil.assertEqualsVerbose;
 import static org.opencube.junit5.TestUtil.cubeByName;
 import static org.opencube.junit5.TestUtil.isDefaultNullMemberRepresentation;
 import static org.opencube.junit5.TestUtil.member;
@@ -2190,7 +2189,7 @@ class AggregationOnDistinctCountMeasuresTest {
             + " UNION(CROSSJOIN(GENERATE([*CJ_ROW_AXIS], {([Gender].[Gender].CURRENTMEMBER)}),{[Store Type].[Store Type].[*TOTAL_MEMBER_SEL~AGG]}),[*CJ_ROW_AXIS]) ON ROWS\r\n"
             + " FROM [Sales]\r\n" );
     String resultString = TestUtil.toString( result );
-    assertEqualsVerbose( "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Measures].[Customer Count]}\n"
+    assertEquals( "Axis #0:\n" + "{}\n" + "Axis #1:\n" + "{[Measures].[Customer Count]}\n"
         + "Axis #2:\n" + "{[Gender].[Gender].[F], [Store Type].[Store Type].[*TOTAL_MEMBER_SEL~AGG]}\n"
         + "{[Gender].[Gender].[M], [Store Type].[Store Type].[*TOTAL_MEMBER_SEL~AGG]}\n"
         + "{[Gender].[Gender].[F], [Store Type].[Store Type].[Gourmet Supermarket]}\n" + "{[Gender].[Gender].[F], [Store Type].[Store Type].[Supermarket]}\n"
@@ -2225,7 +2224,7 @@ class AggregationOnDistinctCountMeasuresTest {
             + " UNION(CROSSJOIN(GENERATE([*CJ_ROW_AXIS], {([Gender].[Gender].CURRENTMEMBER)}),{[Store Type].[Store Type].[*TOTAL_MEMBER_SEL~AGG]}),[*SORTED_ROW_AXIS]) ON ROWS\r\n"
             + " FROM [Sales]\r\n" + " WHERE ([*CJ_SLICER_AXIS])\r\n" );
     String resultString = TestUtil.toString( result );
-    assertEqualsVerbose( "Axis #0:\n" + "{[Product].[Product].[Drink]}\n" + "{[Product].[Product].[Food]}\n" + "Axis #1:\n"
+    assertEquals( "Axis #0:\n" + "{[Product].[Product].[Drink]}\n" + "{[Product].[Product].[Food]}\n" + "Axis #1:\n"
         + "{[Measures].[*FORMATTED_MEASURE_0]}\n" + "Axis #2:\n"
         + "{[Gender].[Gender].[F], [Store Type].[Store Type].[*TOTAL_MEMBER_SEL~AGG]}\n"
         + "{[Gender].[Gender].[M], [Store Type].[Store Type].[*TOTAL_MEMBER_SEL~AGG]}\n"
@@ -2265,7 +2264,7 @@ class AggregationOnDistinctCountMeasuresTest {
             + " UNION(CROSSJOIN(GENERATE([*CJ_ROW_AXIS], {([Gender].CURRENTMEMBER)}),{[Store Type].[Store Type].[*TOTAL_MEMBER_SEL~AGG]}),[*SORTED_ROW_AXIS]) ON ROWS\r\n"
             + " FROM [Sales]\r\n" + " WHERE ([*CJ_SLICER_AXIS])" );
     String resultString = TestUtil.toString( result );
-    assertEqualsVerbose( "Axis #0:\n" + "{[Product].[Product].[Drink]}\n" + "{[Product].[Product].[Food]}\n" + "Axis #1:\n"
+    assertEquals( "Axis #0:\n" + "{[Product].[Product].[Drink]}\n" + "{[Product].[Product].[Food]}\n" + "Axis #1:\n"
         + "{[Measures].[Customer Count]}\n" + "Axis #2:\n" + "{[Gender].[Gender].[F], [Store Type].[Store Type].[*TOTAL_MEMBER_SEL~AGG]}\n"
         + "{[Gender].[Gender].[M], [Store Type].[Store Type].[*TOTAL_MEMBER_SEL~AGG]}\n"
         + "{[Gender].[Gender].[F], [Store Type].[Store Type].[Gourmet Supermarket]}\n" + "{[Gender].[Gender].[F], [Store Type].[Store Type].[Supermarket]}\n"
